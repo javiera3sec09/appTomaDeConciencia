@@ -1,0 +1,96 @@
+.iq-sidebar, .iq-topbar {
+    display: none !important;
+  }
+  .iq-main-area {
+    width: 100vw !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: radial-gradient(circle at 50% 30%, #1e1346 0%, #0c0e1e 70%) !important;
+  }
+  #content {
+    width: 100% !important;
+    max-width: 420px !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+  }
+  .iq-login-box {
+    background: #13172e;
+    border: 1px solid #232952;
+    border-radius: 16px;
+    padding: 36px 32px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(124, 58, 237, 0.2);
+    text-align: center;
+  }
+  .iq-login-logo {
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+  }
+  .iq-login-logo svg {
+    width: 30px;
+    height: 30px;
+    color: #ffffff;
+  }
+  .iq-login-box h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+  }
+  .iq-login-box p {
+    font-size: 12px;
+    color: #8b95b5;
+    margin: 6px 0 24px 0;
+  }
+  .form-row {
+    margin-bottom: 18px;
+    text-align: left;
+  }
+  .form-row label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+  }
+  .form-row input[type="text"], .form-row input[type="password"] {
+    width: 100%;
+    padding: 11px 14px;
+    background: #0c0e1e;
+    border: 1px solid #252c58;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 13px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-row input:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+  }
+  .btn-login-submit {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+    margin-top: 10px;
+  }
+  .btn-login-submit:hover {
+    opacity: 0.92;
+  }

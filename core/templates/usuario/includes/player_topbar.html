@@ -1,0 +1,288 @@
+{% load static humanize %}
+<!-- ================================================================= -->
+<!-- COMPONENTE HUD SUPERIOR GÓTICO: IDÉNTICO PARA TODAS LAS VISTAS     -->
+<!-- (Lobby, Clasificación, Tienda, Mapas, Academia ISO, Colección)    -->
+<!-- ================================================================= -->
+
+<link rel="stylesheet" href="{% static 'css/usuarios/player_topbar.css' %}">
+
+<!-- ================================================================= -->
+<!-- 1. HEADER HUD SUPERIOR FLOTANTE                                   -->
+<!-- ================================================================= -->
+<header class="iq-cl-topbar" id="playerGlobalTopbar">
+  <!-- Identidad del Jugador (Avatar, Aura, Alias, Tuerca, Nivel, XP) -->
+  <div class="iq-player-identity" title="Haz clic para modificar tu Alias o Avatar" onclick="openPlayerProfileModal();">
+    <div class="iq-player-avatar-wrap">
+      <div class="iq-player-avatar-aura"></div>
+      <img id="topbarAvatarImg" src="{{ usuario.avatar_url }}" alt="{{ usuario.alias }}" class="iq-player-avatar-img" onerror="this.src='/static/img/avatars/necromancer_1.png'">
+    </div>
+
+    <div class="iq-player-details">
+      <div class="iq-player-name-row">
+        <span id="topbarAlias" class="iq-player-alias">{{ usuario.alias|default:usuario.nombre_completo }}</span>
+        <button type="button" class="btn-settings-gear" title="Editar perfil" onclick="event.stopPropagation(); openPlayerProfileModal();">
+          <i class="bi bi-gear-fill"></i>
+        </button>
+      </div>
+
+      <div class="iq-player-level-xp-row">
+        <span id="topbarLevelTag" class="iq-player-level-tag">Nv. {{ progreso.nivel|default:1 }}</span>
+        <div class="iq-topbar-xp-bar-wrap" title="Progreso de Experiencia">
+          <div id="topbarXpBarFill" class="iq-topbar-xp-bar-fill" style="width: {{ pct_xp|default:0 }}%;"></div>
+        </div>
+        <span id="topbarXpText" class="iq-topbar-xp-text">{{ xp_en_nivel_fmt|default:xp_en_nivel }} / {{ xp_meta_nivel_fmt|default:xp_meta_nivel }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recursos de la Cuenta (Gemas, Monedas de Oro, Energía, Acciones) -->
+  <div class="iq-topbar-stats-right">
+    <!-- Gemas Arcanas -->
+    <div class="iq-stat-pill gemas" title="Gemas acumuladas en tu progreso">
+      <i class="bi bi-gem"></i>
+      <span id="topbarGemasDisplay">{{ gemas_fmt|default:progreso.gemas }}</span>
+      <button type="button" class="iq-pill-btn-add" title="Obtener gemas" onclick="openGlobalShop('gemas');">+</button>
+    </div>
+
+    <!-- Oro / Monedas -->
+    <div class="iq-stat-pill oro" title="Monedas de oro de recompensas">
+      <i class="bi bi-coin"></i>
+      <span id="topbarOroDisplay">{{ oro_fmt|default:progreso.oro }}</span>
+      <button type="button" class="iq-pill-btn-add" title="Obtener oro" onclick="openGlobalShop('oro');">+</button>
+    </div>
+
+    <!-- Energía / Vidas -->
+    <div class="iq-stat-pill energia" title="Energía disponible para retos ISO">
+      <i class="bi bi-lightning-charge-fill"></i>
+      <span id="topbarEnergiaDisplay">{{ energia_actual }} / {{ energia_maxima }}</span>
+      <span id="topbarRegenBadge" class="iq-topbar-regen-badge" style="{% if energia_actual >= energia_maxima %}display: none;{% else %}display: inline-flex;{% endif %}">
+        <i class="bi bi-hourglass-split"></i>
+        <span id="topbarRegenCountdown">--:--</span>
+      </span>
+      <button type="button" class="iq-pill-btn-add" title="Recargar energía" onclick="openGlobalShop('energia');">+</button>
+    </div>
+
+    <!-- Mensajes / Buzón de la Orden con Alerta -->
+    <button type="button" class="iq-topbar-icon-btn" title="Buzón de Mensajes" onclick="openGlobalMessages();">
+      <i class="bi bi-envelope"></i>
+      <span class="iq-icon-badge">{{ mensajes_no_leidos|default:1 }}</span>
+    </button>
+
+    <!-- Notificaciones con Alerta -->
+    <button type="button" class="iq-topbar-icon-btn" title="Notificaciones de la Orden" onclick="openGlobalNotifs();">
+      <i class="bi bi-bell"></i>
+      <span class="iq-icon-badge">{{ notificaciones_no_leidas|default:1 }}</span>
+    </button>
+
+    <!-- Botón Salir / Quitar Sesión -->
+    <a href="{% url 'core:logout' %}" class="btn-topbar-exit" title="Cerrar sesión e ingresar con otro usuario">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Salir</span>
+    </a>
+  </div>
+</header>
+
+<!-- ================================================================= -->
+<!-- 2. MODAL DE PERFIL: PERSONALIZAR ALIAS Y AVATAR (IDÉNTICO A LA IMAGEN) -->
+<!-- ================================================================= -->
+<div id="modalPerfilGlobal" class="iq-profile-modal-overlay iq-global-modal-overlay">
+  <div class="iq-profile-card-exact">
+    <!-- Escudo Superior Central en Relieve idéntico a la imagen de referencia -->
+    <div class="iq-profile-shield-crest">
+      <svg width="46" height="50" viewBox="0 0 46 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M23 2 C33 2 43 5 43 16 C43 33 29 44 23 48 C17 44 3 33 3 16 C3 5 13 2 23 2 Z" fill="#130728" stroke="#a855f7" stroke-width="2.5"/>
+        <!-- Símbolo heráldico interior blanco/lavanda -->
+        <path d="M23 11 C29 11 34 14 34 20 C34 30 26 36 23 39 C20 36 12 30 12 20 C12 14 17 11 23 11 Z" fill="#ffffff" opacity="0.95"/>
+        <path d="M23 11 L23 39 C26 36 34 30 34 20 C34 14 29 11 23 11 Z" fill="#c084fc" opacity="0.4"/>
+      </svg>
+    </div>
+
+    <!-- Botón de Cierre X -->
+    <button type="button" class="iq-profile-close-btn" onclick="closePlayerProfileModal();" title="Cerrar modal">&times;</button>
+
+    <!-- Título PERFIL -->
+    <h2 class="iq-profile-title-exact">PERFIL</h2>
+
+    <!-- Grid de 2 Columnas -->
+    <div class="iq-profile-grid-exact">
+      <!-- Columna Izquierda: Avatar Circular Grande y Botones de Cambio -->
+      <div class="iq-profile-avatar-col">
+        <div class="iq-profile-avatar-circle-frame">
+          <img id="profileModalAvatarImg" src="{{ usuario.avatar_url }}" alt="{{ usuario.alias }}" class="iq-profile-avatar-img-exact" onerror="this.src='/static/img/avatars/necromancer_1.png'">
+        </div>
+
+        <!-- Selector de Avatar con Flechas < y > y botón central Cambiar Avatar -->
+        <div class="iq-profile-avatar-controls-row">
+          <button type="button" class="btn-avatar-nav-arrow" onclick="profileAvatarPrev();" title="Avatar anterior">&lt;</button>
+          <button type="button" class="btn-avatar-nav-action" onclick="profileAvatarNext();" title="Cambiar avatar">
+            <i class="bi bi-person-fill"></i>
+            <span>Cambiar Avatar</span>
+          </button>
+          <button type="button" class="btn-avatar-nav-arrow" onclick="profileAvatarNext();" title="Siguiente avatar">&gt;</button>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Alias y Nivel -->
+      <div class="iq-profile-form-col">
+        <!-- Campo Alias -->
+        <div class="iq-profile-field-block">
+          <div class="iq-profile-field-label-exact">
+            <i class="bi bi-person-fill"></i>
+            <span>Alias</span>
+          </div>
+          <div class="iq-profile-alias-input-wrap">
+            <input type="text" id="inputProfileModalAlias" class="iq-profile-alias-input-field" value="{{ usuario.alias|default:usuario.nombre_completo }}" maxlength="30" placeholder="Escribe tu alias..." autocomplete="off">
+            <i class="bi bi-pencil-fill iq-profile-alias-pencil" onclick="document.getElementById('inputProfileModalAlias').focus();" title="Editar alias"></i>
+          </div>
+        </div>
+
+        <!-- Campo Nivel -->
+        <div class="iq-profile-field-block">
+          <div class="iq-profile-field-label-exact">
+            <i class="bi bi-star-fill"></i>
+            <span>Nivel</span>
+          </div>
+          <div class="iq-profile-level-card-exact">
+            <div class="iq-profile-level-tag-badge">
+              <span>NV.</span>
+              <span id="profileModalNivelNum">{{ progreso.nivel|default:1 }}</span>
+            </div>
+            <div class="iq-profile-level-progress-col">
+              <div class="iq-profile-level-bar-track">
+                <div id="profileModalXpFill" class="iq-profile-level-bar-fill" style="width: {{ pct_xp|default:0 }}%;"></div>
+              </div>
+              <div id="profileModalXpNums" class="iq-profile-level-xp-text">
+                {{ xp_en_nivel_fmt|default:xp_en_nivel }} / {{ xp_meta_nivel_fmt|default:xp_meta_nivel }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fila de Acciones: Botón Guardar Cambios Centrado -->
+    <div class="iq-profile-action-center">
+      <button type="button" id="btnSaveExactProfile" class="btn-save-profile-exact" onclick="saveGlobalProfileChanges();">
+        <i class="bi bi-check-lg"></i>
+        <span>Guardar Cambios</span>
+      </button>
+      <div id="profileExactStatusMsg" class="iq-profile-status-feedback"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!-- 3. MODAL DE TIENDA ARCANA                                          -->
+<!-- ================================================================= -->
+<div id="modalTiendaGlobal" class="iq-global-modal-overlay">
+  <div class="iq-global-modal-card">
+    <button type="button" class="iq-global-modal-close" onclick="closeGlobalModal('modalTiendaGlobal');">&times;</button>
+    <h3 class="iq-global-modal-title">
+      <i class="bi bi-cart3" style="color: #34d399;"></i> Tienda Arcana de Recursos ISO
+    </h3>
+
+    <div class="iq-shop-grid">
+      <div class="iq-shop-item-card">
+        <div class="iq-shop-item-icon" style="color: #e879f9;"><i class="bi bi-gem"></i></div>
+        <div class="iq-shop-item-title">Saco de 50 Gemas</div>
+        <div class="iq-shop-item-desc">Gemas puras para reintentos y cartas raras</div>
+        <button type="button" class="iq-shop-item-btn" onclick="canjearItemGlobal('gemas');">Canjear 50 Gemas</button>
+      </div>
+
+      <div class="iq-shop-item-card">
+        <div class="iq-shop-item-icon" style="color: #fbbf24;"><i class="bi bi-coin"></i></div>
+        <div class="iq-shop-item-title">Cofre de 500 Monedas</div>
+        <div class="iq-shop-item-desc">Oro de recompensa por auditorías de cumplimiento</div>
+        <button type="button" class="iq-shop-item-btn" onclick="canjearItemGlobal('oro');">Canjear 500 Oro</button>
+      </div>
+
+      <div class="iq-shop-item-card">
+        <div class="iq-shop-item-icon" style="color: #c084fc;"><i class="bi bi-lightning-charge-fill"></i></div>
+        <div class="iq-shop-item-title">Poción de Energía Arcana ({{ vidas_maximas }}/{{ vidas_maximas }})</div>
+        <div class="iq-shop-item-desc">Restaura completamente tu vigor para auditar mundos</div>
+        <button type="button" class="iq-shop-item-btn" onclick="canjearItemGlobal('energia');">Recargar {{ vidas_maximas }} Vidas</button>
+      </div>
+
+      <div class="iq-shop-item-card">
+        <div class="iq-shop-item-icon" style="color: #60a5fa;"><i class="bi bi-shield-check"></i></div>
+        <div class="iq-shop-item-title">Pase de Auditor Maestro</div>
+        <div class="iq-shop-item-desc">Desbloquea cosméticos de nigromante y títulos</div>
+        <button type="button" class="iq-shop-item-btn" onclick="canjearItemGlobal('pase');">Activar Pase</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!-- 4. MODAL DE MENSAJES / BUZÓN DE LA ORDEN                           -->
+<!-- ================================================================= -->
+<div id="modalMensajesGlobal" class="iq-global-modal-overlay">
+  <div class="iq-global-modal-card">
+    <button type="button" class="iq-global-modal-close" onclick="closeGlobalModal('modalMensajesGlobal');">&times;</button>
+    <h3 class="iq-global-modal-title">
+      <i class="bi bi-envelope-fill" style="color: #c084fc;"></i> Buzón de la Orden de Compliance
+    </h3>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+      <div style="background: rgba(14, 7, 34, 0.7); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 12px; padding: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-weight: 800; color: #e9d5ff; font-size: 13.5px;"><i class="bi bi-award-fill" style="color: #fbbf24;"></i> Mensaje del Oficial Principal</span>
+          <span style="font-size: 11px; color: #94a3b8;">Hoy</span>
+        </div>
+        <p style="font-size: 12.5px; color: #cbd5e1; margin: 0; line-height: 1.5;">
+          ¡Bienvenido, invocador <strong>{{ usuario.alias|default:usuario.nombre_completo }}</strong>! Se ha iniciado la nueva campaña de auditoría en los Mapas ISO. Recuerda mantener tus controles al día para escalar en la clasificación.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!-- 5. MODAL DE NOTIFICACIONES                                        -->
+<!-- ================================================================= -->
+<div id="modalNotificacionesGlobal" class="iq-global-modal-overlay">
+  <div class="iq-global-modal-card">
+    <button type="button" class="iq-global-modal-close" onclick="closeGlobalModal('modalNotificacionesGlobal');">&times;</button>
+    <h3 class="iq-global-modal-title">
+      <i class="bi bi-bell-fill" style="color: #fbbf24;"></i> Alertas de Cumplimiento
+    </h3>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+      <div style="background: rgba(14, 7, 34, 0.7); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 12px; padding: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-weight: 800; color: #f87171; font-size: 13.5px;"><i class="bi bi-shield-exclamation"></i> Reto Diario Activo</span>
+          <span style="font-size: 11px; color: #94a3b8;">Hace 1h</span>
+        </div>
+        <p style="font-size: 12.5px; color: #cbd5e1; margin: 0; line-height: 1.5;">
+          Completa al menos 1 fase en el Mundo de Seguridad de la Información (ISO 27001) para recibir <strong>+100 de Oro</strong> y <strong>+15 Gemas Arcanas</strong>.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!-- 6. SCRIPTS REACTIVOS DE LA BARRA SUPERIOR                         -->
+<!-- ================================================================= -->
+<script id="topbar-data" type="application/json">
+{
+  "availableAvatars": [
+    {% for av in avatares_coleccion %}
+    "{{ av.img }}"{% if not forloop.last %},{% endif %}
+    {% empty %}
+    "/static/img/avatars/necromancer_1.png",
+    "/static/img/avatars/necromancer_2.png",
+    "/static/img/avatars/necromancer_3.png",
+    "/static/img/avatars/necromancer_4.png",
+    "/static/img/avatars/necromancer_5.png"
+    {% endfor %}
+  ],
+  "avatarUrl": "{{ usuario.avatar_url }}",
+  "energiaActual": {{ energia_actual|default:0 }},
+  "energiaMaxima": {{ energia_maxima|default:3 }},
+  "segundosSiguienteVida": {{ segundos_siguiente_vida|default:0 }},
+  "regeneracionMinutos": {{ regeneracion_minutos|default:5 }},
+  "alias": "{{ usuario.alias|default:usuario.nombre_completo|escapejs }}"
+}
+</script>
+<script src="{% static 'js/usuario/player_topbar.js' %}"></script>

@@ -1,0 +1,188 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}Tablero de Analítica y Métricas ISO | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/analytics_dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="analytics-container">
+  <div class="nav-back">
+    <a href="{% url 'admin:index' %}">&larr; Regresar al Menú Principal de Administración</a>
+  </div>
+
+  <div class="hero-card">
+    <div>
+      <h1>📊 Tablero Integral de Analítica y Compliance ISO</h1>
+      <p>Métricas consolidadas de efectividad en capacitación, economía de juego y participación organizacional</p>
+    </div>
+    <div>
+      <span style="font-size: 12px; background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 20px;">
+        Generado: {{ generado_en|date:"d/M/Y H:i" }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Métricas Rápidas -->
+  <div class="grid-4">
+    <div class="stat-card">
+      <div class="title">Partidas Totales</div>
+      <div class="val">{{ total_partidas|intcomma }}</div>
+      <div class="sub">
+        <span style="color: #10b981; font-weight: 600;">{{ total_victorias }} victorias</span> &bull; 
+        <span style="color: #ef4444; font-weight: 600;">{{ total_derrotas }} derrotas</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="title">Efectividad Global (Win Rate)</div>
+      <div class="val" style="color: #2563eb;">{{ tasa_victoria }}%</div>
+      <div class="sub">Índice global de aciertos en incidentes ISO</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="title">Oro en Circulación</div>
+      <div class="val" style="color: #ca8a04;">🪙 {{ oro_global|intcomma }}</div>
+      <div class="sub">Recompensas acumuladas por aciertos</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="title">Gemas en Circulación</div>
+      <div class="val" style="color: #7c3aed;">💎 {{ gemas_globales|intcomma }}</div>
+      <div class="sub">Recompensas críticas por resolución de jefes</div>
+    </div>
+  </div>
+
+  <div class="dashboard-columns">
+    <!-- Desempeño por Norma ISO -->
+    <div class="panel-box">
+      <h3>🛡️ Rendimiento por Norma ISO</h3>
+      {% if partidas_por_iso %}
+      <table class="table-clean">
+        <thead>
+          <tr>
+            <th>Norma ISO</th>
+            <th>Partidas</th>
+            <th>Victorias</th>
+            <th>Derrotas</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in partidas_por_iso %}
+          <tr>
+            <td><span class="badge-tag badge-iso">{{ item.nivel__mundo__codigo_iso|default:"General" }}</span></td>
+            <td><strong>{{ item.total }}</strong></td>
+            <td><span class="badge-tag badge-win">{{ item.victorias }}</span></td>
+            <td><span class="badge-tag badge-loss">{{ item.derrotas }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color: #64748b; font-size: 13px;">Aún no se han disputado partidas asociadas a normas ISO.</p>
+      {% endif %}
+    </div>
+
+    <!-- Participación por Área Organizacional -->
+    <div class="panel-box">
+      <h3>🏢 Participación por Área Organizacional</h3>
+      {% if areas_breakdown %}
+      <table class="table-clean">
+        <thead>
+          <tr>
+            <th>Área / Departamento</th>
+            <th>Colaboradores</th>
+            <th>Distribución</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for area in areas_breakdown %}
+          <tr>
+            <td><strong>{{ area.area }}</strong></td>
+            <td>{{ area.total }} jugadores</td>
+            <td style="width: 40%;">
+              <div class="bar-container">
+                <div class="bar-fill" style="width: {% widthratio area.total total_jugadores 100 %}%; background: #3b82f6;"></div>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color: #64748b; font-size: 13px;">No hay registros de jugadores por área.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="dashboard-columns">
+    <!-- Top Jugadores -->
+    <div class="panel-box">
+      <h3>🏆 Cuadro de Honor - Top 5 Colaboradores</h3>
+      {% if top_jugadores %}
+      <table class="table-clean">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Colaborador</th>
+            <th>Área</th>
+            <th>Nivel</th>
+            <th>XP Acumulada</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in top_jugadores %}
+          <tr>
+            <td><strong>{{ forloop.counter }}</strong></td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <img src="{{ p.usuario.avatar_url }}" alt="{{ p.usuario.alias }}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1.5px solid #a855f7;">
+                <span>{{ p.usuario.nombre_completo }} <small style="color: #64748b;">({{ p.usuario.alias }})</small></span>
+              </div>
+            </td>
+            <td><span class="badge-tag badge-iso">{{ p.usuario.area }}</span></td>
+            <td>Nivel {{ p.nivel }}</td>
+            <td><strong style="color: #2563eb;">{{ p.xp|intcomma }} XP</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color: #64748b; font-size: 13px;">No hay registros de progreso aún.</p>
+      {% endif %}
+    </div>
+
+    <!-- Últimas Acciones de Auditoría Inmutable -->
+    <div class="panel-box">
+      <h3>🔒 Auditoría Forense Reciente (Solo Lectura)</h3>
+      {% if ultimas_auditorias %}
+      <table class="table-clean">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Admin</th>
+            <th>Acción</th>
+            <th>Módulo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in ultimas_auditorias %}
+          <tr>
+            <td style="font-size: 11px; color: #64748b;">{{ log.created_at|date:"d/m/Y H:i:s" }}</td>
+            <td>{{ log.admin.alias|default:"Sistema" }}</td>
+            <td><span class="badge-tag badge-gold">{{ log.accion }}</span></td>
+            <td>{{ log.modulo_afectado }} #{{ log.registro_id }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color: #64748b; font-size: 13px;">No se registran eventos de auditoría administrativa.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,384 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/index.css' %}">
+
+<div class="iq-dashboard">
+  <!-- Cabecera del Panel Principal -->
+  <div class="iq-dash-header">
+    <div class="iq-dash-title">
+      <div class="iq-dash-title-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <polyline points="9 12 11 14 15 10"></polyline>
+        </svg>
+      </div>
+      <div>
+        <h1>Panel de Administración</h1>
+        <p>Métricas generales del juego y la capacitación ISO</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. FILA SUPERIOR: 6 TARJETAS KPI -->
+  <div class="iq-kpi-row">
+    <!-- Total Partidas -->
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon icon-purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <div class="iq-kpi-content">
+        <span class="iq-kpi-label">Total de partidas</span>
+        <span class="iq-kpi-value">{{ analytics.total_partidas|intcomma }}</span>
+        <span class="iq-kpi-subtext sub-green">&uarr; 12% vs. mes anterior</span>
+      </div>
+    </div>
+
+    <!-- Victorias -->
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon icon-green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+          <path d="M4 22h16"></path>
+          <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1 .45-1 1v1h12v-1c0-.55-.45-1-1-1h-2c-.55 0-1-.45-1-1v-2.34"></path>
+          <path d="M6 4h12v5a6 6 0 0 1-12 0V4z"></path>
+        </svg>
+      </div>
+      <div class="iq-kpi-content">
+        <span class="iq-kpi-label">Victorias</span>
+        <span class="iq-kpi-value">{{ analytics.total_victorias|intcomma }}</span>
+        <span class="iq-kpi-subtext sub-muted">{{ analytics.tasa_victoria }}% de éxito</span>
+      </div>
+    </div>
+
+    <!-- Derrotas -->
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon icon-red">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+      </div>
+      <div class="iq-kpi-content">
+        <span class="iq-kpi-label">Derrotas</span>
+        <span class="iq-kpi-value">{{ analytics.total_derrotas|intcomma }}</span>
+        <span class="iq-kpi-subtext sub-muted">{{ analytics.tasa_derrota }}% de derrotas</span>
+      </div>
+    </div>
+
+    <!-- Oro Emitido -->
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon icon-gold">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9"></circle>
+          <circle cx="12" cy="12" r="5"></circle>
+        </svg>
+      </div>
+      <div class="iq-kpi-content">
+        <span class="iq-kpi-label">Oro global emitido</span>
+        <span class="iq-kpi-value">{{ analytics.oro_global|intcomma }}</span>
+        <span class="iq-kpi-subtext sub-green">&uarr; 15% vs. mes anterior</span>
+      </div>
+    </div>
+
+    <!-- Gemas Emitidas -->
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon icon-violet">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 3h12l4 6-10 12L2 9z"></path>
+        </svg>
+      </div>
+      <div class="iq-kpi-content">
+        <span class="iq-kpi-label">Gemas globales emitidas</span>
+        <span class="iq-kpi-value">{{ analytics.gemas_globales|intcomma }}</span>
+        <span class="iq-kpi-subtext sub-green">&uarr; 18% vs. mes anterior</span>
+      </div>
+    </div>
+
+    <!-- Jugadores Activos -->
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon icon-blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <div class="iq-kpi-content">
+        <span class="iq-kpi-label">Jugadores activos</span>
+        <span class="iq-kpi-value">{{ analytics.jugadores_activos|intcomma }}</span>
+        <span class="iq-kpi-subtext sub-muted">{{ analytics.porcentaje_activos }}% del total</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. FILA MEDIA: EVOLUCIÓN, RESULTADOS DONUT, ÁREAS, ACTIVIDAD -->
+  <div class="iq-mid-row">
+    <!-- Widget 1: Evolución de partidas (Line Chart) -->
+    <div class="iq-panel">
+      <div class="iq-panel-head">
+        <h3>Evolución de partidas</h3>
+        <div class="iq-chart-legend">
+          <span><span class="legend-dot dot-purple"></span> Partidas</span>
+          <span><span class="legend-dot dot-cyan"></span> Victorias</span>
+        </div>
+      </div>
+      <div style="height: 180px; width: 100%;">
+        <canvas id="lineChartEvolucion"></canvas>
+      </div>
+    </div>
+
+    <!-- Widget 2: Resultados de partidas (Donut Chart) -->
+    <div class="iq-panel">
+      <div class="iq-panel-head">
+        <h3>Resultados de partidas</h3>
+      </div>
+      <div class="iq-donut-box">
+        <div class="iq-donut-canvas-wrap">
+          <canvas id="donutChartResultados" data-victorias="{{ analytics.total_victorias }}" data-derrotas="{{ analytics.total_derrotas }}" data-abandonadas="{{ analytics.total_abandonadas }}"></canvas>
+          <div class="iq-donut-center-text">
+            <span class="num">{{ analytics.total_partidas|intcomma }}</span>
+            <span class="lbl">Total</span>
+          </div>
+        </div>
+        <div class="iq-donut-list">
+          <div class="iq-donut-item">
+            <div class="iq-donut-item-left">
+              <span class="legend-dot dot-green"></span>
+              <span>Victorias</span>
+            </div>
+            <span class="iq-donut-item-right">{{ analytics.total_victorias }} ({{ analytics.tasa_victoria }}%)</span>
+          </div>
+          <div class="iq-donut-item">
+            <div class="iq-donut-item-left">
+              <span class="legend-dot dot-purple"></span>
+              <span>Derrotas</span>
+            </div>
+            <span class="iq-donut-item-right">{{ analytics.total_derrotas }} ({{ analytics.tasa_derrota }}%)</span>
+          </div>
+          <div class="iq-donut-item">
+            <div class="iq-donut-item-left">
+              <span class="legend-dot dot-red"></span>
+              <span>Abandonadas</span>
+            </div>
+            <span class="iq-donut-item-right">{{ analytics.total_abandonadas }} ({{ analytics.tasa_abandonadas }}%)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Widget 3: Jugadores por área (Progress Bars) -->
+    <div class="iq-panel">
+      <div class="iq-panel-head">
+        <h3>Jugadores por área</h3>
+      </div>
+      <div class="iq-area-list">
+        {% for area in analytics.areas_stats %}
+        <div class="iq-area-item">
+          <span class="iq-area-name">{{ area.area }}</span>
+          <div class="iq-area-bar-bg">
+            <div class="iq-area-bar-fill" style="width: {{ area.porcentaje }}%;"></div>
+          </div>
+          <span class="iq-area-pct">{{ area.porcentaje }}%</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Widget 4: Actividad reciente (Timeline) -->
+    <div class="iq-panel">
+      <div class="iq-panel-head">
+        <h3>Actividad reciente</h3>
+      </div>
+      <div class="iq-timeline">
+        {% for item in analytics.actividad_reciente %}
+        <div class="iq-timeline-item">
+          <div class="iq-timeline-icon" style="background: {{ item.color }};">
+            {% if item.tipo == 'user' %}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            {% elif item.tipo == 'config' %}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            {% elif item.tipo == 'game' %}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="6" width="20" height="12" rx="2"></rect><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line></svg>
+            {% elif item.tipo == 'edit' %}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            {% elif item.tipo == 'audit' %}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+            {% else %}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+            {% endif %}
+          </div>
+          <div class="iq-timeline-body">
+            <div class="iq-timeline-title">{{ item.titulo }}</div>
+            <span class="iq-timeline-time">{{ item.tiempo }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. FILA INFERIOR: ÚLTIMAS PARTIDAS, MUNDOS, ACCIONES RÁPIDAS -->
+  <div class="iq-bot-row">
+    <!-- Últimas Partidas -->
+    <div class="iq-panel">
+      <div class="iq-panel-head">
+        <h3>Últimas partidas</h3>
+      </div>
+      <table class="iq-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Nivel</th>
+            <th>Resultado</th>
+            <th>Oro</th>
+            <th>Gemas</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in analytics.ultimas_partidas %}
+          <tr>
+            <td>
+              <div class="iq-user-cell">
+                <div class="iq-avatar-xs">
+                  <img src="{{ p.avatar_url|default:'/static/img/avatars/necromancer_1.png' }}" alt="{{ p.usuario }}" loading="lazy">
+                </div>
+                <span>{{ p.usuario }}</span>
+              </div>
+            </td>
+            <td style="color: #cbd5e1;">{{ p.nivel }}</td>
+            <td>
+              <span class="iq-badge-res {% if p.es_victoria %}badge-win-dark{% else %}badge-loss-dark{% endif %}">
+                {{ p.resultado }}
+              </span>
+            </td>
+            <td style="color: #facc15; font-weight: 700;">{{ p.oro }}</td>
+            <td style="color: #c084fc; font-weight: 700;">{{ p.gemas }}</td>
+            <td style="color: var(--text-subtle); font-size: 11px;">{{ p.fecha }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mundos más jugados -->
+    <div class="iq-panel">
+      <div class="iq-panel-head">
+        <h3>Mundos más jugados</h3>
+      </div>
+      <div class="iq-worlds-list">
+        {% for m in analytics.mundos_mas_jugados %}
+        <div class="iq-world-item">
+          <div class="iq-world-item-left">
+            <span class="iq-world-rank">{{ m.rank }}</span>
+            <div class="iq-world-shield" style="background: {{ m.color }};">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <span class="iq-world-name">{{ m.codigo_iso }}</span>
+          </div>
+          <span class="iq-world-stats">{{ m.partidas }} partidas ({{ m.porcentaje }}%)</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="iq-panel">
+      <div class="iq-panel-head">
+        <h3>Acciones rápidas</h3>
+      </div>
+      <div class="iq-quick-actions">
+        <!-- Reiniciar progreso con redirección y auditoría -->
+        <a href="/admin/core/usuario/" class="btn-iq-primary" title="Acción administrativa con registro forense">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          <span>Reiniciar progreso de jugador<br><small style="font-size: 9px; opacity: 0.85;">(Nivel y XP a 0)</small></span>
+        </a>
+
+        <!-- Reinicio masivo -->
+        <a href="/admin/quick-reset-progress/" onclick="return confirm('¿Confirmas el reinicio masivo del progreso de todos los colaboradores? Se generará asiento en la bitácora de auditoría.');" class="btn-iq-secondary">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Reiniciar progreso masivo</span>
+        </a>
+
+        <!-- Importar contenido -->
+        <a href="/admin/core/fasecaso/add/" class="btn-iq-outline">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>Importar contenido</span>
+        </a>
+
+        <!-- Ejecutar seed de parámetros -->
+        <a href="/admin/quick-seed/" class="btn-iq-outline">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+          </svg>
+          <span>Ejecutar seed de parámetros</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. TABLA ANCHA INFERIOR: PARÁMETROS GLOBALES -->
+  <div class="iq-panel">
+    <div class="iq-panel-head">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#a855f7" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <h3>Parámetros Globales</h3>
+      </div>
+    </div>
+    <table class="iq-table">
+      <thead>
+        <tr>
+          <th>Categoría</th>
+          <th>Clave</th>
+          <th>Valor</th>
+          <th>Descripción</th>
+          <th>Última actualización</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for param in analytics.parametros_tabla %}
+        <tr>
+          <td style="color: #cbd5e1; font-weight: 600;">{{ param.categoria }}</td>
+          <td style="color: #93c5fd; font-family: monospace;">{{ param.clave }}</td>
+          <td><strong style="color: #ffffff; background: #1e2448; padding: 2px 8px; border-radius: 4px;">{{ param.valor }}</strong></td>
+          <td style="color: #94a3b8;">{{ param.descripcion }}</td>
+          <td style="color: var(--text-subtle); font-size: 11px;">{{ param.updated_at }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="iq-params-footer">
+      <a href="/admin/core/parametroglobal/">Ver todos los parámetros &rarr;</a>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts de Inicialización de Chart.js para los 2 Gráficos -->
+<script src="{% static 'js/admin/index.js' %}"></script>
+{% endblock %}

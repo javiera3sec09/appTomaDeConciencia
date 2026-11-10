@@ -1,0 +1,279 @@
+{% load static humanize %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clasificación | ISO QUEST</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Cinzel Decorative -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/usuarios/clasificacion.css' %}">
+</head>
+<body>
+
+  <!-- CAPAS DE FONDO DEL CASTILLO GÓTICO Y ATMÓSFERA -->
+  <div class="iq-cl-bg-layer"></div>
+  <div class="iq-cl-atmosphere"></div>
+
+  <!-- ============================================================= -->
+  <!-- 1. TOPBAR FLOTANTE SUPERIOR (DATOS REALES Y RECURSOS)        -->
+  <!-- ============================================================= -->
+  <!-- 1. TOPBAR SUPERIOR FLOTANTE IDÉNTICA (HUD)                    -->
+  <!-- ============================================================= -->
+  {% include 'usuario/includes/player_topbar.html' %}
+
+  <!-- ============================================================= -->
+  <!-- 2. ESPACIO DE TRABAJO PRINCIPAL (3 COLUMNAS)                  -->
+  <!-- ============================================================= -->
+  <main class="iq-cl-workspace">
+
+    <!-- COLUMNA 1: MENÚ LATERAL -->
+    <aside class="iq-cl-sidebar">
+      <a href="{% url 'core:lobby' %}" class="iq-cl-nav-btn" title="Ir al Lobby Principal">
+        <i class="bi bi-shield-shaded"></i>
+        <span>Lobby</span>
+      </a>
+
+      <a href="{% url 'core:mapas' %}" class="iq-cl-nav-btn" title="Ir a los Mapas de Auditoría">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>Mapas</span>
+      </a>
+
+      <a href="{% url 'core:coleccion' %}" class="iq-cl-nav-btn" title="Colección de Cartas y Avatares">
+        <i class="bi bi-archive-fill"></i>
+        <span>Colección</span>
+        <span class="iq-menu-alert-dot"></span>
+      </a>
+
+      <a href="{% url 'core:academia' %}" class="iq-cl-nav-btn" title="Academia ISO">
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>Academia ISO</span>
+      </a>
+
+      <!-- ACTIVO: CLASIFICACIÓN -->
+      <a href="{% url 'core:clasificacion' %}" class="iq-cl-nav-btn active" title="Tabla de Clasificación">
+        <i class="bi bi-trophy-fill"></i>
+        <span>Clasificación</span>
+      </a>
+
+      <a href="{% url 'core:tienda' %}" class="iq-cl-nav-btn" title="Tienda Arcana ISO">
+        <i class="bi bi-cart3"></i>
+        <span>Tienda</span>
+      </a>
+
+      <!-- Tarjeta Inferior de Evento Especial -->
+      <div class="iq-event-card" onclick="window.location.href='{% url 'core:mapas' %}';" title="Evento Especial: La Academia Oscura">
+        <span class="iq-event-tag">EVENTO ESPECIAL</span>
+        <div class="iq-event-title">LA ACADEMIA OSCURA</div>
+        <div class="iq-event-timer">
+          <i class="bi bi-clock-history"></i>
+          <span>Termina en: 12d 14h</span>
+        </div>
+        <div class="iq-event-art-row">
+          <img src="/static/img/avatars/necromancer_2.png" alt="Evento Especial" class="iq-event-thumb">
+        </div>
+      </div>
+    </aside>
+
+    <!-- COLUMNA 2: CENTRO (CRESTA, TABS, PODIO TOP 3, TABLA) -->
+    <section class="iq-cl-center">
+
+
+      <!-- PODIO DE LOS 3 MEJORES JUGADORES -->
+      <div class="iq-podium-stage">
+        <!-- Banners de Calaveras Detrás del Podio -->
+        <img src="{% static 'img/banner_skull_left.png' %}" alt="Banner Izquierdo" class="iq-podium-banner-l">
+      
+
+        <!-- 2° LUGAR (IZQUIERDA - PLATA) -->
+        <div class="iq-podium-col rank-2">
+          <div class="iq-sub-avatar-wrap">
+            <img src="{{ podio_2.usuario.avatar_url|default:'/static/img/avatars/necromancer_2.png' }}" alt="{{ podio_2.usuario.alias|default:'Jugador 2' }}" class="iq-sub-avatar-img">
+          </div>
+          <div class="iq-pedestal-card silver">
+            <div class="iq-pedestal-laurel-badge">
+              <svg viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="38" stroke="#cbd5e1" stroke-width="3" stroke-dasharray="4 2"/>
+                <path d="M 24 72 C 16 56, 18 36, 38 18 C 34 26, 34 38, 42 48" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
+                <path d="M 76 72 C 84 56, 82 36, 62 18 C 66 26, 66 38, 58 48" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+              <span class="iq-pedestal-num silver">2</span>
+            </div>
+            <div class="iq-pedestal-plaque silver">
+              <div class="iq-pedestal-alias">{{ podio_2.usuario.alias|default:'Sin Jugador' }}</div>
+              <div class="iq-pedestal-sub">Nv. {{ podio_2.nivel|default:1 }} &bull; {{ podio_2.xp|default:0|intcomma }} XP</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1° LUGAR (CENTRO - ORO - CAMPEÓN) -->
+        <div class="iq-podium-col rank-1">
+          <div class="iq-champion-avatar-wrap">
+            <!-- Corona Dorada Flotante -->
+            <div class="iq-champion-crown">
+              <i class="bi bi-crown-fill"></i>
+            </div>
+            <!-- Halo Solar Giratorio -->
+            <div class="iq-champion-halo"></div>
+            <img src="{{ podio_1.usuario.avatar_url|default:'/static/img/avatars/necromancer_1.png' }}" alt="{{ podio_1.usuario.alias|default:'Campeón' }}" class="iq-champion-avatar-img">
+          </div>
+          <div class="iq-pedestal-card gold">
+            <div class="iq-pedestal-laurel-badge">
+              <svg viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="40" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="5 2"/>
+                <path d="M 22 75 C 14 56, 16 34, 38 16 C 34 25, 34 38, 43 49" stroke="#fbbf24" stroke-width="4.5" stroke-linecap="round"/>
+                <path d="M 78 75 C 86 56, 84 34, 62 16 C 66 25, 66 38, 57 49" stroke="#fbbf24" stroke-width="4.5" stroke-linecap="round"/>
+              </svg>
+              <span class="iq-pedestal-num gold">1</span>
+            </div>
+            <div class="iq-pedestal-plaque gold">
+              <div class="iq-pedestal-alias gold">{{ podio_1.usuario.alias|default:'Sin Jugador' }}</div>
+              <div class="iq-pedestal-sub gold">Nv. {{ podio_1.nivel|default:1 }} &bull; {{ podio_1.xp|default:0|intcomma }} XP</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3° LUGAR (DERECHA - BRONCE) -->
+        <div class="iq-podium-col rank-3">
+          <div class="iq-sub-avatar-wrap">
+            <img src="{{ podio_3.usuario.avatar_url|default:'/static/img/avatars/necromancer_3.png' }}" alt="{{ podio_3.usuario.alias|default:'Jugador 3' }}" class="iq-sub-avatar-img">
+          </div>
+          <div class="iq-pedestal-card bronze">
+            <div class="iq-pedestal-laurel-badge">
+              <svg viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="38" stroke="#d97706" stroke-width="3" stroke-dasharray="4 2"/>
+                <path d="M 24 72 C 16 56, 18 36, 38 18 C 34 26, 34 38, 42 48" stroke="#d97706" stroke-width="4" stroke-linecap="round"/>
+                <path d="M 76 72 C 84 56, 82 36, 62 18 C 66 26, 66 38, 58 48" stroke="#d97706" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+              <span class="iq-pedestal-num bronze">3</span>
+            </div>
+            <div class="iq-pedestal-plaque bronze">
+              <div class="iq-pedestal-alias">{{ podio_3.usuario.alias|default:'Sin Jugador' }}</div>
+              <div class="iq-pedestal-sub">Nv. {{ podio_3.nivel|default:1 }} &bull; {{ podio_3.xp|default:0|intcomma }} XP</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLA DE CLASIFICACIÓN (5 FILAS VISIBLES CON FILA DE ORO) -->
+      <div class="iq-ranking-card">
+        <div class="iq-table-scroll">
+          <table class="iq-cl-table">
+            <thead>
+              <tr>
+                <th style="width: 48px; text-align: center;">#</th>
+                <th style="text-align: left; padding-left: 12px;">Jugador</th>
+                <th style="width: 80px; text-align: center;">Nivel</th>
+                <th style="width: 110px; text-align: right; padding-right: 14px;">XP</th>
+              </tr>
+            </thead>
+            <tbody id="rankingTableBody">
+              {% for p in top_jugadores %}
+              <tr class="{% if forloop.counter == 1 %}is-gold-row{% endif %}" data-user-id="{{ p.usuario_id }}">
+                <td class="iq-cl-td-rank">
+                  {% if forloop.counter == 1 %}
+                    <i class="bi bi-crown-fill iq-rank-crown-icon gold" title="1° Lugar"></i>
+                  {% elif forloop.counter == 2 %}
+                    <i class="bi bi-crown-fill iq-rank-crown-icon silver" title="2° Lugar"></i>
+                  {% elif forloop.counter == 3 %}
+                    <i class="bi bi-crown-fill iq-rank-crown-icon bronze" title="3° Lugar"></i>
+                  {% else %}
+                    <span class="iq-rank-number-text">{{ forloop.counter }}</span>
+                  {% endif %}
+                </td>
+                <td class="iq-cl-td-player">
+                  <div class="iq-player-cell-box">
+                    <img src="{{ p.usuario.avatar_url }}" alt="{{ p.usuario.alias|default:p.usuario.nombre_completo }}" class="iq-cell-avatar" onerror="this.src='/static/img/avatars/necromancer_1.png'">
+                    <span class="iq-cell-name">{{ p.usuario.alias|default:p.usuario.nombre_completo }}</span>
+                  </div>
+                </td>
+                <td class="iq-cl-td-level">Nv. {{ p.nivel }}</td>
+                <td class="iq-cl-td-xp">{{ p.xp|intcomma }} XP</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" style="text-align: center; color: #cbd5e1; padding: 20px; font-weight: 600;">
+                  No hay jugadores clasificados aún.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginador < 1 / total_paginas > -->
+        <div class="iq-pagination-row">
+          <button type="button" class="iq-page-arrow-btn" id="btnPagePrev" onclick="changeRankPage(-1);" title="Página anterior" disabled>
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="iq-page-indicator" id="rankPageText">1 / {{ total_paginas }}</span>
+          <button type="button" class="iq-page-arrow-btn" id="btnPageNext" onclick="changeRankPage(1);" title="Siguiente página" {% if total_paginas <= 1 %}disabled{% endif %}>
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLUMNA 3: LATERAL DERECHO (TU POSICIÓN + BOTÓN JUGAR) -->
+    <aside class="iq-cl-right-col">
+      <!-- Tarjeta Tu Posición -->
+      <div class="iq-my-position-card">
+        <div class="iq-my-pos-header-title">Tu Posición</div>
+
+        <div class="iq-my-pos-body-row">
+          <div class="iq-my-pos-avatar-box">
+            <div class="iq-my-pos-aura"></div>
+            <img id="myPosAvatarImg" src="{{ usuario.avatar_url }}" alt="{{ usuario.alias }}" class="iq-my-pos-avatar-img" onerror="this.src='/static/img/avatars/necromancer_1.png'">
+          </div>
+
+          <div class="iq-my-pos-text-info">
+            <div id="myPosAlias" class="iq-my-pos-alias">{{ usuario.alias|default:usuario.nombre_completo }}</div>
+            <div class="iq-my-pos-level">Nv. {{ progreso.nivel }}</div>
+          </div>
+        </div>
+
+        <!-- Corona de Laureles Dorada con #1 -->
+        <div class="iq-my-pos-laurel-badge" title="Tu posición en el Ranking Global">
+          <svg viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Laurel Izquierdo -->
+            <path d="M 20 52 C 12 38, 14 24, 30 10 C 26 17, 26 27, 32 35 C 35 40, 42 44, 48 47 C 41 49, 29 51, 20 52 Z" fill="#fbbf24"/>
+            <path d="M 14 38 C 8 28, 10 16, 20 10 C 18 18, 20 26, 24 32 Z" fill="#fde68a"/>
+            <path d="M 24 24 C 20 16, 24 8, 32 4 C 30 11, 32 18, 34 22 Z" fill="#f59e0b"/>
+            <!-- Laurel Derecho -->
+            <path d="M 100 52 C 108 38, 106 24, 90 10 C 94 17, 94 27, 88 35 C 85 40, 78 44, 72 47 C 79 49, 91 51, 100 52 Z" fill="#fbbf24"/>
+            <path d="M 106 38 C 112 28, 110 16, 100 10 C 102 18, 100 26, 96 32 Z" fill="#fde68a"/>
+            <path d="M 96 24 C 100 16, 96 8, 88 4 C 90 11, 88 18, 86 22 Z" fill="#f59e0b"/>
+          </svg>
+          <span class="iq-my-pos-rank-num">#{{ user_rank|default:1 }}</span>
+        </div>
+      </div>
+
+      <!-- BOTÓN MONUMENTAL JUGAR CON FILOS DE DIAMANTE GÓTICOS -->
+      <a href="{% url 'core:mapas' %}" class="iq-btn-jugar-exact" title="Comenzar auditoría / reto en los Mapas ISO">
+        <i class="bi bi-swords"></i>
+        <span>JUGAR</span>
+      </a>
+    </aside>
+
+  </main>
+
+
+
+  <script id="clasificacion-data" type="application/json">
+{
+  "rankingPlayers": {{ ranking_data_json|safe }},
+  "avatarUrl": "{{ usuario.avatar_url }}",
+  "updateProfileUrl": "{% url 'core:player_profile_update_ajax' %}"
+}
+</script>
+<script src="{% static 'js/usuario/clasificacion.js' %}"></script>
+
+</body>
+</html>

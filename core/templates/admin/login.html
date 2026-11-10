@@ -1,0 +1,33 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/login.css' %}">
+
+<div class="iq-login-box">
+  <div class="iq-login-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      <path d="m9 12 2 2 4-4"></path>
+    </svg>
+  </div>
+  <h2>ISO QUEST</h2>
+  <p>Panel de Administración y Control ISO & Compliance</p>
+
+  <form action="{{ app_path }}" method="post" id="login-form">
+    {% csrf_token %}
+    <div class="form-row">
+      <label for="id_username">Correo Institucional:</label>
+      <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="id_username" placeholder="admin@compliance.org">
+    </div>
+
+    <div class="form-row">
+      <label for="id_password">Contraseña:</label>
+      <input type="password" name="password" autocomplete="current-password" required id="id_password" placeholder="••••••••">
+    </div>
+
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="btn-login-submit">Ingresar al Dashboard &rarr;</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,197 @@
+{% load i18n static humanize %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'es-co' }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ title }} | ISO QUEST Admin{% endblock %}</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Cinzel Decorative -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- Chart.js para telemetría -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  {% block extrastyle %}{% endblock %}
+  {% block extrahead %}{% endblock %}
+
+  <link rel="stylesheet" href="{% static 'css/admin/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/admin/nav_sidebar.css' %}">
+</head>
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+  <div class="iq-layout-container">
+    <!-- =================================================================== -->
+    <!-- SIDEBAR DE NAVEGACIÓN COMPLETA (ÚNICA Y COMPARTIDA POR TODAS LAS VISTAS) -->
+    <!-- =================================================================== -->
+    {% block nav_sidebar %}
+      {% include "admin/includes/nav_sidebar.html" %}
+    {% endblock %}
+
+    <!-- =================================================================== -->
+    <!-- ÁREA PRINCIPAL DERECHA (TOPBAR + CONTENIDO DE CADA MÓDULO)          -->
+    <!-- =================================================================== -->
+    <main class="iq-main-area">
+      <!-- Topbar Header -->
+      <header class="iq-topbar">
+        <div class="iq-topbar-slogan">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span>ISO + Compliance = Un mejor mañana</span>
+        </div>
+
+        <div class="iq-topbar-date">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>{{ analytics.fecha_header|default:"10 abr. 2025, 14:32" }}</span>
+        </div>
+
+        <div class="iq-notification-bell" title="Notificaciones del sistema">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span class="iq-notif-badge">3</span>
+        </div>
+
+        <!-- Botón Ver Lobby del Jugador -->
+        <a href="{% url 'core:lobby' %}" class="btn-topbar-action btn-topbar-lobby" title="Ver interfaz del jugador (Lobby)">
+          <i class="bi bi-controller"></i>
+          <span>Lobby Arcano</span>
+        </a>
+
+        <!-- Botón Salir Directo -->
+        <a href="{% url 'core:logout' %}" class="btn-topbar-action btn-topbar-logout" title="Cerrar sesión e ingresar con otro perfil">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Salir</span>
+        </a>
+
+        <!-- Perfil Administrador con Ranura Interactiva y Modal Flotante -->
+        <div class="iq-user-menu-wrap">
+          <div class="iq-user-profile" id="userMenuToggle" onclick="openAdminProfileModal();" title="Haz clic para modificar tu Alias o Avatar">
+            <div class="iq-user-avatar">
+              <img id="adminTopbarAvatar" src="{{ request.user.avatar_url|default:'/static/img/avatars/necromancer_3.png' }}" alt="{{ request.user.alias|default:'admin' }}">
+            </div>
+            <div class="iq-user-info">
+              <span class="name">
+                <span id="adminTopbarAlias">{{ request.user.alias|default:"admin" }}</span>
+                <i class="bi bi-pencil-fill" style="font-size: 10px; color: #c084fc; margin-left: 4px;" title="Editar Alias o Avatar"></i>
+              </span>
+              <span class="role">{{ request.user.get_rol_display|default:"Administrador" }}</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Contenedor del Módulo Activo -->
+      <div class="iq-content-body">
+        {% if messages %}
+        <ul class="messagelist">
+          {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- MODAL FLOTANTE DE PERFIL DEL ADMINISTRADOR (IDÉNTICO A IMAGEN) -->
+  <!-- ============================================================= -->
+  <div id="modalPerfil" class="iq-modal-overlay">
+    <div class="iq-profile-modal-frame">
+      <!-- Escudo Superior Central en Relieve -->
+      <div class="iq-profile-shield-crest">
+        <i class="bi bi-shield-shaded"></i>
+      </div>
+
+      <!-- Botón de Cierre X -->
+      <button type="button" class="btn-profile-close" onclick="closeAdminProfileModal();" title="Cerrar">&times;</button>
+
+      <!-- Título PERFIL -->
+      <h2 class="iq-profile-title">PERFIL</h2>
+
+      <!-- Grid de 2 Columnas -->
+      <div class="iq-profile-grid">
+        <!-- Columna Izquierda: Avatar Circular Grande y Botones de Cambio -->
+        <div class="iq-profile-avatar-col">
+          <div class="iq-profile-avatar-circle-rune">
+            <img id="adminProfileModalAvatarImg" src="{{ request.user.avatar_url|default:'/static/img/avatars/necromancer_3.png' }}" alt="Avatar Administrador" class="iq-profile-avatar-big-img" onerror="this.src='/static/img/avatars/necromancer_3.png'">
+          </div>
+
+          <!-- Selector de Avatar con Flechas < y > -->
+          <div class="iq-profile-avatar-switch-row">
+            <button type="button" class="btn-avatar-arrow" onclick="adminAvatarPrev();" title="Avatar anterior">&lt;</button>
+            <button type="button" class="btn-avatar-badge" onclick="adminAvatarNext();" title="Cambiar avatar">
+              <i class="bi bi-person-fill"></i>
+              <span>Cambiar Avatar</span>
+            </button>
+            <button type="button" class="btn-avatar-arrow" onclick="adminAvatarNext();" title="Siguiente avatar">&gt;</button>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Alias y Nivel -->
+        <div class="iq-profile-fields-col">
+          <!-- Campo Alias -->
+          <div class="iq-profile-field-group">
+            <label for="inputAdminModalAlias" class="iq-profile-field-label">
+              <i class="bi bi-person-fill"></i>
+              <span>Alias</span>
+            </label>
+            <div class="iq-profile-input-wrap">
+              <input type="text" id="inputAdminModalAlias" class="iq-profile-input" value="{{ request.user.alias|default:'admin' }}" maxlength="50" placeholder="Escribe tu alias..." autocomplete="off">
+              <i class="bi bi-pencil-fill iq-profile-input-icon" onclick="document.getElementById('inputAdminModalAlias').focus();"></i>
+            </div>
+          </div>
+
+          <!-- Campo Nivel -->
+          <div class="iq-profile-field-group">
+            <label class="iq-profile-field-label">
+              <i class="bi bi-star-fill"></i>
+              <span>Nivel</span>
+            </label>
+            <div class="iq-profile-level-box">
+              <div class="iq-profile-level-badge">
+                <span>NV.</span>
+                <span>{{ request.user.progreso.nivel|default:5 }}</span>
+              </div>
+              <div class="iq-stats-xp-details" style="flex: 1;">
+                <div class="iq-stats-xp-bar-wrap">
+                  <div class="iq-stats-xp-bar-fill" style="width: 66%;"></div>
+                </div>
+                <div class="iq-stats-xp-nums">
+                  {{ request.user.progreso.xp|default:830|intcomma }} / {{ request.user.progreso.nivel|default:5|stringformat:"d"|add:"5"|default:1250|intcomma }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila de Acciones: Botón Guardar Cambios -->
+      <div class="iq-profile-actions-row">
+        <button type="button" id="btnAdminGuardarPerfil" class="btn-guardar-perfil-necro" onclick="guardarAdminPerfil();">
+          <i class="bi bi-check-lg"></i>
+          <span>Guardar Cambios</span>
+        </button>
+        <div id="adminProfileStatusMsg" class="iq-profile-status-msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{% static 'js/admin/base.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Parámetros Globales | ISO QUEST{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/core/parametroglobal/change_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="iq-pg-container">
+  {% csrf_token %}
+
+  <!-- 1. HEADER PRINCIPAL -->
+  <header class="iq-pg-header">
+    <div class="iq-pg-title-group">
+      <div class="iq-pg-header-icon">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="iq-pg-title">Parámetros Globales</h1>
+        <p class="iq-pg-subtitle">Configura los valores generales del sistema</p>
+      </div>
+    </div>
+
+    <div>
+      <button type="button" class="iq-pg-btn-reset" id="btnResetDefault" title="Restaura la configuración oficial por defecto">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"></polyline>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+        </svg>
+        <span>Restablecer a Valores por Defecto</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 2. TOP LAYOUT: CATEGORÍAS (IZQ) + 4 KPIS (DER) -->
+  <div class="iq-pg-top-layout">
+    <!-- Píldoras de Categoría -->
+    <div class="iq-pg-cat-list" id="categoryFilterList">
+      <button type="button" class="iq-pg-cat-btn active" data-cat="ALL">
+        <span class="iq-pg-cat-icon">⭐</span>
+        <span>Todas las Categorías</span>
+      </button>
+      <button type="button" class="iq-pg-cat-btn" data-cat="Vidas">
+        <span class="iq-pg-cat-icon">💜</span>
+        <span>Vidas</span>
+      </button>
+      <button type="button" class="iq-pg-cat-btn" data-cat="Jerarquía">
+        <span class="iq-pg-cat-icon">👑</span>
+        <span>Jerarquía</span>
+      </button>
+      <button type="button" class="iq-pg-cat-btn" data-cat="Economía">
+        <span class="iq-pg-cat-icon">🟡</span>
+        <span>Economía</span>
+      </button>
+      <button type="button" class="iq-pg-cat-btn" data-cat="Seguridad">
+        <span class="iq-pg-cat-icon">🛡️</span>
+        <span>Seguridad</span>
+      </button>
+      <button type="button" class="iq-pg-cat-btn" data-cat="Logros">
+        <span class="iq-pg-cat-icon">🏆</span>
+        <span>Logros</span>
+      </button>
+      <button type="button" class="iq-pg-cat-btn" data-cat="Otros">
+        <span class="iq-pg-cat-icon">🌐</span>
+        <span>Otros</span>
+      </button>
+    </div>
+
+    <!-- 4 Tarjetas de Resumen KPI -->
+    <div class="iq-pg-kpi-grid">
+      <!-- Vidas -->
+      <div class="iq-pg-kpi-card kpi-vidas">
+        <div class="iq-pg-kpi-icon-wrap">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+        <div class="iq-pg-kpi-info">
+          <span class="iq-pg-kpi-label">Vidas</span>
+          <span class="iq-pg-kpi-val" id="kpiVidasVal">{{ vidas_count|default:"3" }}</span>
+          <span class="iq-pg-kpi-sub">Parámetros</span>
+        </div>
+      </div>
+
+      <!-- Jerarquía -->
+      <div class="iq-pg-kpi-card kpi-jerarquia">
+        <div class="iq-pg-kpi-icon-wrap">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1v-1h14v1z"/>
+          </svg>
+        </div>
+        <div class="iq-pg-kpi-info">
+          <span class="iq-pg-kpi-label">Jerarquía</span>
+          <span class="iq-pg-kpi-val" id="kpiJerarquiaVal">{{ jerarquia_count|default:"2" }}</span>
+          <span class="iq-pg-kpi-sub">Parámetros</span>
+        </div>
+      </div>
+
+      <!-- Economía -->
+      <div class="iq-pg-kpi-card kpi-economia">
+        <div class="iq-pg-kpi-icon-wrap">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 7v10M9 9h6M9 12h5" stroke="#141033" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="iq-pg-kpi-info">
+          <span class="iq-pg-kpi-label">Economía</span>
+          <span class="iq-pg-kpi-val" id="kpiEconomiaVal">{{ economia_count|default:"2" }}</span>
+          <span class="iq-pg-kpi-sub">Parámetros</span>
+        </div>
+      </div>
+
+      <!-- Seguridad -->
+      <div class="iq-pg-kpi-card kpi-seguridad">
+        <div class="iq-pg-kpi-icon-wrap">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+          </svg>
+        </div>
+        <div class="iq-pg-kpi-info">
+          <span class="iq-pg-kpi-label">Seguridad</span>
+          <span class="iq-pg-kpi-val" id="kpiSeguridadVal">{{ seguridad_count|default:"1" }}</span>
+          <span class="iq-pg-kpi-sub">Parámetro</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. TABLA: "LISTA DE PARÁMETROS" -->
+  <div class="iq-pg-table-card">
+    <div class="iq-pg-table-header">
+      <span class="iq-pg-table-header-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2">
+          <line x1="8" y1="6" x2="21" y2="6"></line>
+          <line x1="8" y1="12" x2="21" y2="12"></line>
+          <line x1="8" y1="18" x2="21" y2="18"></line>
+          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+      </span>
+      <h3>Lista de Parámetros</h3>
+    </div>
+
+    <div class="iq-pg-table-wrap">
+      <table class="iq-pg-table" id="parametrosTable">
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>Clave</th>
+            <th>Valor</th>
+            <th>Descripción</th>
+            <th class="th-updated">Última Actualización</th>
+            <th class="th-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="parametrosTbody">
+          {% for p in parametros_lista %}
+          <tr data-id="{{ p.id }}" data-categoria="{{ p.categoria }}" data-clave="{{ p.clave }}" data-valor="{{ p.valor }}" data-descripcion="{{ p.descripcion|default:'' }}" data-updated="{{ p.updated_at|date:'d/m/Y - H:i' }}">
+            <td>
+              <span class="iq-pg-cat-badge {% if p.categoria == 'Vidas' %}cat-vidas{% elif 'Jerarqu' in p.categoria %}cat-jerarquia{% elif 'Econom' in p.categoria %}cat-economia{% elif p.categoria == 'Seguridad' %}cat-seguridad{% elif p.categoria == 'Logros' %}cat-logros{% else %}cat-otros{% endif %}">
+                {% if p.categoria == 'Vidas' %}❤️
+                {% elif 'Jerarqu' in p.categoria %}👑
+                {% elif 'Econom' in p.categoria %}🟡
+                {% elif p.categoria == 'Seguridad' %}🛡️
+                {% elif p.categoria == 'Logros' %}🏆
+                {% else %}🌐
+                {% endif %}
+                {{ p.categoria }}
+              </span>
+            </td>
+            <td>
+              <span class="iq-pg-key-code">{{ p.clave }}</span>
+            </td>
+            <td>
+              <span class="iq-pg-val-pill">{{ p.valor }}</span>
+            </td>
+            <td>
+              <span class="iq-pg-desc-text">{{ p.descripcion|default:"-" }}</span>
+            </td>
+            <td>
+              <span class="iq-pg-date-text">{{ p.updated_at|date:"d/m/Y - H:i" }}</span>
+            </td>
+            <td class="iq-pg-actions-cell">
+              <button type="button" class="iq-pg-action-btn btn-edit-param" title="Editar Parámetro" data-id="{{ p.id }}">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+              </button>
+              <button type="button" class="iq-pg-action-btn btn-view-param" title="Ver Detalles" data-id="{{ p.id }}">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 32px; color: #94a3b8;">
+              No se encontraron parámetros registrados.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación y Contador -->
+    <div class="iq-pg-table-footer">
+      <div class="iq-pg-showing-text" id="showingCountText">
+        Mostrando 1 - 5 de {{ total_params|default:8 }} parámetros
+      </div>
+      <div class="iq-pg-pagination" id="tablePagination">
+        <!-- Renderizado dinámicamente con JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. DETALLE DEL PARÁMETRO (EDITOR INFERIOR) -->
+  <div class="iq-pg-detail-card" id="detailFormCard">
+    <div class="iq-pg-detail-header">
+      <span class="iq-pg-detail-header-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+      </span>
+      <h3 class="iq-pg-detail-title">Detalle del Parámetro</h3>
+    </div>
+
+    <form id="parametroDetailForm">
+      <input type="hidden" id="editParamId" name="param_id" value="">
+
+      <div class="iq-pg-form-body">
+        <div class="iq-pg-fields-grid">
+          <!-- Categoría -->
+          <div class="iq-pg-form-group">
+            <label class="iq-pg-label" for="editCategoria">
+              <span class="iq-pg-label-icon">ⓘ</span>
+              <span>Categoría</span>
+            </label>
+            <select class="iq-pg-select" id="editCategoria" name="categoria" required>
+              <option value="Vidas">❤️ Vidas</option>
+              <option value="Jerarquía">👑 Jerarquía</option>
+              <option value="Economía">🟡 Economía</option>
+              <option value="Seguridad">🛡️ Seguridad</option>
+              <option value="Logros">🏆 Logros</option>
+              <option value="Otros">🌐 Otros</option>
+            </select>
+          </div>
+
+          <!-- Clave -->
+          <div class="iq-pg-form-group">
+            <label class="iq-pg-label" for="editClave">Clave</label>
+            <input type="text" class="iq-pg-input" id="editClave" name="clave" placeholder="ej. vidas_iniciales" required>
+          </div>
+
+          <!-- Valor -->
+          <div class="iq-pg-form-group">
+            <label class="iq-pg-label" for="editValor">Valor</label>
+            <input type="text" class="iq-pg-input" id="editValor" name="valor" placeholder="ej. 3" required>
+          </div>
+
+          <!-- Descripción -->
+          <div class="iq-pg-form-group full-width">
+            <label class="iq-pg-label" for="editDescripcion">Descripción</label>
+            <input type="text" class="iq-pg-input" id="editDescripcion" name="descripcion" placeholder="Descripción breve del parámetro...">
+          </div>
+        </div>
+
+        <!-- Botón Guardar Cambios -->
+        <div>
+          <button type="submit" class="iq-pg-btn-save" id="btnGuardarCambios">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span>Guardar Cambios</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL PARA VER DETALLE (Botón Ojo) -->
+<div class="iq-pg-modal-backdrop" id="paramViewModal">
+  <div class="iq-pg-modal">
+    <button type="button" class="iq-pg-modal-close" id="modalCloseBtn">&times;</button>
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+      <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; font-size: 20px;">
+        👁️
+      </div>
+      <div>
+        <h4 style="margin: 0; color: #ffffff; font-size: 1.15rem; font-weight: 700;">Información del Parámetro</h4>
+        <p style="margin: 2px 0 0 0; color: #94a3b8; font-size: 0.8rem;">Detalle del balance del sistema</p>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; background: rgba(20, 16, 48, 0.6); padding: 16px; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.2);">
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: #94a3b8; font-size: 0.82rem;">Categoría:</span>
+        <span id="modalCategoria" style="font-weight: 700; color: #ffffff;">-</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: #94a3b8; font-size: 0.82rem;">Clave:</span>
+        <span id="modalClave" style="font-family: monospace; color: #c084fc; font-weight: 700;">-</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #94a3b8; font-size: 0.82rem;">Valor Actual:</span>
+        <span id="modalValor" class="iq-pg-val-pill">-</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <span style="color: #94a3b8; font-size: 0.82rem;">Descripción:</span>
+        <span id="modalDescripcion" style="color: #cbd5e1; font-size: 0.84rem; line-height: 1.4;">-</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(139, 92, 246, 0.15); padding-top: 10px;">
+        <span style="color: #94a3b8; font-size: 0.82rem;">Última Modificación:</span>
+        <span id="modalUpdated" style="color: #a855f7; font-size: 0.82rem; font-weight: 600;">-</span>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+      <button type="button" class="iq-pg-btn-reset" id="modalEditBtn">
+        ✏️ Cargar en Editor
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="iq-pg-toast" id="pgToast">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+  </svg>
+  <span id="toastMsg">Cambios guardados con éxito</span>
+</div>
+
+<script src="{% static 'js/admin/core/parametroglobal/change_list.js' %}"></script>
+{% endblock %}

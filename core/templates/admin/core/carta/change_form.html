@@ -1,0 +1,305 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}{% if is_edit %}Editar Carta: {{ carta_obj.nombre }}{% else %}Crear Nueva Carta{% endif %} | ISO QUEST Admin{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/core/carta/change_form.css' %}">
+
+<div class="iq-card-editor-page">
+
+  <!-- CABECERA PRINCIPAL -->
+  <div class="iq-editor-header">
+    <div class="iq-editor-header-icon">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+        <rect x="2" y="6" width="14" height="15" rx="2.5" stroke="#ffffff" />
+        <rect x="8" y="3" width="14" height="15" rx="2.5" stroke="#c084fc" fill="none" />
+        <path d="m6 13 2 2 4-4" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+    <div class="iq-editor-header-text">
+      <h1>{% if is_edit %}Editar Carta{% else %}Crear Nueva Carta{% endif %}</h1>
+      <p>{% if is_edit %}Modifica la información y atributos de la carta del catálogo{% else %}Añade una nueva carta al catálogo del juego{% endif %}</p>
+    </div>
+  </div>
+
+  <!-- GRID DE 2 COLUMNAS (FORMULARIO + VISTA PREVIA) -->
+  <div class="iq-editor-grid">
+
+    <!-- COLUMNA IZQUIERDA: FORMULARIO -->
+    <form method="post" enctype="multipart/form-data" id="cartaForm" class="iq-form-container">
+      {% csrf_token %}
+
+      {% if form.errors %}
+      <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 8px; padding: 12px 16px; color: #fca5a5; font-size: 12.5px;">
+        <i class="bi bi-exclamation-triangle-fill" style="margin-right: 6px;"></i>
+        <strong>Por favor corrige los siguientes errores:</strong>
+        <ul style="margin: 6px 0 0 16px; padding: 0;">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+            <li>{{ field }}: {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- CAMPO 1: NOMBRE DE LA CARTA -->
+      <div class="iq-field-group">
+        <div class="iq-field-header">
+          <label for="id_nombre" class="iq-field-label">
+            Nombre de la Carta <span class="iq-req">*</span>
+          </label>
+          <span class="iq-char-counter" id="counterNombre">0/100</span>
+        </div>
+        <input type="text"
+               name="nombre"
+               id="id_nombre"
+               class="iq-input-custom"
+               placeholder="Ej. Firewall Protector"
+               maxlength="100"
+               value="{{ form.nombre.value|default:'' }}"
+               required />
+      </div>
+
+      <!-- FILA 2 COLUMNAS: NORMA ISO Y CONCEPTO -->
+      <div class="iq-form-row-2">
+        <!-- Norma ISO -->
+        <div class="iq-field-group">
+          <div class="iq-field-header">
+            <label for="id_norma_iso" class="iq-field-label">
+              Norma ISO <span class="iq-req">*</span>
+            </label>
+          </div>
+          <div class="iq-select-wrapper">
+            <i class="bi bi-shield-shaded iq-select-icon"></i>
+            <select name="norma_iso" id="id_norma_iso" class="iq-select-custom" required>
+              {% for val, label in normas_choices %}
+              <option value="{{ val }}" {% if form.norma_iso.value == val or carta_obj.norma_iso == val %}selected{% elif not form.norma_iso.value and forloop.first %}selected{% endif %}>
+                {{ val }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- Concepto -->
+        <div class="iq-field-group">
+          <div class="iq-field-header">
+            <label for="id_concepto" class="iq-field-label">
+              Concepto <span class="iq-req">*</span>
+            </label>
+            <span class="iq-char-counter" id="counterConcepto">0/150</span>
+          </div>
+          <input type="text"
+                 name="concepto"
+                 id="id_concepto"
+                 class="iq-input-custom"
+                 placeholder="Ej. Seguridad de la Información"
+                 maxlength="150"
+                 value="{{ form.concepto.value|default:'' }}"
+                 required />
+        </div>
+      </div>
+
+      <!-- CAMPO: DESCRIPCIÓN -->
+      <div class="iq-field-group">
+        <div class="iq-field-header">
+          <label for="id_descripcion" class="iq-field-label">
+            Descripción <span class="iq-req">*</span>
+          </label>
+          <span class="iq-char-counter" id="counterDescripcion">0/250</span>
+        </div>
+        <textarea name="descripcion"
+                  id="id_descripcion"
+                  class="iq-textarea-custom"
+                  rows="3"
+                  placeholder="Describe el efecto o utilidad de esta carta..."
+                  maxlength="250"
+                  required>{{ form.descripcion.value|default:'' }}</textarea>
+      </div>
+
+      <!-- FILA 3 COLUMNAS: FUERZA, DEFENSA, ESTADO -->
+      <div class="iq-form-row-3">
+        <!-- Fuerza -->
+        <div class="iq-field-group">
+          <label for="id_fuerza" class="iq-field-label">
+            Fuerza <span class="iq-req">*</span>
+          </label>
+          <div class="iq-number-wrapper">
+            <div class="iq-number-icon">
+              <i class="bi bi-lightning-charge-fill"></i>
+            </div>
+            <input type="number"
+                   name="fuerza"
+                   id="id_fuerza"
+                   class="iq-number-input"
+                   min="0"
+                   max="100"
+                   value="{{ form.fuerza.value|default:'0' }}"
+                   required />
+            <div class="iq-number-stepper">
+              <button type="button" class="iq-step-btn" onclick="stepNumber('id_fuerza', 1)">▲</button>
+              <button type="button" class="iq-step-btn" onclick="stepNumber('id_fuerza', -1)">▼</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Defensa -->
+        <div class="iq-field-group">
+          <label for="id_defensa" class="iq-field-label">
+            Defensa <span class="iq-req">*</span>
+          </label>
+          <div class="iq-number-wrapper">
+            <div class="iq-number-icon">
+              <i class="bi bi-shield-fill"></i>
+            </div>
+            <input type="number"
+                   name="defensa"
+                   id="id_defensa"
+                   class="iq-number-input"
+                   min="0"
+                   max="100"
+                   value="{{ form.defensa.value|default:'0' }}"
+                   required />
+            <div class="iq-number-stepper">
+              <button type="button" class="iq-step-btn" onclick="stepNumber('id_defensa', 1)">▲</button>
+              <button type="button" class="iq-step-btn" onclick="stepNumber('id_defensa', -1)">▼</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado Toggle Switch -->
+        <div class="iq-field-group">
+          <label class="iq-field-label">Estado</label>
+          <div class="iq-toggle-container">
+            <label class="iq-switch">
+              <input type="checkbox"
+                     id="estadoToggle"
+                     {% if form.estado.value == 'activo' or not form.estado.value %}checked{% endif %}
+                     onchange="toggleEstadoSwitch(this.checked)" />
+              <span class="iq-slider"></span>
+            </label>
+            <span class="iq-toggle-label {% if form.estado.value == 'inactivo' %}inactivo{% endif %}" id="estadoToggleText">
+              {% if form.estado.value == 'inactivo' %}Inactivo{% else %}Activo{% endif %}
+            </span>
+            <input type="hidden" name="estado" id="id_estado" value="{{ form.estado.value|default:'activo' }}" />
+          </div>
+        </div>
+      </div>
+
+      <!-- CAMPO: IMAGEN DE LA CARTA (DRAG & DROP) -->
+      <div class="iq-field-group">
+        <label class="iq-field-label">Imagen de la Carta</label>
+        <div class="iq-dropzone" id="dropzoneBox" onclick="document.getElementById('id_imagen').click()">
+          <div class="iq-dropzone-icon">
+            <i class="bi bi-cloud-arrow-up"></i>
+          </div>
+          <span class="iq-dropzone-text">Arrastra una imagen aquí o haz clic para subir</span>
+          <span class="iq-dropzone-subtext">Formatos: JPG, PNG · Máx. 2MB</span>
+
+          <!-- Chip de archivo seleccionado -->
+          <div class="iq-file-preview-pill" id="fileChosenPill">
+            <i class="bi bi-check2-circle"></i>
+            <span id="fileNameLabel">imagen.png</span>
+          </div>
+
+          <input type="file"
+                 name="imagen"
+                 id="id_imagen"
+                 accept="image/png, image/jpeg, image/jpg, image/webp"
+                 style="display: none;"
+                 onchange="handleFileSelect(event)" />
+        </div>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN (CANCELAR Y GUARDAR) -->
+      <div class="iq-form-actions">
+        <a href="{% url 'admin:core_carta_changelist' %}" class="btn-form-cancel">
+          <i class="bi bi-x-lg"></i>
+          <span>Cancelar</span>
+        </a>
+        <button type="submit" class="btn-form-save">
+          <i class="bi bi-floppy"></i>
+          <span>Guardar Carta</span>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- COLUMNA DERECHA: VISTA PREVIA -->
+    <div class="iq-preview-container">
+      <div class="iq-preview-title">
+        <i class="bi bi-eye"></i>
+        <span>Vista Previa</span>
+      </div>
+
+      <div class="iq-preview-card-frame">
+
+        <!-- ESTADO VACÍO (SIN IMAGEN) -->
+        <div class="iq-preview-empty-state" id="previewEmptyState">
+          <!-- Ilustración de dos cartas contorneadas en neon púrpura -->
+          <svg class="iq-cards-outline-svg" width="110" height="110" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Carta trasera girada hacia la izquierda -->
+            <rect x="22" y="32" width="46" height="60" rx="8" transform="rotate(-15 22 32)" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round" fill="rgba(124, 58, 237, 0.08)"/>
+            <rect x="28" y="37" width="34" height="48" rx="5" transform="rotate(-15 28 37)" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="3 3"/>
+            <!-- Carta frontal ligeramente girada a la derecha -->
+            <rect x="36" y="24" width="48" height="64" rx="8" transform="rotate(6 36 24)" stroke="#c084fc" stroke-width="3" fill="#14112e"/>
+            <rect x="42" y="30" width="36" height="52" rx="5" transform="rotate(6 42 30)" stroke="#a855f7" stroke-width="1.8"/>
+            <!-- Estrella central en la carta frontal -->
+            <path d="M60 48L62.5 53.5L68.5 54.2L64 58.2L65.2 64L60 61L54.8 64L56 58.2L51.5 54.2L57.5 53.5L60 48Z" fill="#a855f7" stroke="#c084fc" stroke-width="1.2"/>
+          </svg>
+
+          <h3 class="iq-empty-title">Sin imagen</h3>
+          <p class="iq-empty-desc">Sube una imagen para ver la vista previa</p>
+        </div>
+
+        <!-- ESTADO ACTIVO: TARJETA RENDERIZADA EN VIVO -->
+        <div class="iq-preview-live-card" id="previewLiveCard" data-has-image="{% if carta_obj and carta_obj.imagen %}true{% else %}false{% endif %}">
+          <div class="iq-preview-artwork-box">
+            <img src="{% if carta_obj %}{{ carta_obj.imagen_url }}{% else %}{% static 'img/cartas/carta_ciberseguridad.png' %}{% endif %}"
+                 alt="Arte de la Carta"
+                 class="iq-preview-artwork-img"
+                 id="previewImgElem" />
+            <span class="iq-preview-iso-badge" id="previewBadgeIso">ISO 27001</span>
+          </div>
+
+          <div class="iq-preview-card-body">
+            <h4 class="iq-preview-card-title" id="previewTitle">Nombre de la Carta</h4>
+            <span class="iq-preview-card-concepto" id="previewConcepto">Seguridad de la Información</span>
+            <p class="iq-preview-card-desc" id="previewDesc">Describe el efecto o utilidad de esta carta...</p>
+
+            <div class="iq-preview-stats-row">
+              <div class="iq-preview-stat-item fuerza">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <span id="previewFuerza">0</span>
+              </div>
+              <div class="iq-preview-stat-item defensa">
+                <i class="bi bi-shield-fill"></i>
+                <span id="previewDefensa">0</span>
+              </div>
+            </div>
+
+            <span class="iq-preview-pill-status activo" id="previewPillEstado">Activo</span>
+          </div>
+        </div>
+
+        <!-- Barra inferior para alternar modo de previsualización -->
+        <div class="iq-preview-toggle-bar">
+          <button type="button" class="btn-preview-toggle active" id="btnModeEmpty" onclick="forcePreviewMode('empty')">
+            <i class="bi bi-card-image"></i> Marcador
+          </button>
+          <button type="button" class="btn-preview-toggle" id="btnModeLive" onclick="forcePreviewMode('live')">
+            <i class="bi bi-eye-fill"></i> Tarjeta en Vivo
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="{% static 'js/admin/core/carta/change_form.js' %}"></script>
+{% endblock %}

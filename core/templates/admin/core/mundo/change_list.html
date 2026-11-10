@@ -1,0 +1,493 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}Mundos ISO | ISO QUEST Admin{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/core/mundo/change_list.css' %}">
+
+<div class="iq-mundos-page">
+  <!-- 1. CABECERA PRINCIPAL: TÍTULO Y BOTÓN NUEVO MUNDO -->
+  <div class="iq-mundos-header">
+    <div class="iq-mundos-title-box">
+      <div class="iq-mundos-title-icon">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+        </svg>
+      </div>
+      <div class="iq-mundos-title-text">
+        <h1>Mundos</h1>
+        <p>Gestiona los mundos del juego basados en normas ISO</p>
+      </div>
+    </div>
+
+    <!-- Botón + Nuevo Mundo -->
+    <div>
+      <button type="button" class="btn-new-mundo" id="btnOpenNewMundoModal">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>Nuevo Mundo</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. FILA DE 4 TARJETAS KPI -->
+  <div class="iq-mundos-kpis">
+    <!-- KPI 1: Total de Mundos -->
+    <div class="iq-mkpi-card">
+      <div class="iq-mkpi-icon mkpi-icon-total">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="4.93" y1="4.93" x2="9.17" y2="9.17"></line>
+          <line x1="14.83" y1="14.83" x2="19.07" y2="19.07"></line>
+          <line x1="14.83" y1="9.17" x2="19.07" y2="4.93"></line>
+          <line x1="4.93" y1="19.07" x2="9.17" y2="14.83"></line>
+        </svg>
+      </div>
+      <div class="iq-mkpi-info">
+        <span class="iq-mkpi-label">Total de Mundos</span>
+        <span class="iq-mkpi-val">{{ kpi_total_mundos }}</span>
+        <span class="iq-mkpi-sub" style="color: #10b981;">&uarr; 1 nuevo</span>
+      </div>
+    </div>
+
+    <!-- KPI 2: Mundos Activos -->
+    <div class="iq-mkpi-card">
+      <div class="iq-mkpi-icon mkpi-icon-activos">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+          <polyline points="4 8 10 4 14 9 20 2"></polyline>
+        </svg>
+      </div>
+      <div class="iq-mkpi-info">
+        <span class="iq-mkpi-label">Mundos Activos</span>
+        <span class="iq-mkpi-val">{{ kpi_mundos_activos }}</span>
+        <span class="iq-mkpi-sub" style="color: #38bdf8;">{{ pct_activos }}% del total</span>
+      </div>
+    </div>
+
+    <!-- KPI 3: Dominio Principal -->
+    <div class="iq-mkpi-card">
+      <div class="iq-mkpi-icon mkpi-icon-dominio">
+        <!-- Icono Trofeo Dorado -->
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fbbf24" stroke-width="2.2">
+          <path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2"></path>
+          <path d="M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2"></path>
+          <path d="M4 3h16v6a8 8 0 0 1-16 0V3z"></path>
+          <path d="M12 17v4"></path>
+          <path d="M8 21h8"></path>
+        </svg>
+      </div>
+      <div class="iq-mkpi-info">
+        <span class="iq-mkpi-label">Dominio Principal</span>
+        <span class="iq-mkpi-val" style="font-size: 20px;">{{ kpi_dominio_principal }}</span>
+        <span class="iq-mkpi-sub" style="color: var(--text-muted); font-size: 11px;">{{ kpi_dominio_sub }}</span>
+      </div>
+    </div>
+
+    <!-- KPI 4: Dificultad Promedio -->
+    <div class="iq-mkpi-card">
+      <div class="iq-mkpi-icon mkpi-icon-dificultad">
+        <!-- Icono Estrella Púrpura -->
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="#c084fc" stroke="#a855f7" stroke-width="1.5">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+      </div>
+      <div class="iq-mkpi-info">
+        <span class="iq-mkpi-label">Dificultad Promedio</span>
+        <span class="iq-mkpi-val" style="font-size: 20px;">{{ kpi_dificultad_promedio }}</span>
+        <div class="iq-dif-progress-wrap">
+          <div class="iq-dif-progress-bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. BARRA DE FILTROS Y BÚSQUEDA -->
+  <div class="iq-mundos-filter-bar">
+    <div class="iq-mundos-search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="mundoSearchInput" class="iq-mundos-search-input" placeholder="Buscar mundo por nombre, código ISO...">
+    </div>
+
+    <!-- Filtro Dominios -->
+    <select id="mundoDomainSelect" class="iq-mundos-select">
+      <option value="">Todos los dominios</option>
+      {% for d in dominios_list %}
+        <option value="{{ d }}">{{ d }}</option>
+      {% endfor %}
+    </select>
+
+    <!-- Filtro Dificultades -->
+    <select id="mundoDifficultySelect" class="iq-mundos-select">
+      <option value="">Todas las dificultades</option>
+      <option value="facil">Fácil</option>
+      <option value="normal">Normal</option>
+      <option value="dificil">Difícil</option>
+    </select>
+
+    <!-- Filtro Estados -->
+    <select id="mundoStatusSelect" class="iq-mundos-select">
+      <option value="">Todos los estados</option>
+      <option value="activo">Activo</option>
+      <option value="inactivo">Inactivo</option>
+    </select>
+
+    <button type="button" class="btn-mundos-filter" id="btnMundosFilter">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+      </svg>
+      <span>Filtrar</span>
+    </button>
+  </div>
+
+  <!-- 4. TABLA DE MUNDOS ISO -->
+  <div class="iq-mundos-table-card">
+    <div class="iq-mundos-tbl-wrap">
+      <table class="iq-mundos-table" id="mundosTable">
+        <thead>
+          <tr>
+            <th>Imagen</th>
+            <th>Orden</th>
+            <th>Código ISO</th>
+            <th>Nombre Temático</th>
+            <th>Dominio</th>
+            <th>Dificultad</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="mundosTableBody">
+          {% for cl in cl.result_list %}
+          <tr class="mundo-row"
+              data-id="{{ cl.id }}"
+              data-orden="{{ cl.orden }}"
+              data-codigo="{{ cl.codigo_iso|lower }}"
+              data-nombre="{{ cl.nombre_tematico|lower }}"
+              data-dominio="{{ cl.dominio|lower }}"
+              data-dificultad="{{ cl.dificultad }}"
+              data-estado="{{ cl.estado }}">
+            <!-- 1. Imagen -->
+            <td>
+              <div class="iq-mundo-img-thumb">
+                <img src="{{ cl.imagen_url }}" alt="{{ cl.nombre_tematico }}" loading="lazy">
+              </div>
+            </td>
+
+            <!-- 2. Orden -->
+            <td style="font-weight: 700; color: #cbd5e1; text-align: center;">
+              {{ cl.orden }}
+            </td>
+
+            <!-- 3. Código ISO -->
+            <td style="font-weight: 700; color: #ffffff;">
+              {{ cl.codigo_iso }}
+            </td>
+
+            <!-- 4. Nombre Temático -->
+            <td style="font-weight: 600; color: #ffffff;">
+              {{ cl.nombre_tematico }}
+            </td>
+
+            <!-- 5. Dominio -->
+            <td style="color: #cbd5e1;">
+              {{ cl.dominio }}
+            </td>
+
+            <!-- 6. Dificultad -->
+            <td>
+              {% if cl.dificultad == 'facil' %}
+                <span class="iq-dif-pill dif-facil">Fácil</span>
+              {% elif cl.dificultad == 'normal' %}
+                <span class="iq-dif-pill dif-normal">Normal</span>
+              {% else %}
+                <span class="iq-dif-pill dif-dificil">Difícil</span>
+              {% endif %}
+            </td>
+
+            <!-- 7. Estado -->
+            <td>
+              {% if cl.estado == 'activo' %}
+                <span class="iq-status-pill status-activo">Activo</span>
+              {% else %}
+                <span class="iq-status-pill status-inactivo">Inactivo</span>
+              {% endif %}
+            </td>
+
+            <!-- 8. Acciones -->
+            <td>
+              <div class="iq-actions-cell">
+                <!-- Ver -->
+                <button type="button" class="btn-row-action btn-view-mundo" title="Ver detalles del mundo" data-id="{{ cl.id }}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+
+                <!-- Editar -->
+                <button type="button" class="btn-row-action btn-edit-mundo" title="Editar mundo" data-id="{{ cl.id }}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);">
+              No se encontraron mundos registrados.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5. PIE DE TABLA Y PAGINACIÓN -->
+    <div class="iq-mundos-pagination">
+      <div id="mundosShowingCount">
+        Mostrando 1 - {{ cl.result_list|length }} de {{ cl.result_list|length }} mundos
+      </div>
+      <div class="iq-mundos-pages">
+        <button type="button" class="iq-pbtn" title="Página anterior">&lt;</button>
+        <button type="button" class="iq-pbtn active">1</button>
+        <button type="button" class="iq-pbtn" title="Página siguiente">&gt;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- MODAL 1: VER DETALLE DE MUNDO (OJO)                           -->
+<!-- ============================================================= -->
+<div class="iq-modal-backdrop" id="viewMundoModal">
+  <div class="iq-modal-card">
+    <div class="iq-modal-head">
+      <h3>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#a855f7" stroke-width="2.2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        <span>Ficha de Mundo ISO</span>
+      </h3>
+      <button type="button" class="btn-modal-close" id="btnCloseViewMundo">&times;</button>
+    </div>
+
+    <div class="iq-modal-body">
+      <!-- Banner / Imagen del Mundo -->
+      <div style="width: 100%; height: 140px; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid rgba(124, 58, 237, 0.4); box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
+        <img id="viewMundoImg" src="" alt="Mundo" style="width: 100%; height: 100%; object-fit: cover;">
+        <div style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 12px 16px; background: linear-gradient(180deg, transparent 0%, rgba(10, 12, 27, 0.95) 100%);">
+          <div id="viewMundoCodigo" style="font-size: 13px; font-weight: 800; color: #a855f7; letter-spacing: 0.5px;">ISO —</div>
+          <div id="viewMundoNombre" style="font-size: 16px; font-weight: 800; color: #ffffff;">—</div>
+        </div>
+      </div>
+
+      <!-- Cuadrícula de Métricas -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div style="background: #0d1026; border: 1px solid #1e2448; border-radius: 8px; padding: 10px; text-align: center;">
+          <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Orden</div>
+          <div id="viewMundoOrden" style="font-size: 20px; font-weight: 800; color: #ffffff; margin-top: 2px;">—</div>
+        </div>
+        <div style="background: #0d1026; border: 1px solid #1e2448; border-radius: 8px; padding: 10px; text-align: center;">
+          <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Dificultad</div>
+          <div id="viewMundoDificultad" style="margin-top: 4px;">—</div>
+        </div>
+        <div style="background: #0d1026; border: 1px solid #1e2448; border-radius: 8px; padding: 10px; text-align: center;">
+          <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Estado</div>
+          <div id="viewMundoEstado" style="margin-top: 4px;">—</div>
+        </div>
+      </div>
+
+      <!-- Información Detallada -->
+      <div style="background: #0d1026; border: 1px solid #1e2448; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; font-size: 12.5px;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Dominio Temático:</span>
+          <span id="viewMundoDominio" style="color: #ffffff; font-weight: 600;">—</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Niveles vinculados:</span>
+          <span id="viewMundoNiveles" style="color: #38bdf8; font-weight: 700;">— niveles</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="iq-modal-footer">
+      <button type="button" class="btn-mundos-filter" id="btnEditFromView" style="margin-right: auto; padding: 8px 14px;">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+        <span>Editar este Mundo</span>
+      </button>
+      <button type="button" class="btn-new-mundo" id="btnCloseViewMundoBtn" style="padding: 8px 18px;">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- MODAL 2: EDITAR MUNDO (LÁPIZ)                                 -->
+<!-- ============================================================= -->
+<div class="iq-modal-backdrop" id="editMundoModal">
+  <div class="iq-modal-card">
+    <div class="iq-modal-head">
+      <h3>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#a855f7" stroke-width="2.2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+        <span>Editar Mundo ISO</span>
+      </h3>
+      <button type="button" class="btn-modal-close" id="btnCloseEditMundo">&times;</button>
+    </div>
+
+    <form id="editMundoForm">
+      {% csrf_token %}
+      <input type="hidden" id="editMundoId" value="">
+
+      <div class="iq-modal-body">
+        <div class="iq-form-grid-2">
+          <div class="iq-form-row">
+            <label class="iq-form-label">Orden en Mapa</label>
+            <input type="number" id="editInputOrden" class="iq-form-input" min="1" required>
+          </div>
+          <div class="iq-form-row">
+            <label class="iq-form-label">Código ISO</label>
+            <input type="text" id="editInputCodigo" class="iq-form-input" required>
+          </div>
+        </div>
+
+        <div class="iq-form-row">
+          <label class="iq-form-label">Nombre Temático del Mundo</label>
+          <input type="text" id="editInputNombre" class="iq-form-input" required>
+        </div>
+
+        <div class="iq-form-row">
+          <label class="iq-form-label">Dominio / Área de Cumplimiento</label>
+          <input type="text" id="editInputDominio" class="iq-form-input" required>
+        </div>
+
+        <div class="iq-form-grid-2">
+          <div class="iq-form-row">
+            <label class="iq-form-label">Nivel de Dificultad</label>
+            <select id="editSelectDificultad" class="iq-form-input" style="cursor: pointer;">
+              <option value="facil">Fácil</option>
+              <option value="normal">Normal</option>
+              <option value="dificil">Difícil</option>
+            </select>
+          </div>
+          <div class="iq-form-row">
+            <label class="iq-form-label">Estado de Publicación</label>
+            <select id="editSelectEstado" class="iq-form-input" style="cursor: pointer;">
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="iq-modal-footer">
+        <button type="button" class="btn-mundos-filter" id="btnCancelEditMundo" style="padding: 8px 16px;">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-new-mundo" style="padding: 8px 20px;">
+          Guardar Cambios
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- MODAL 3: CREAR NUEVO MUNDO (+)                                -->
+<!-- ============================================================= -->
+<div class="iq-modal-backdrop" id="createMundoModal">
+  <div class="iq-modal-card">
+    <div class="iq-modal-head">
+      <h3>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#a855f7" stroke-width="2.4">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>Crear Nuevo Mundo ISO</span>
+      </h3>
+      <button type="button" class="btn-modal-close" id="btnCloseCreateMundo">&times;</button>
+    </div>
+
+    <form id="createMundoForm">
+      {% csrf_token %}
+      <div class="iq-modal-body">
+        <div class="iq-form-grid-2">
+          <div class="iq-form-row">
+            <label class="iq-form-label">Orden</label>
+            <input type="number" id="createInputOrden" class="iq-form-input" value="6" min="1" required>
+          </div>
+          <div class="iq-form-row">
+            <label class="iq-form-label">Código ISO</label>
+            <input type="text" id="createInputCodigo" class="iq-form-input" placeholder="ej. ISO 45001" required>
+          </div>
+        </div>
+
+        <div class="iq-form-row">
+          <label class="iq-form-label">Nombre Temático</label>
+          <input type="text" id="createInputNombre" class="iq-form-input" placeholder="ej. Seguridad Laboral" required>
+        </div>
+
+        <div class="iq-form-row">
+          <label class="iq-form-label">Dominio / Especialidad</label>
+          <input type="text" id="createInputDominio" class="iq-form-input" placeholder="ej. Seguridad y Salud en el Trabajo" required>
+        </div>
+
+        <div class="iq-form-grid-2">
+          <div class="iq-form-row">
+            <label class="iq-form-label">Dificultad</label>
+            <select id="createSelectDificultad" class="iq-form-input">
+              <option value="facil">Fácil</option>
+              <option value="normal" selected>Normal</option>
+              <option value="dificil">Difícil</option>
+            </select>
+          </div>
+          <div class="iq-form-row">
+            <label class="iq-form-label">Estado</label>
+            <select id="createSelectEstado" class="iq-form-input">
+              <option value="activo" selected>Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="iq-modal-footer">
+        <button type="button" class="btn-mundos-filter" id="btnCancelCreateMundo" style="padding: 8px 16px;">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-new-mundo" style="padding: 8px 20px;">
+          Crear Mundo
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST FLOTANTE -->
+<div class="iq-toast" id="iqMundosToast">Operación realizada con éxito</div>
+
+<!-- JAVASCRIPT DE FILTRADO, BÚSQUEDA Y MODALES -->
+<script src="{% static 'js/admin/core/mundo/change_list.js' %}"></script>
+{% endblock %}

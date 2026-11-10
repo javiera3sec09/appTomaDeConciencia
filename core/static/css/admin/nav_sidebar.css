@@ -1,0 +1,291 @@
+/* ========================================================================== */
+/* ISO QUEST ADMIN - BARRA DE NAVEGACIÓN LATERAL (NAV / SIDEBAR ÚNICO)       */
+/* Archivo modular dedicado exclusivamente al nav de administración.          */
+/* ========================================================================== */
+
+:root {
+  --iq-sidebar-width: 240px;
+  --iq-sidebar-bg: #10132b;
+  --iq-sidebar-border: #1e2448;
+  --iq-sidebar-text-muted: #8b95b5;
+  --iq-sidebar-text-subtle: #616b8d;
+  --iq-sidebar-purple-gradient: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  --iq-sidebar-active-gradient: linear-gradient(90deg, #6366f1 0%, #7c3aed 100%);
+}
+
+/* -------------------------------------------------------------------------- */
+/* CONTENEDOR PRINCIPAL DEL SIDEBAR                                           */
+/* -------------------------------------------------------------------------- */
+.iq-sidebar {
+  width: var(--iq-sidebar-width);
+  min-width: var(--iq-sidebar-width);
+  background-color: var(--iq-sidebar-bg);
+  border-right: 1px solid var(--iq-sidebar-border);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px 18px 14px;
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* Scrollbar estilizado para el sidebar */
+.iq-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.iq-sidebar::-webkit-scrollbar-thumb {
+  background: var(--iq-sidebar-border);
+  border-radius: 4px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 1. LOGO PRINCIPAL (ISO QUEST)                                              */
+/* -------------------------------------------------------------------------- */
+.iq-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 4px 16px 4px;
+  border-bottom: 1px solid var(--iq-sidebar-border);
+  margin-bottom: 14px;
+  text-decoration: none !important;
+}
+
+.iq-logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.45);
+  flex-shrink: 0;
+}
+
+.iq-logo-icon svg {
+  width: 22px;
+  height: 22px;
+  color: #ffffff;
+}
+
+.iq-logo-text h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  line-height: 1.15;
+}
+
+.iq-logo-text span {
+  font-size: 10px;
+  color: var(--iq-sidebar-text-muted);
+  display: block;
+  font-weight: 500;
+  margin-top: 2px;
+  line-height: 1.25;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 2. TÍTULOS DE GRUPOS / MÓDULOS                                             */
+/* -------------------------------------------------------------------------- */
+.iq-nav-group-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--iq-sidebar-text-subtle);
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  padding: 12px 10px 4px 10px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 3. ITEMS DE NAVEGACIÓN Y ESTADO ACTIVO                                     */
+/* -------------------------------------------------------------------------- */
+.iq-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 10px;
+  color: var(--iq-sidebar-text-muted);
+  text-decoration: none !important;
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+  cursor: pointer;
+  line-height: 1.25;
+}
+
+.iq-nav-item-left {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.iq-nav-item-left svg {
+  width: 17px;
+  height: 17px;
+  opacity: 0.9;
+  color: #a855f7;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.iq-nav-item:hover {
+  background-color: rgba(124, 58, 237, 0.12);
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.iq-nav-item:hover .iq-nav-item-left svg {
+  color: #c084fc;
+}
+
+.iq-nav-item:hover .iq-nav-arrow {
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+/* Item Activo (Estilo idéntico a Progreso de Jugadores en la imagen de referencia) */
+.iq-nav-item.active {
+  background: var(--iq-sidebar-active-gradient) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+  font-weight: 700;
+}
+
+.iq-nav-item.active .iq-nav-item-left svg,
+.iq-nav-item.active .iq-nav-item-left i {
+  color: #ffffff !important;
+  opacity: 1;
+}
+
+.iq-nav-item.active .iq-nav-arrow {
+  color: #ffffff !important;
+  opacity: 1;
+  font-weight: 800;
+}
+
+.iq-nav-arrow {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--iq-sidebar-text-subtle);
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 4. TARJETA GAMER EN EL PIE DEL SIDEBAR                                     */
+/* -------------------------------------------------------------------------- */
+.iq-sidebar-footer {
+  margin-top: auto;
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.12) 0%, rgba(19, 23, 46, 0.85) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  border-radius: 14px;
+  padding: 13px 12px;
+  text-align: left;
+  margin-top: 16px;
+}
+
+.iq-footer-gamepad {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.35);
+}
+
+.iq-footer-gamepad svg {
+  width: 17px;
+  height: 17px;
+  color: #ffffff;
+}
+
+.iq-sidebar-footer h4 {
+  margin: 0 0 6px 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.35;
+}
+
+.iq-sidebar-footer h4 strong {
+  color: #c084fc;
+}
+
+.iq-footer-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.iq-sidebar-footer .iq-iso-pill {
+  background: #6d28d9;
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  display: inline-block;
+}
+
+.iq-footer-points {
+  font-size: 9px;
+  color: var(--iq-sidebar-text-muted);
+  line-height: 1.25;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 5. BOTÓN CERRAR SESIÓN                                                     */
+/* -------------------------------------------------------------------------- */
+.iq-sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+  color: #f87171 !important;
+  text-decoration: none !important;
+  margin-top: 12px;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.iq-sidebar-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #fca5a5 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+}
+
+.iq-sidebar-logout-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.iq-sidebar-logout-icon svg {
+  width: 16px;
+  height: 16px;
+}

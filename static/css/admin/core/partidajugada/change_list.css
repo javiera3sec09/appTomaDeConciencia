@@ -1,0 +1,1002 @@
+:root {
+    --iq-purple-glow: rgba(124, 58, 237, 0.45);
+    --iq-cyan-glow: rgba(56, 189, 248, 0.45);
+    --iq-card-bg: #13102c;
+    --iq-card-border: #282155;
+    --iq-input-bg: #161238;
+    --iq-input-border: #322868;
+  }
+
+  .iq-analytics-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 40px;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* 1. CABECERA PRINCIPAL                                         */
+  /* ------------------------------------------------------------- */
+  .iq-analytics-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .iq-analytics-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .iq-btn-reset-launch {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(185, 28, 28, 0.25));
+    border: 1.5px solid rgba(239, 68, 68, 0.6);
+    border-radius: 12px;
+    color: #fca5a5;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.2);
+  }
+
+  .iq-btn-reset-launch i {
+    font-size: 16px;
+    color: #ef4444;
+    transition: transform 0.4s ease;
+  }
+
+  .iq-btn-reset-launch:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.45));
+    border-color: #ef4444;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 0 24px rgba(239, 68, 68, 0.45);
+  }
+
+  .iq-btn-reset-launch:hover i {
+    transform: rotate(-180deg);
+  }
+
+  .iq-analytics-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: radial-gradient(circle at 30% 30%, #a855f7, #6d28d9);
+    border: 1.5px solid rgba(168, 85, 247, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 24px;
+    flex-shrink: 0;
+    box-shadow: 0 0 18px rgba(124, 58, 237, 0.55);
+  }
+
+  .iq-analytics-header-text h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.4px;
+    line-height: 1.2;
+  }
+
+  .iq-analytics-header-text p {
+    margin: 4px 0 0 0;
+    font-size: 13.5px;
+    color: #8b95b5;
+    font-weight: 500;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* 2. BARRA DE FILTROS SUPERIOR                                  */
+  /* ------------------------------------------------------------- */
+  .iq-filter-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .iq-filter-select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--iq-input-bg);
+    border: 1.2px solid var(--iq-input-border);
+    border-radius: 10px;
+    padding: 0 12px;
+    flex: 1;
+    min-width: 160px;
+    height: 44px;
+    transition: all 0.2s ease;
+  }
+
+  .iq-filter-select-wrapper:hover,
+  .iq-filter-select-wrapper:focus-within {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+  }
+
+  .iq-filter-icon {
+    color: #a855f7;
+    font-size: 16px;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+
+  .iq-filter-select {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding-right: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%23a855f7' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 2px) center;
+  }
+
+  .iq-filter-select option {
+    background: #14112e;
+    color: #ffffff;
+    padding: 8px;
+  }
+
+  .iq-btn-refresh {
+    background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+    border: none;
+    color: #ffffff !important;
+    border-radius: 10px;
+    height: 44px;
+    padding: 0 24px;
+    font-size: 13.5px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(124, 58, 237, 0.45);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .iq-btn-refresh:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 22px rgba(124, 58, 237, 0.65);
+  }
+
+  /* ------------------------------------------------------------- */
+  /* 3. FILA DE 4 TARJETAS KPIS CON RESPLANDOR Y ONDA NEÓN         */
+  /* ------------------------------------------------------------- */
+  .iq-kpi-row-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    width: 100%;
+  }
+
+  @media (max-width: 1200px) {
+    .iq-kpi-row-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .iq-kpi-row-4 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .iq-kpi-neon-card {
+    background: var(--iq-card-bg);
+    border-radius: 16px;
+    padding: 20px 22px 14px 22px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.4);
+    transition: all 0.22s ease;
+  }
+
+  /* Variantes de color de tarjeta */
+  .iq-kpi-neon-card.purple {
+    border: 1.5px solid #8b5cf6;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.25);
+  }
+  .iq-kpi-neon-card.blue {
+    border: 1.5px solid #0284c7;
+    box-shadow: 0 0 20px rgba(2, 132, 199, 0.25);
+  }
+  .iq-kpi-neon-card.gold {
+    border: 1.5px solid #d97706;
+    box-shadow: 0 0 20px rgba(217, 119, 6, 0.25);
+  }
+  .iq-kpi-neon-card.cyan {
+    border: 1.5px solid #06b6d4;
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+  }
+
+  .iq-kpi-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 2;
+    position: relative;
+  }
+
+  .iq-kpi-avatar-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .iq-kpi-neon-card.purple .iq-kpi-avatar-circle {
+    background: rgba(139, 92, 246, 0.2);
+    color: #c084fc;
+    border: 1.2px solid rgba(168, 85, 247, 0.45);
+  }
+
+  .iq-kpi-neon-card.blue .iq-kpi-avatar-circle {
+    background: rgba(2, 132, 199, 0.2);
+    color: #38bdf8;
+    border: 1.2px solid rgba(56, 189, 248, 0.45);
+  }
+
+  .iq-kpi-neon-card.gold .iq-kpi-avatar-circle {
+    background: rgba(217, 119, 6, 0.2);
+    color: #fbbf24;
+    border: 1.2px solid rgba(245, 158, 11, 0.45);
+  }
+
+  .iq-kpi-neon-card.cyan .iq-kpi-avatar-circle {
+    background: rgba(6, 182, 212, 0.2);
+    color: #22d3ee;
+    border: 1.2px solid rgba(34, 211, 238, 0.45);
+  }
+
+  .iq-kpi-texts {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .iq-kpi-big-number {
+    font-size: 26px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+
+  .iq-kpi-sub-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .iq-kpi-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #8b95b5;
+  }
+
+  .iq-kpi-trend {
+    font-size: 12px;
+    font-weight: 800;
+    color: #10b981;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* Onda decorativa neón inferior */
+  .iq-kpi-wave-svg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 38px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.85;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* 4. LAYOUT PRINCIPAL: 2 COLUMNAS (TABLA Y RENDIMIENTO)         */
+  /* ------------------------------------------------------------- */
+  .iq-analytics-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 390px;
+    gap: 22px;
+    align-items: start;
+    width: 100%;
+  }
+
+  @media (max-width: 1100px) {
+    .iq-analytics-grid-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ------------------------------------------------------------- */
+  /* COLUMNA IZQUIERDA: HISTORIAL DE PARTIDAS (TABLA)              */
+  /* ------------------------------------------------------------- */
+  .iq-table-panel {
+    background: var(--iq-card-bg);
+    border: 1.5px solid var(--iq-card-border);
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .iq-table-header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .iq-table-header-title i {
+    color: #a855f7;
+    font-size: 19px;
+  }
+
+  .iq-partidas-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .iq-partidas-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 6px;
+    text-align: left;
+  }
+
+  .iq-partidas-table th {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #8b95b5;
+    text-transform: none;
+    letter-spacing: 0.2px;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .iq-partidas-table tbody tr {
+    background: #100d28;
+    border-radius: 10px;
+    transition: all 0.18s ease;
+  }
+
+  .iq-partidas-table tbody tr:hover {
+    background: #19143a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  .iq-partidas-table td {
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #ffffff;
+    vertical-align: middle;
+  }
+
+  .iq-partidas-table td:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+
+  .iq-partidas-table td:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+
+  .iq-user-cell {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .iq-user-avatar-sm {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #8b5cf6;
+    background: #1e1b4b;
+  }
+
+  .iq-user-alias {
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  /* Píldoras de Resultado */
+  .iq-result-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 4px 14px;
+    border-radius: 20px;
+  }
+
+  .iq-result-pill.victoria {
+    background: rgba(16, 185, 129, 0.18);
+    border: 1px solid #10b981;
+    color: #34d399;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+  }
+
+  .iq-result-pill.derrota {
+    background: rgba(239, 68, 68, 0.18);
+    border: 1px solid #ef4444;
+    color: #f87171;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+  }
+
+  .iq-result-pill.abandonada {
+    background: rgba(245, 158, 11, 0.18);
+    border: 1px solid #f59e0b;
+    color: #fbbf24;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+  }
+
+  /* Recompensas en tabla */
+  .iq-reward-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .iq-btn-view-match {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #201844;
+    border: 1.2px solid #3c2f70;
+    color: #c084fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.18s ease;
+  }
+
+  .iq-btn-view-match:hover {
+    background: #7c3aed;
+    color: #ffffff;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 12px rgba(124, 58, 237, 0.5);
+  }
+
+  /* Pie de Tabla y Paginación */
+  .iq-table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .iq-table-count-text {
+    font-size: 12.5px;
+    color: #8b95b5;
+    font-weight: 600;
+  }
+
+  .iq-pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .iq-page-btn {
+    min-width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    background: #14112e;
+    border: 1px solid #282155;
+    color: #8b95b5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0 6px;
+  }
+
+  .iq-page-btn:hover {
+    background: #251e50;
+    color: #ffffff;
+    border-color: #8b5cf6;
+  }
+
+  .iq-page-btn.active {
+    background: linear-gradient(135deg, #7c3aed, #6366f1);
+    color: #ffffff;
+    border-color: #a855f7;
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.45);
+  }
+
+  /* ------------------------------------------------------------- */
+  /* COLUMNA DERECHA: RENDIMIENTO GENERAL Y NIVEL MÁS JUGADO       */
+  /* ------------------------------------------------------------- */
+  .iq-analytics-side-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .iq-side-panel {
+    background: var(--iq-card-bg);
+    border: 1.5px solid var(--iq-card-border);
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .iq-side-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .iq-side-panel-header i {
+    color: #a855f7;
+    font-size: 17px;
+  }
+
+  /* Donut Chart y Leyenda */
+  .iq-donut-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 6px 0;
+  }
+
+  .iq-donut-wrapper {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .iq-donut-svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+  }
+
+  .iq-donut-center-text {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .iq-donut-center-pct {
+    font-size: 26px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+    letter-spacing: -0.5px;
+  }
+
+  .iq-donut-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .iq-legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  .iq-legend-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #cbd5e1;
+  }
+
+  .iq-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+  }
+
+  .iq-dot.green { background: #10b981; box-shadow: 0 0 6px #10b981; }
+  .iq-dot.red { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+  .iq-dot.purple { background: #8b5cf6; box-shadow: 0 0 6px #8b5cf6; }
+
+  .iq-legend-value {
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  /* Area Wave Chart (S1, S2, S3, S4) */
+  .iq-trend-chart-box {
+    width: 100%;
+    height: 110px;
+    position: relative;
+    margin-top: 6px;
+  }
+
+  .iq-trend-chart-box svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .iq-chart-labels-x {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 8px;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #8b95b5;
+  }
+
+  /* Tarjeta Nivel Más Jugado */
+  .iq-top-level-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #0f0c24;
+    border: 1.2px solid #2a2055;
+    border-radius: 12px;
+    padding: 12px;
+  }
+
+  .iq-terminal-thumb {
+    width: 82px;
+    height: 58px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1.2px solid #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    flex-shrink: 0;
+    background: #050512;
+  }
+
+  .iq-terminal-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .iq-top-level-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .iq-top-level-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+  }
+
+  .iq-top-level-sub {
+    font-size: 13px;
+    font-weight: 600;
+    color: #c4b5fd;
+    margin-top: 2px;
+  }
+
+  .iq-top-level-metric {
+    font-size: 11.5px;
+    color: #8b95b5;
+    margin-top: 3px;
+  }
+
+  /* Modal de Telemetría */
+  .iq-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(8, 6, 20, 0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+  }
+
+  .iq-modal-card {
+    background: #14112e;
+    border: 2px solid #8b5cf6;
+    border-radius: 18px;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: 0 0 35px rgba(139, 92, 246, 0.45);
+    overflow: hidden;
+    animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes modalPop {
+    from { transform: scale(0.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .iq-modal-header {
+    padding: 18px 24px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(99, 102, 241, 0.1));
+    border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .iq-modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .iq-modal-close {
+    background: transparent;
+    border: none;
+    color: #8b95b5;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+  }
+
+  .iq-modal-close:hover {
+    color: #ffffff;
+  }
+
+  .iq-modal-body {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .iq-detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 13px;
+  }
+
+  .iq-detail-label {
+    color: #8b95b5;
+    font-weight: 600;
+  }
+
+  .iq-detail-val {
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+
+  /* ------------------------------------------------------------- */
+  /* MODAL DE REINICIO MODO LANZAMIENTO                             */
+  /* ------------------------------------------------------------- */
+  .iq-modal-card-danger {
+    border-color: #ef4444 !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(239, 68, 68, 0.35) !important;
+  }
+
+  .iq-modal-header-danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(185, 28, 28, 0.12)) !important;
+    border-bottom: 1px solid rgba(239, 68, 68, 0.4) !important;
+  }
+
+  .iq-reset-warning-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 12px;
+    color: #fca5a5;
+  }
+
+  .iq-reset-warning-banner i {
+    font-size: 28px;
+    color: #ef4444;
+    flex-shrink: 0;
+  }
+
+  .iq-reset-warning-banner strong {
+    display: block;
+    font-size: 14px;
+    color: #ffffff;
+    margin-bottom: 2px;
+  }
+
+  .iq-reset-warning-banner p {
+    margin: 0;
+    font-size: 12px;
+    color: #fca5a5;
+    line-height: 1.4;
+  }
+
+  .iq-reset-details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .iq-reset-detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12.5px;
+    color: #cbd5e1;
+    line-height: 1.4;
+  }
+
+  .iq-reset-detail-item i {
+    font-size: 15px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .iq-reset-detail-item strong {
+    color: #ffffff;
+  }
+
+  .iq-reset-prompt-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 4px;
+  }
+
+  .iq-reset-prompt-box label {
+    font-size: 13px;
+    color: #cbd5e1;
+  }
+
+  .iq-reset-prompt-box strong {
+    color: #ef4444;
+    letter-spacing: 1px;
+  }
+
+  .iq-input-confirm {
+    text-align: center !important;
+    font-weight: 800 !important;
+    font-size: 15px !important;
+    letter-spacing: 2px !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
+    color: #ffffff !important;
+    background: #0d0a21 !important;
+    padding: 10px 14px !important;
+  }
+
+  .iq-input-confirm:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.4) !important;
+  }
+
+  .iq-modal-footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 6px;
+  }
+
+  .iq-btn-cancelar {
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .iq-btn-cancelar:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  .iq-btn-danger-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+    transition: all 0.2s ease;
+  }
+
+  .iq-btn-danger-confirm:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+    filter: grayscale(0.5);
+  }
+
+  .iq-btn-danger-confirm:not(:disabled):hover {
+    background: linear-gradient(135deg, #f87171, #ef4444);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+    transform: translateY(-1px);
+  }

@@ -1,0 +1,625 @@
+:root {
+    --iq-purple-glow: rgba(124, 58, 237, 0.35);
+  }
+
+  .iq-mundos-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 30px;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* CABECERA PRINCIPAL: TÍTULO Y BOTÓN NUEVO MUNDO                */
+  /* ------------------------------------------------------------- */
+  .iq-mundos-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .iq-mundos-title-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .iq-mundos-title-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #a855f7, #6d28d9);
+    border: 1.5px solid rgba(168, 85, 247, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex-shrink: 0;
+    box-shadow: 0 0 16px rgba(124, 58, 237, 0.45);
+  }
+
+  .iq-mundos-title-text h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.4px;
+    line-height: 1.2;
+  }
+
+  .iq-mundos-title-text p {
+    margin: 3px 0 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .btn-new-mundo {
+    background: var(--primary-gradient);
+    color: #ffffff !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.45);
+    transition: all 0.2s ease;
+  }
+
+  .btn-new-mundo:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
+  }
+
+  /* ------------------------------------------------------------- */
+  /* FILA DE 4 TARJETAS KPI DE MUNDOS                              */
+  /* ------------------------------------------------------------- */
+  .iq-mundos-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 1100px) {
+    .iq-mundos-kpis {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .iq-mundos-kpis {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .iq-mkpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .iq-mkpi-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(124, 58, 237, 0.45);
+  }
+
+  .iq-mkpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .mkpi-icon-total     { background: #4c1d95; color: #ffffff; }
+  .mkpi-icon-activos   { background: #047857; color: #ffffff; }
+  .mkpi-icon-dominio   { background: #b45309; color: #fbbf24; }
+  .mkpi-icon-dificultad{ background: #6b21a8; color: #f472b6; }
+
+  .iq-mkpi-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .iq-mkpi-label {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .iq-mkpi-val {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+    margin: 2px 0 3px 0;
+  }
+
+  .iq-mkpi-sub {
+    font-size: 11.5px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Barra de progreso para Dificultad Promedio */
+  .iq-dif-progress-wrap {
+    width: 58px;
+    height: 6px;
+    background: rgba(124, 58, 237, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+
+  .iq-dif-progress-bar {
+    width: 65%;
+    height: 100%;
+    background: #a855f7;
+    border-radius: 4px;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* BARRA DE FILTROS Y BÚSQUEDA                                   */
+  /* ------------------------------------------------------------- */
+  .iq-mundos-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #10132b;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 14px;
+  }
+
+  .iq-mundos-search-wrap {
+    flex: 1;
+    min-width: 280px;
+    position: relative;
+  }
+
+  .iq-mundos-search-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 17px;
+    height: 17px;
+    color: #64748b;
+    pointer-events: none;
+  }
+
+  .iq-mundos-search-input {
+    width: 100%;
+    background: #0b0e22;
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    padding: 10px 16px 10px 42px;
+    color: #ffffff;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .iq-mundos-search-input:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+  }
+
+  .iq-mundos-search-input::placeholder {
+    color: #64748b;
+  }
+
+  .iq-mundos-select {
+    background: #0b0e22;
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    padding: 10px 32px 10px 14px;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color 0.2s ease;
+  }
+
+  .iq-mundos-select:focus {
+    border-color: #7c3aed;
+  }
+
+  .btn-mundos-filter {
+    background: #141738;
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    color: #c4b5fd;
+    padding: 10px 18px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-mundos-filter:hover {
+    background: #1d2250;
+    color: #ffffff;
+    border-color: #a855f7;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* TABLA PRINCIPAL DE MUNDOS                                     */
+  /* ------------------------------------------------------------- */
+  .iq-mundos-table-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .iq-mundos-tbl-wrap {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .iq-mundos-tbl-wrap::-webkit-scrollbar {
+    height: 5px;
+  }
+  .iq-mundos-tbl-wrap::-webkit-scrollbar-thumb {
+    background: var(--border-subtle);
+    border-radius: 4px;
+  }
+
+  .iq-mundos-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    text-align: left;
+  }
+
+  .iq-mundos-table th {
+    background: #141838;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    border-bottom: 1px solid var(--border-color);
+    padding: 13px 16px;
+    white-space: nowrap;
+  }
+
+  .iq-mundos-table td {
+    border-bottom: 1px solid rgba(30, 36, 72, 0.55);
+    color: #cbd5e1;
+    font-size: 13px;
+    padding: 10px 16px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .iq-mundos-table tbody tr {
+    transition: background-color 0.15s ease;
+  }
+
+  .iq-mundos-table tbody tr:hover {
+    background-color: rgba(124, 58, 237, 0.08);
+  }
+
+  /* Miniatura del Mundo */
+  .iq-mundo-img-thumb {
+    width: 76px;
+    height: 38px;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0c0e1e;
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .iq-mundo-img-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Badges de Dificultad */
+  .iq-dif-pill {
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.2px;
+  }
+
+  .dif-facil   { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+  .dif-normal  { background: rgba(59, 130, 246, 0.2);  color: #38bdf8; }
+  .dif-dificil { background: rgba(239, 68, 68, 0.2);  color: #ef4444; }
+
+  /* Badges de Estado */
+  .iq-status-pill {
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.2px;
+  }
+
+  .status-activo   { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+  .status-inactivo { background: rgba(239, 68, 68, 0.2);  color: #ef4444; }
+
+  /* Acciones en la Fila (Ver y Editar) */
+  .iq-actions-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-row-action {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    background: #171c3b;
+    border: 1px solid #232a58;
+    color: #c4b5fd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .btn-row-action:hover {
+    background: #7c3aed;
+    border-color: #7c3aed;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(124, 58, 237, 0.4);
+  }
+
+  .btn-row-action svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* PIE DE TABLA Y PAGINACIÓN                                     */
+  /* ------------------------------------------------------------- */
+  .iq-mundos-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: #10132b;
+    border-top: 1px solid var(--border-color);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .iq-mundos-pages {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .iq-pbtn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+  }
+
+  .iq-pbtn:hover {
+    color: #ffffff;
+    background: #1a2046;
+  }
+
+  .iq-pbtn.active {
+    background: #6366f1;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+  }
+
+  /* ------------------------------------------------------------- */
+  /* MODAL MODERNO DARK: VER Y EDITAR MUNDO                        */
+  /* ------------------------------------------------------------- */
+  .iq-modal-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(8, 10, 22, 0.75);
+    backdrop-filter: blur(6px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    animation: fadeInModal 0.2s ease forwards;
+  }
+
+  .iq-modal-backdrop.open {
+    display: flex;
+  }
+
+  @keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .iq-modal-card {
+    background: #11142e;
+    border: 1px solid rgba(124, 58, 237, 0.35);
+    border-radius: 14px;
+    width: 90%;
+    max-width: 520px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: popUpModal 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes popUpModal {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .iq-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: #141838;
+  }
+
+  .iq-modal-head h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-modal-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    transition: all 0.15s ease;
+  }
+
+  .btn-modal-close:hover {
+    color: #ffffff;
+    background: rgba(239, 68, 68, 0.2);
+  }
+
+  .iq-modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .iq-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border-color);
+    background: #0f1228;
+  }
+
+  .iq-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .iq-form-label {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .iq-form-input {
+    background: #0b0e22;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .iq-form-input:focus {
+    border-color: #7c3aed;
+  }
+
+  .iq-form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Toast de Notificación */
+  .iq-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #10b981;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    z-index: 3000;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all 0.25s ease;
+    pointer-events: none;
+  }
+
+  .iq-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }

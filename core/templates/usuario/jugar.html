@@ -1,0 +1,361 @@
+{% load static humanize %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auditoría ISO | Nivel {{ nivel.numero_nivel }}: {{ nivel.titulo }}</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans, Cinzel & Cormorant Garamond -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/usuarios/jugar.css' %}">
+</head>
+<body>
+
+  <!-- Capas de Fondo -->
+  <div class="iq-gameplay-bg"></div>
+  <div class="iq-gameplay-overlay"></div>
+
+  <!-- 1. TOPBAR EXACTA AL MOCKUP -->
+  <header class="iq-topbar">
+    <div class="iq-player-identity">
+      <div class="iq-avatar-wrap">
+        <div class="iq-avatar-aura"></div>
+        <img src="{% static 'img/avatars/necromancer_1.png' %}" alt="Avatar" class="iq-avatar-img">
+      </div>
+      <div class="iq-player-info">
+        <div class="iq-player-name-row">
+          <span class="iq-player-username">{{ usuario.alias|default:usuario.nombre_completo }}</span>
+          <span class="iq-player-lvl">Nv. {{ progreso.nivel }}</span>
+        </div>
+        <div class="iq-xp-bar-bg">
+          <div id="topbarXpFill" class="iq-xp-bar-fill" style="width: {{ pct_xp }}%;"></div>
+        </div>
+        <span id="topbarXpText" class="iq-xp-bar-text">{{ xp_en_nivel|intcomma }} / {{ xp_meta_nivel|intcomma }}</span>
+      </div>
+      <button type="button" class="iq-btn-circle-icon" title="Ajustes" style="margin-left: 4px;">
+        <i class="bi bi-gear-fill"></i>
+      </button>
+    </div>
+
+    <div class="iq-topbar-right">
+      <div class="iq-resource-pill gemas">
+        <i class="bi bi-gem"></i>
+        <span id="topbarGemas" class="iq-resource-val">{{ progreso.gemas|intcomma }}</span>
+        <button type="button" class="iq-resource-plus">+</button>
+      </div>
+
+      <div class="iq-resource-pill oro">
+        <i class="bi bi-coin"></i>
+        <span id="topbarOro" class="iq-resource-val">{{ progreso.oro|intcomma }}</span>
+        <button type="button" class="iq-resource-plus">+</button>
+      </div>
+
+      <div class="iq-resource-pill energy" id="topbarEnergyPill" title="Energía Arcana (Vidas) para retos ISO">
+        <i class="bi bi-lightning-charge-fill"></i>
+        <span id="topbarEnergiaDisplay" class="iq-resource-val">{{ progreso.vidas_actuales }} / {{ vidas_maximas }}</span>
+        <span id="topbarRegenBadge" class="iq-topbar-regen-badge" style="{% if progreso.vidas_actuales >= vidas_maximas %}display: none;{% else %}display: inline-flex;{% endif %}">
+          <i class="bi bi-hourglass-split"></i>
+          <span id="topbarRegenCountdown">--:--</span>
+        </span>
+        <button type="button" class="iq-resource-plus" onclick="window.location.href='{% url 'core:tienda' %}';">+</button>
+      </div>
+
+      <button type="button" class="iq-btn-circle-icon" title="Buzón de Mensajes">
+        <i class="bi bi-envelope-fill"></i>
+        <span class="iq-badge-dot">1</span>
+      </button>
+
+      <button type="button" class="iq-btn-circle-icon" title="Notificaciones">
+        <i class="bi bi-bell-fill"></i>
+        <span class="iq-badge-dot">1</span>
+      </button>
+
+      <a href="{% url 'core:mapas' %}" class="btn-exit-map" title="Salir al Mapa">
+        <i class="bi bi-arrow-left"></i>
+        <span>Mapa</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- 2. ESCENARIO DE JUEGO (CASO + RELOJ + CARTAS + CONFIRMAR) -->
+  <main class="iq-game-stage">
+
+    <!-- Placa Gótica Superior -->
+    <div class="iq-header-plaque-wrap">
+      <img src="{% static 'img/crest_skull_head.png' %}" alt="Skull Crest" class="iq-plaque-skull-crest">
+      <div class="iq-header-plaque">
+        <h2 id="casoHeaderTitle" class="iq-caso-title">Caso #1</h2>
+        <div id="casoHeaderSubtitle" class="iq-caso-subtitle">
+          {{ mundo.codigo_iso }} — Nivel {{ nivel.numero_nivel }} - Fase 1
+        </div>
+      </div>
+    </div>
+
+    <!-- Fila de Escenario / Caso + Reloj de Arena -->
+    <div class="iq-scenario-timer-row">
+      <div class="iq-scenario-box">
+        <div class="iq-scenario-tag">Escenario / Caso</div>
+        <p id="scenarioTextContent" class="iq-scenario-text">
+          Cargando escenario de auditoría...
+        </p>
+      </div>
+
+      <div class="iq-hourglass-widget">
+        <i class="bi bi-hourglass-split iq-hourglass-icon"></i>
+        <span class="iq-hourglass-label">Tiempo Restante</span>
+        <span id="timerDisplay" class="iq-timer-digits">{{ tiempo_caso_fmt }}</span>
+      </div>
+    </div>
+
+    <!-- Fila de Cartas A, B, C, D -->
+    <div id="cardsDeckContainer" class="iq-cards-deck-row">
+      <!-- Se puebla dinámicamente con JavaScript -->
+    </div>
+
+    <!-- Fila Inferior con Botón Confirmar -->
+    <div class="iq-bottom-actions-row">
+      <button id="btnConfirmar" type="button" class="btn-confirmar-action" onclick="confirmarRespuesta();">
+        <i class="bi bi-swords"></i>
+        <span>Confirmar</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- ============================================================= -->
+  <!-- PANTALLA GÓTICA MONUMENTAL DE VICTORIA / SUBIR NIVEL           -->
+  <!-- ============================================================= -->
+  <div id="modalVictoria" class="iq-victory-fullscreen">
+    <div class="iq-vic-backdrop-gradient"></div>
+    <div class="iq-vic-right-pane">
+      <!-- Banner Corona y ¡Victoria! Exacto a la referencia -->
+      <img src="{% static 'img/banner_victoria.png' %}" alt="¡Victoria!" class="iq-vic-banner-img">
+
+      <!-- Subtítulo -->
+      <p class="iq-vic-subtitle" id="vicSubtitle">
+        Has completado todas las fases del Consejo de los Nigromantes
+      </p>
+
+      <!-- Banner opcional si se desbloqueó nuevo mundo -->
+      <div id="vicNewWorldBanner" class="iq-vic-world-notice" style="display: none;">
+        🌟 ¡NUEVO MUNDO DESBLOQUEADO: <strong id="vicNewWorldName"></strong>! 🌟
+      </div>
+
+      <!-- Tarjeta / Contenedor Ornato de Recompensas -->
+      <div class="iq-vic-rewards-card">
+        <div class="iq-vic-rewards-badge">
+          <span>Recompensas Obtenidas</span>
+        </div>
+
+        <div class="iq-vic-rewards-grid">
+          <!-- Cristales de Nigromante (Gemas) -->
+          <div class="iq-vic-reward-item">
+            <div class="iq-vic-reward-slot">
+              <img src="{% static 'img/icon_crystal_transp.png' %}" alt="Cristales" class="iq-vic-slot-icon">
+              <span class="iq-vic-slot-qty" id="vicGemasQty">x{{ nivel.recompensa_gemas }}</span>
+            </div>
+            <span class="iq-vic-slot-name">Cristales<br>de Nigromante</span>
+          </div>
+
+          <!-- Oro Arcano -->
+          <div class="iq-vic-reward-item">
+            <div class="iq-vic-reward-slot">
+              <img src="{% static 'img/icon_gold_transp.png' %}" alt="Oro Arcano" class="iq-vic-slot-icon">
+              <span class="iq-vic-slot-qty" id="vicOroQty">x{{ nivel.recompensa_oro }}</span>
+            </div>
+            <span class="iq-vic-slot-name">Oro<br>Arcano</span>
+          </div>
+
+          <!-- Experiencia (EXP) -->
+          <div class="iq-vic-reward-item">
+            <div class="iq-vic-reward-slot">
+              <img src="{% static 'img/icon_exp_transp.png' %}" alt="Experiencia" class="iq-vic-slot-icon">
+              <span class="iq-vic-slot-qty" id="vicXpQty">x{{ nivel.recompensa_xp }}</span>
+            </div>
+            <span class="iq-vic-slot-name">Experiencia<br>EXP</span>
+          </div>
+
+          <!-- Slot condicional si subió de nivel -->
+          <div class="iq-vic-reward-item" id="vicCardLevelUp" style="display: none;">
+            <div class="iq-vic-reward-slot level-up">
+              <img src="{% static 'img/crown_clean.png' %}" alt="Subió de Nivel" class="iq-vic-slot-icon">
+              <span class="iq-vic-slot-qty" id="vicLevelUpVal">Nv. 2</span>
+            </div>
+            <span class="iq-vic-slot-name">¡Ascenso<br>de Nivel!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Texto de Lore y Motivación del Consejo -->
+      <div class="iq-vic-footer-lore">
+        <p class="iq-vic-lore-quote">
+          Tu conocimiento y estrategia han demostrado que eres un verdadero miembro del Consejo.
+        </p>
+        <p class="iq-vic-lore-callout">
+          ¡Sigue desafiando los misterios del mundo!
+        </p>
+        <div class="iq-vic-skull-divider">
+          <span class="iq-vic-divider-diamond">◆</span>
+        </div>
+      </div>
+
+      <!-- Botón Continuar exacto al diseño de la imagen -->
+      <div class="iq-vic-buttons-row">
+        <a href="{% url 'core:mapas' %}" id="btnVicContinuar" class="iq-vic-btn-continuar">
+          <span class="iq-vic-btn-chevrons">❯❯</span>
+          <span>Continuar</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- PANTALLA GÓTICA MONUMENTAL DE DERROTA                         -->
+  <!-- ============================================================= -->
+  <div id="modalDerrota" class="iq-derrota-fullscreen">
+    <div class="iq-derrota-backdrop-gradient"></div>
+    <div class="iq-derrota-right-pane">
+      
+      <!-- Crest y Título Derrota (Exacto a la Imagen) -->
+      <div class="iq-derrota-banner-wrap">
+        <img src="{% static 'img/derrota_crest_title_clean.png' %}" alt="Derrota" class="iq-derrota-banner-img">
+      </div>
+
+      <!-- Subtítulo Exacto a la Imagen -->
+      <p class="iq-derrota-subtitle">
+        El Consejo de los Nigromantes ha caído... por ahora.
+      </p>
+
+      <!-- Widget Gótico de Vidas y Tiempo de Regeneración al Perder -->
+      <div class="iq-derrota-vidas-card" id="derrotaVidasCard">
+        <div class="iq-derrota-vidas-top">
+          <span class="iq-derrota-badge-lost">
+            <i class="bi bi-heartbreak-fill"></i> -1 VIDA
+          </span>
+          <div class="iq-derrota-hearts-visual" id="derrotaHeartsVisual">
+            <!-- Corazones / Cristales generados por JavaScript -->
+          </div>
+          <span class="iq-derrota-vidas-counter" id="derrotaVidasCounter">
+            {{ progreso.vidas_actuales }} / {{ vidas_maximas }} Vidas
+          </span>
+        </div>
+        <div class="iq-derrota-regen-banner" id="derrotaRegenBanner">
+          <div class="iq-derrota-regen-left">
+            <i class="bi bi-hourglass-split iq-regen-hourglass"></i>
+            <span class="iq-derrota-regen-title">Nueva vida en:</span>
+          </div>
+          <div class="iq-derrota-regen-right">
+            <span class="iq-derrota-countdown-digits" id="derrotaCountdownDigits">--:--</span>
+          </div>
+        </div>
+        <div class="iq-derrota-zero-warning" id="derrotaZeroWarning" style="display: none;">
+          <i class="bi bi-exclamation-triangle-fill"></i> ¡Has agotado tu Energía Arcana! Espera a que se regenere una vida o recárgala en la Tienda.
+        </div>
+      </div>
+
+      <!-- Tarjeta / Contenedor Ornato de Recompensas Obtenidas -->
+      <div class="iq-derrota-rewards-card">
+        <div class="iq-derrota-rewards-badge">
+          <span>Recompensas Obtenidas</span>
+        </div>
+
+        <div class="iq-derrota-rewards-grid">
+          <!-- Cristales de Nigromante -->
+          <div class="iq-derrota-reward-item" title="Cristales de Nigromante (Gemas)">
+            <div class="iq-derrota-reward-slot">
+              <img src="{% static 'img/icon_crystal_transp.png' %}" alt="Cristales" class="iq-derrota-slot-icon">
+              <span class="iq-derrota-slot-qty" id="derrotaGemas">+0</span>
+            </div>
+            <span class="iq-derrota-slot-name">Cristales<br>de Nigromante</span>
+          </div>
+
+          <!-- Oro Arcano -->
+          <div class="iq-derrota-reward-item" title="Oro Arcano">
+            <div class="iq-derrota-reward-slot">
+              <img src="{% static 'img/icon_gold_transp.png' %}" alt="Oro Arcano" class="iq-derrota-slot-icon">
+              <span class="iq-derrota-slot-qty" id="derrotaOro">+0</span>
+            </div>
+            <span class="iq-derrota-slot-name">Oro<br>Arcano</span>
+          </div>
+
+          <!-- Experiencia EXP -->
+          <div class="iq-derrota-reward-item" title="Experiencia EXP">
+            <div class="iq-derrota-reward-slot">
+              <img src="{% static 'img/icon_exp_transp.png' %}" alt="Experiencia" class="iq-derrota-slot-icon">
+              <span class="iq-derrota-slot-qty" id="derrotaXp">+0</span>
+            </div>
+            <span class="iq-derrota-slot-name">Experiencia<br>EXP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Texto de Lore y Frase Motivacional Exacto a la Imagen -->
+      <div class="iq-derrota-footer-lore">
+        <p class="iq-derrota-lore-quote">
+          No te rindas, Nigromante... El conocimiento aún te espera.
+        </p>
+        <div class="iq-derrota-divider">
+          <span class="iq-derrota-divider-line"></span>
+          <i class="bi bi-skull-fill iq-derrota-divider-skull"></i>
+          <span class="iq-derrota-divider-line"></span>
+        </div>
+      </div>
+
+      <!-- Feedback de Auditoría Pedagógica -->
+      <div id="derrotaFeedback" class="iq-derrota-feedback-box">
+        <div style="margin-bottom: 4px;">
+          <strong id="derrotaMsg" style="color: #fca5a5;">La carta seleccionada no corresponde al control exigido.</strong>
+        </div>
+        <div>
+          <span style="color: #cbd5e1;">Control Requerido: </span>
+          <span id="derrotaSolucionNombre" style="color: #fef08a; font-weight: 600;"></span>
+        </div>
+      </div>
+
+      <!-- Botones de Acción Exactos a la Imagen: Intentar de Nuevo y Volver al Menú -->
+      <div class="iq-derrota-buttons-row">
+        <button type="button" class="btn-derrota-gothic retry" onclick="reiniciarPartidaActual();">
+          <i class="bi bi-arrow-counterclockwise"></i>
+          <span>Intentar de Nuevo</span>
+        </button>
+        <a href="{% url 'core:mapas' %}" class="btn-derrota-gothic menu">
+          <i class="bi bi-house-door-fill"></i>
+          <span>Volver al Menú</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST FLOTANTE -->
+  <div id="gameToast" class="iq-toast">
+    <i class="bi bi-shield-fill-exclamation" style="color: #c084fc; font-size: 18px;"></i>
+    <span id="toastMsg">Notificación</span>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- JAVASCRIPT DEL GAMEPLAY                                       -->
+  <!-- ============================================================= -->
+  <script id="juego-data" type="application/json">
+{
+  "nivelId": {{ nivel.id }},
+  "mundoIso": "{{ mundo.codigo_iso|escapejs }}",
+  "numeroNivel": {{ nivel.numero_nivel }},
+  "tiempoCaso": {{ tiempo_caso }},
+  "vidasActuales": {{ progreso.vidas_actuales }},
+  "vidasMaximas": {{ vidas_maximas }},
+  "segundosSiguienteVida": {{ segundos_siguiente_vida|default:0 }},
+  "regeneracionMinutos": {{ regeneracion_minutos|default:5 }},
+  "fasesData": {{ fases_data_json|safe }}
+}
+</script>
+<script src="{% static 'js/usuario/jugar.js' %}"></script>
+</body>
+</html>

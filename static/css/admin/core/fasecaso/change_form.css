@@ -1,0 +1,875 @@
+:root {
+    --iq-purple-glow: rgba(124, 58, 237, 0.4);
+    --iq-cyan-glow: rgba(56, 189, 248, 0.45);
+    --iq-card-bg: #14112e;
+    --iq-card-border: #282155;
+    --iq-input-bg: #0c0a20;
+    --iq-input-border: #2a2254;
+    --iq-badge-bg: #221a48;
+  }
+
+  .iq-fase-editor-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 40px;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* CABECERA PRINCIPAL: TÍTULO Y SUBTÍTULO CON ICONO DE PUZZLE     */
+  /* ------------------------------------------------------------- */
+  .iq-editor-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .iq-editor-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: radial-gradient(circle at 30% 30%, #a855f7, #6d28d9);
+    border: 1.5px solid rgba(168, 85, 247, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 24px;
+    flex-shrink: 0;
+    box-shadow: 0 0 18px rgba(124, 58, 237, 0.55);
+  }
+
+  .iq-editor-header-text h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.4px;
+    line-height: 1.2;
+  }
+
+  .iq-editor-header-text p {
+    margin: 4px 0 0 0;
+    font-size: 13.5px;
+    color: #8b95b5;
+    font-weight: 500;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* FILA SUPERIOR: TARJETAS DE CONTEXTO (MUNDO Y NIVEL)           */
+  /* ------------------------------------------------------------- */
+  .iq-context-cards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    width: 100%;
+  }
+
+  @media (max-width: 900px) {
+    .iq-context-cards-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .iq-context-card {
+    background: var(--iq-card-bg);
+    border: 1.5px solid var(--iq-card-border);
+    border-radius: 16px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .iq-context-card:hover {
+    border-color: rgba(168, 85, 247, 0.5);
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.2);
+  }
+
+  .iq-mundo-thumb-wrapper {
+    position: relative;
+    width: 96px;
+    height: 62px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1.5px solid #3d2f75;
+    box-shadow: 0 0 14px rgba(124, 58, 237, 0.35);
+  }
+
+  .iq-mundo-thumb-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .iq-nivel-icon-box {
+    width: 58px;
+    height: 58px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(99, 102, 241, 0.15));
+    border: 1.5px solid rgba(168, 85, 247, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a855f7;
+    font-size: 26px;
+    flex-shrink: 0;
+    box-shadow: 0 0 14px rgba(124, 58, 237, 0.3);
+  }
+
+  .iq-context-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .iq-context-header-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+
+  .iq-context-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: #a855f7;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .iq-card-select {
+    width: 100%;
+    background-color: #1a153c;
+    border: 1.2px solid #3c3175;
+    color: #ffffff;
+    font-size: 14.5px;
+    font-weight: 800;
+    border-radius: 9px;
+    padding: 7px 34px 7px 10px;
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23a855f7' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 12px) center;
+    transition: all 0.2s ease;
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+
+  .iq-card-select:hover,
+  .iq-card-select:focus {
+    border-color: #a855f7;
+    background-color: #241d55;
+    box-shadow: 0 0 14px rgba(168, 85, 247, 0.4);
+  }
+
+  .iq-card-select option {
+    background-color: #14112e;
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 10px;
+  }
+
+  .iq-context-desc {
+    font-size: 12px;
+    color: #8b95b5;
+    margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Banner de nivel y mundo asignado */
+  .iq-assigned-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: rgba(124, 58, 237, 0.12);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    border-radius: 10px;
+    padding: 10px 16px;
+    margin-bottom: 4px;
+  }
+
+  .iq-assigned-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #c4b5fd;
+  }
+
+  .iq-assigned-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .iq-assigned-chip {
+    font-size: 12px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+
+  .iq-assigned-chip.mundo {
+    background: #2e1a5a;
+    color: #e9d5ff;
+    border: 1px solid #7e22ce;
+  }
+
+  .iq-assigned-chip.nivel {
+    background: #1e1b4b;
+    color: #a5b4fc;
+    border: 1px solid #4338ca;
+  }
+
+  .iq-assigned-arrow {
+    color: #8b95b5;
+    font-size: 12px;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* LAYOUT PRINCIPAL: 2 COLUMNAS (FORMULARIO Y VISTA PREVIA)      */
+  /* ------------------------------------------------------------- */
+  .iq-editor-grid {
+    display: grid;
+    grid-template-columns: 1fr 390px;
+    gap: 22px;
+    align-items: start;
+    width: 100%;
+  }
+
+  @media (max-width: 1100px) {
+    .iq-editor-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ------------------------------------------------------------- */
+  /* COLUMNA IZQUIERDA: CONTENEDOR DEL FORMULARIO                  */
+  /* ------------------------------------------------------------- */
+  .iq-form-container {
+    background: var(--iq-card-bg);
+    border: 1.5px solid var(--iq-card-border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .iq-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .iq-field-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .iq-field-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .iq-req {
+    color: #ef4444;
+    font-weight: 800;
+  }
+
+  .iq-char-counter {
+    font-size: 11.5px;
+    color: #8b95b5;
+    font-weight: 600;
+  }
+
+  /* Filas de 2 columnas para el formulario */
+  .iq-form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    .iq-form-row-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Filas de 3 columnas (Oro, XP, Estado) */
+  .iq-form-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    align-items: end;
+    width: 100%;
+  }
+
+  @media (max-width: 760px) {
+    .iq-form-row-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Input con icono badge integrado */
+  .iq-badge-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    background: var(--iq-input-bg);
+    border: 1.2px solid var(--iq-input-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+
+  .iq-badge-input-wrapper:focus-within {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.35);
+  }
+
+  .iq-input-badge {
+    width: 44px;
+    background: var(--iq-badge-bg);
+    border-right: 1.2px solid var(--iq-input-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c084fc;
+    font-size: 17px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .iq-input-badge i {
+    font-size: 18px;
+    color: #c084fc;
+  }
+
+  .iq-badge-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 11px 14px;
+    outline: none;
+    font-family: inherit;
+    min-width: 0;
+  }
+
+  .iq-badge-input::placeholder {
+    color: #64748b;
+  }
+
+  /* Number input stepper vertical controls */
+  .iq-stepper-btns {
+    display: flex;
+    flex-direction: column;
+    width: 28px;
+    border-left: 1.2px solid var(--iq-input-border);
+    flex-shrink: 0;
+  }
+
+  .iq-step-btn {
+    background: #151136;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50%;
+    transition: all 0.15s ease;
+  }
+
+  .iq-step-btn:first-child {
+    border-bottom: 1px solid var(--iq-input-border);
+  }
+
+  .iq-step-btn:hover {
+    background: #282155;
+    color: #ffffff;
+  }
+
+  /* Select con badge */
+  .iq-badge-select {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 11px 34px 11px 14px;
+    outline: none;
+    font-family: inherit;
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 12px) center;
+  }
+
+  .iq-badge-select option {
+    background: #14112e;
+    color: #ffffff;
+    padding: 8px;
+  }
+
+  /* Selector con Pill para Dificultad */
+  .iq-diff-select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    padding: 0 14px;
+    cursor: pointer;
+    min-height: 44px;
+  }
+
+  .iq-diff-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 4px 16px;
+    border-radius: 7px;
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.45);
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
+
+  .iq-diff-pill-btn.facil {
+    background: #10b981;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
+  }
+
+  .iq-diff-pill-btn.dificil {
+    background: #dc2626;
+    box-shadow: 0 0 12px rgba(220, 38, 38, 0.45);
+  }
+
+  .iq-diff-chevron {
+    color: #94a3b8;
+    font-size: 11px;
+    pointer-events: none;
+  }
+
+  .iq-select-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  /* Textarea con badge y contador */
+  .iq-badge-textarea-wrapper {
+    position: relative;
+    display: flex;
+    background: var(--iq-input-bg);
+    border: 1.2px solid var(--iq-input-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    align-items: stretch;
+  }
+
+  .iq-badge-textarea-wrapper:focus-within {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.35);
+  }
+
+  .iq-textarea-badge {
+    width: 44px;
+    background: var(--iq-badge-bg);
+    border-right: 1.2px solid var(--iq-input-border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 14px;
+    color: #c084fc;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .iq-badge-textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 13.5px;
+    font-family: inherit;
+    line-height: 1.5;
+    padding: 12px 14px 28px 14px;
+    outline: none;
+    resize: vertical;
+    min-height: 90px;
+  }
+
+  .iq-badge-textarea::placeholder {
+    color: #64748b;
+  }
+
+  .iq-textarea-counter-box {
+    position: absolute;
+    bottom: 6px;
+    right: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #8b95b5;
+    pointer-events: none;
+  }
+
+  /* Toggle Switch de Estado */
+  .iq-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 44px;
+    background: var(--iq-input-bg);
+    border: 1.2px solid var(--iq-input-border);
+    border-radius: 10px;
+    padding: 0 14px;
+    box-sizing: border-box;
+  }
+
+  .iq-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .iq-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .iq-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #332b55;
+    transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 24px;
+  }
+
+  .iq-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .iq-switch input:checked + .iq-slider {
+    background-color: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.45);
+  }
+
+  .iq-switch input:checked + .iq-slider:before {
+    transform: translateX(20px);
+  }
+
+  .iq-estado-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #10b981;
+    transition: color 0.2s ease;
+  }
+
+  .iq-estado-text.inactivo {
+    color: #94a3b8;
+  }
+
+  /* Botones de acción inferiores */
+  .iq-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 10px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .iq-btn-cancel {
+    background: rgba(30, 27, 75, 0.5);
+    border: 1.5px solid #3c336b;
+    color: #ffffff !important;
+    border-radius: 10px;
+    padding: 12px 26px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .iq-btn-cancel:hover {
+    background: rgba(49, 46, 129, 0.7);
+    border-color: #6366f1;
+    color: #ffffff !important;
+  }
+
+  .iq-btn-save {
+    flex: 1;
+    background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+    border: none;
+    color: #ffffff !important;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 14px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.55);
+    transition: all 0.2s ease;
+  }
+
+  .iq-btn-save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 26px rgba(124, 58, 237, 0.75);
+  }
+
+  /* ------------------------------------------------------------- */
+  /* COLUMNA DERECHA: VISTA PREVIA (CARTA HOLOGRÁFICA CYBERPUNK)   */
+  /* ------------------------------------------------------------- */
+  .iq-preview-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: sticky;
+    top: 76px;
+  }
+
+  .iq-preview-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+  }
+
+  .iq-preview-header i {
+    font-size: 18px;
+    color: #38bdf8;
+  }
+
+  /* Marco exterior Cyberpunk con resplandor neón */
+  .iq-cyber-card-outer {
+    background: #0b0920;
+    border: 2px solid #2563eb;
+    border-radius: 20px;
+    padding: 14px;
+    box-shadow: 0 0 28px rgba(37, 99, 235, 0.4), inset 0 0 16px rgba(37, 99, 235, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Esquinas cibernéticas estilizadas */
+  .iq-cyber-card-outer::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 14px;
+    height: 14px;
+    border-top: 2px solid #38bdf8;
+    border-left: 2px solid #38bdf8;
+    pointer-events: none;
+  }
+
+  .iq-cyber-card-outer::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 14px;
+    height: 14px;
+    border-bottom: 2px solid #38bdf8;
+    border-right: 2px solid #38bdf8;
+    pointer-events: none;
+  }
+
+  .iq-cyber-card-inner {
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 14px;
+    background: linear-gradient(180deg, #120e2e 0%, #0c0a20 100%);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+  }
+
+  /* Ilustración del Hacker / Incidente */
+  .iq-cyber-art-box {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: #080614;
+    overflow: hidden;
+  }
+
+  .iq-cyber-art-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.5));
+  }
+
+  /* Cinta / Badge de Fase superpuesta en el centro inferior de la imagen */
+  .iq-fase-ribbon {
+    position: absolute;
+    bottom: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #1b1544, #2a1b63);
+    border: 1.5px solid #6366f1;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 4px 22px;
+    border-radius: 6px;
+    box-shadow: 0 0 14px rgba(99, 102, 241, 0.65);
+    letter-spacing: 0.5px;
+    z-index: 5;
+    clip-path: polygon(8% 0%, 92% 0%, 100% 50%, 92% 100%, 8% 100%, 0% 50%);
+  }
+
+  /* Contenido del Incidente */
+  .iq-cyber-card-body {
+    padding: 24px 16px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 10px;
+  }
+
+  .iq-cyber-incident-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+    line-height: 1.25;
+    margin: 0;
+  }
+
+  .iq-cyber-meta-pill {
+    background: rgba(124, 58, 237, 0.18);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    color: #c4b5fd;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .iq-cyber-case-text {
+    font-size: 12.5px;
+    color: #cbd5e1;
+    line-height: 1.45;
+    margin: 0;
+    padding: 0 6px;
+    text-align: center;
+    min-height: 54px;
+  }
+
+  /* Barra de recompensas inferior */
+  .iq-cyber-rewards-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    background: rgba(15, 12, 38, 0.85);
+    border-top: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 12px 16px;
+    margin-top: 6px;
+    box-sizing: border-box;
+  }
+
+  .iq-cyber-reward-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .iq-reward-coin {
+    color: #f59e0b;
+    font-size: 20px;
+    filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.6));
+  }
+
+  .iq-reward-xp {
+    color: #c084fc;
+    font-size: 19px;
+    filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.6));
+  }
+
+  .iq-cyber-reward-divider {
+    width: 1px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.15);
+  }

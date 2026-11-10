@@ -1,0 +1,151 @@
+{% load static humanize %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda Arcana ISO | ISO QUEST</title>
+
+  <!-- Google Fonts: Cinzel & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/usuarios/tienda.css' %}">
+</head>
+<body>
+
+  <!-- ============================================================= -->
+  <!-- 1. TOPBAR SUPERIOR IDÉNTICA (HUD DE JUGADOR)                  -->
+  <!-- ============================================================= -->
+  {% include 'usuario/includes/player_topbar.html' %}
+
+  <!-- ============================================================= -->
+  <!-- 2. WORKSPACE DE TIENDA CON MENÚ LATERAL                       -->
+  <!-- ============================================================= -->
+  <main class="iq-page-workspace">
+    <!-- MENÚ LATERAL IZQUIERDO -->
+    <aside class="iq-cl-sidebar">
+      <a href="{% url 'core:lobby' %}" class="iq-cl-nav-btn" title="Ir al Lobby Principal">
+        <i class="bi bi-shield-shaded"></i>
+        <span>Lobby</span>
+      </a>
+
+      <a href="{% url 'core:mapas' %}" class="iq-cl-nav-btn" title="Ir a los Mapas de Auditoría">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>Mapas</span>
+      </a>
+
+      <a href="{% url 'core:coleccion' %}" class="iq-cl-nav-btn" title="Colección de Cartas y Avatares">
+        <i class="bi bi-archive-fill"></i>
+        <span>Colección</span>
+        <span class="iq-menu-alert-dot"></span>
+      </a>
+
+      <a href="{% url 'core:academia' %}" class="iq-cl-nav-btn" title="Academia ISO">
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>Academia ISO</span>
+      </a>
+
+      <a href="{% url 'core:clasificacion' %}" class="iq-cl-nav-btn" title="Tabla de Clasificación">
+        <i class="bi bi-trophy-fill"></i>
+        <span>Clasificación</span>
+      </a>
+
+      <!-- ACTIVO: TIENDA -->
+      <a href="{% url 'core:tienda' %}" class="iq-cl-nav-btn active" title="Tienda Arcana ISO">
+        <i class="bi bi-cart3"></i>
+        <span>Tienda</span>
+      </a>
+    </aside>
+
+    <!-- PANEL CENTRAL: TIENDA ARCANA -->
+    <section class="iq-content-card">
+      <div class="iq-section-header">
+        <h2 class="iq-section-title">
+          <i class="bi bi-cart3" style="color: #34d399;"></i> Tienda Arcana de Recursos ISO
+        </h2>
+        <div class="iq-shop-tabs">
+          <button type="button" class="iq-shop-tab-btn active" onclick="filtrarTienda('todos', this)">Todos</button>
+          <button type="button" class="iq-shop-tab-btn" onclick="filtrarTienda('gemas', this)">Gemas</button>
+          <button type="button" class="iq-shop-tab-btn" onclick="filtrarTienda('oro', this)">Oro</button>
+          <button type="button" class="iq-shop-tab-btn" onclick="filtrarTienda('energia', this)">Energía</button>
+        </div>
+      </div>
+
+      <div class="iq-items-grid" id="tiendaItemsGrid">
+        <!-- Gemas 50 -->
+        <div class="iq-item-card" data-cat="gemas">
+          <div class="iq-item-icon-box" style="color: #e879f9;">
+            <i class="bi bi-gem"></i>
+          </div>
+          <div class="iq-item-title">Saco Arcano de 50 Gemas</div>
+          <div class="iq-item-desc">Gemas puras para desbloquear cartas de mitigación y revivir fases fallidas.</div>
+          <div class="iq-item-cost"><i class="bi bi-award-fill"></i> Recompensa de Cumplimiento</div>
+          <button type="button" class="iq-item-buy-btn" onclick="comprarItemTienda('gemas_50');">Canjear 50 Gemas</button>
+        </div>
+
+        <!-- Gemas 120 -->
+        <div class="iq-item-card" data-cat="gemas">
+          <div class="iq-item-icon-box" style="color: #ec4899;">
+            <i class="bi bi-gem"></i>
+          </div>
+          <div class="iq-item-title">Cofre de 120 Gemas</div>
+          <div class="iq-item-desc">Reserva de gemas de alto rendimiento para auditores de élite.</div>
+          <div class="iq-item-cost"><i class="bi bi-award-fill"></i> Nivel 5 Requerido</div>
+          <button type="button" class="iq-item-buy-btn" onclick="comprarItemTienda('gemas_120');">Canjear 120 Gemas</button>
+        </div>
+
+        <!-- Oro 500 -->
+        <div class="iq-item-card" data-cat="oro">
+          <div class="iq-item-icon-box" style="color: #fbbf24;">
+            <i class="bi bi-coin"></i>
+          </div>
+          <div class="iq-item-title">Bolsa de 500 Monedas</div>
+          <div class="iq-item-desc">Monedas de oro obtenidas mediante auditorías y lecciones aprobadas.</div>
+          <div class="iq-item-cost"><i class="bi bi-check-circle-fill" style="color: #34d399;"></i> Disponible</div>
+          <button type="button" class="iq-item-buy-btn" onclick="comprarItemTienda('oro_500');">Canjear 500 Oro</button>
+        </div>
+
+        <!-- Oro 1500 -->
+        <div class="iq-item-card" data-cat="oro">
+          <div class="iq-item-icon-box" style="color: #f59e0b;">
+            <i class="bi bi-coin"></i>
+          </div>
+          <div class="iq-item-title">Arca Real de 1.500 Monedas</div>
+          <div class="iq-item-desc">Gran reserva para potenciar tus cartas de control ISO/IEC 27001:2022 e ISO/IEC 27017.</div>
+          <div class="iq-item-cost"><i class="bi bi-shield-shaded"></i> Logro de Auditor</div>
+          <button type="button" class="iq-item-buy-btn" onclick="comprarItemTienda('oro_1500');">Canjear 1.500 Oro</button>
+        </div>
+
+        <!-- Energía -->
+        <div class="iq-item-card" data-cat="energia">
+          <div class="iq-item-icon-box" style="color: #c084fc;">
+            <i class="bi bi-lightning-charge-fill"></i>
+          </div>
+          <div class="iq-item-title">Poción de Vigor Arcano ({{ vidas_maximas }}/{{ vidas_maximas }})</div>
+          <div class="iq-item-desc">Restaura completamente tu Energía Arcana (vidas) para superar los mundos ISO.</div>
+          <div class="iq-item-cost"><i class="bi bi-lightning-fill"></i> {{ vidas_maximas }} / {{ vidas_maximas }} Instantáneo</div>
+          <button type="button" class="iq-item-buy-btn" onclick="comprarItemTienda('energia');">Restaurar Energía</button>
+        </div>
+
+        <!-- Pase de Batalla -->
+        <div class="iq-item-card" data-cat="todos">
+          <div class="iq-item-icon-box" style="color: #38bdf8;">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <div class="iq-item-title">Pase de Temporada ISO</div>
+          <div class="iq-item-desc">Desbloquea cosméticos oscuros y títulos de Oficial Supremo de Compliance.</div>
+          <div class="iq-item-cost"><i class="bi bi-star-fill"></i> Temporada Activa</div>
+          <button type="button" class="iq-item-buy-btn" onclick="comprarItemTienda('pase');">Activar Pase</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="{% static 'js/usuario/tienda.js' %}"></script>
+</body>
+</html>

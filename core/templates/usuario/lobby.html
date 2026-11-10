@@ -1,0 +1,490 @@
+{% load static humanize %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lobby Principal | ISO QUEST</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Cinzel Decorative -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/usuarios/lobby.css' %}">
+</head>
+<body>
+
+  <!-- ============================================================= -->
+  <!-- TOPBAR SUPERIOR IDÉNTICA (HUD DE JUGADOR)                      -->
+  <!-- ============================================================= -->
+  {% include 'usuario/includes/player_topbar.html' %}
+
+  <!-- CONTENIDO PRINCIPAL: OVERLAYS SOBRE EL FONDO LIMPIO -->
+  <main class="iq-necro-workspace">
+    <!-- COLUMNA 1: MENÚ DE NAVEGACIÓN FLOTANTE -->
+    <aside class="iq-necro-menu-col">
+      <a href="{% url 'core:lobby' %}" id="btnNavLobby" class="iq-menu-btn active" title="Lobby Principal">
+        <i class="bi bi-shield-shaded"></i>
+        <span>Lobby</span>
+      </a>
+
+      <a href="{% url 'core:mapas' %}" class="iq-menu-btn" title="Explorar el Mapa de Niveles">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>Mapas</span>
+      </a>
+
+      <a href="{% url 'core:coleccion' %}" class="iq-menu-btn" title="Colección de Cartas y Avatares">
+        <i class="bi bi-archive-fill"></i>
+        <span>Colección</span>
+        <span class="iq-menu-alert-dot"></span>
+      </a>
+
+      <a href="{% url 'core:academia' %}" class="iq-menu-btn" title="Academia ISO">
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>Academia ISO</span>
+      </a>
+
+      <a href="{% url 'core:clasificacion' %}" id="btnNavRanking" class="iq-menu-btn" title="Tabla de Clasificación">
+        <i class="bi bi-trophy-fill"></i>
+        <span>Clasificación</span>
+      </a>
+
+      <a href="{% url 'core:tienda' %}" class="iq-menu-btn" title="Tienda Arcana ISO">
+        <i class="bi bi-cart3"></i>
+        <span>Tienda</span>
+      </a>
+
+      <!-- Tarjeta Inferior de Evento Especial -->
+      <div class="iq-event-card" onclick="window.location.href='{% url 'core:mapas' %}';">
+        <span class="iq-event-tag">EVENTO ESPECIAL</span>
+        <div class="iq-event-title">LA ACADEMIA OSCURA</div>
+        <div class="iq-event-timer">
+          <i class="bi bi-clock-history"></i>
+          <span>Termina en: 12d 14h</span>
+        </div>
+        <div class="iq-event-art-row">
+          <img src="/static/img/avatars/necromancer_2.png" alt="Evento Especial" class="iq-event-thumb">
+          <div class="iq-event-arrow">
+            <i class="bi bi-chevron-right"></i>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ZONA CENTRAL 1: LOBBY HERO (FONDO LIMPIO + BOTÓN JUGAR) -->
+    <section id="viewLobbyCenter" class="iq-necro-center-area">
+      <!-- Botón Monumental JUGAR -->
+      <a href="{% url 'core:mapas' %}" class="btn-play-hero" title="Comenzar auditoría / reto en el Mapa ISO">
+        <i class="bi bi-swords"></i>
+        <span>JUGAR</span>
+      </a>
+    </section>
+
+    <!-- ZONA CENTRAL 2: CLASIFICACIÓN (CABECERA, PESTAÑAS, PODIO TOP 3 Y TABLA COMPLETA) -->
+    <section id="viewRankingCenter" class="iq-necro-ranking-center" style="display: none;">
+      <!-- Cabecera Arcano-Gótica de Clasificación -->
+      <div class="iq-ranking-header">
+        <div class="iq-ranking-banner">
+          <div class="iq-ranking-title-badge">
+            <i class="bi bi-trophy-fill iq-trophy-icon"></i>
+            <span class="iq-ranking-title-text">Clasificación</span>
+          </div>
+        </div>
+
+        <!-- Pestañas Filtro: Global, Amigos, Semanal, Mensual -->
+        <div class="iq-ranking-tabs-wrap">
+          <button type="button" class="iq-rank-tab-btn active" data-tab="global" onclick="switchRankingTab('global');">Global</button>
+          <button type="button" class="iq-rank-tab-btn" data-tab="amigos" onclick="switchRankingTab('amigos');">Amigos</button>
+          <button type="button" class="iq-rank-tab-btn" data-tab="semanal" onclick="switchRankingTab('semanal');">Semanal</button>
+          <button type="button" class="iq-rank-tab-btn" data-tab="mensual" onclick="switchRankingTab('mensual');">Mensual</button>
+        </div>
+      </div>
+
+      <!-- PODIO DE LOS TRES MEJORES (AVATARES MUCHO MÁS GRANDES Y NOMBRES) -->
+      <div class="iq-podium-wrap">
+        <!-- 2° LUGAR (IZQUIERDA) -->
+        {% if podio_2 %}
+        <div class="iq-podium-item rank-2">
+          <div class="iq-podium-banner-back">
+            <i class="bi bi-shield-shaded"></i>
+          </div>
+          <div class="iq-podium-avatar-wrap">
+            <img src="{{ podio_2.usuario.avatar_url }}" alt="{{ podio_2.usuario.alias }}" class="iq-podium-avatar-img">
+            <div class="iq-podium-medal silver" title="2° Lugar">2</div>
+          </div>
+          <div class="iq-podium-pedestal silver">
+            <div class="iq-podium-plaque silver">
+              <div class="iq-podium-name">{{ podio_2.usuario.alias }}</div>
+              <div class="iq-podium-stats">Nv. {{ podio_2.nivel }} &bull; {{ podio_2.xp|intcomma }} XP</div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- 1° LUGAR (CENTRO - CAMPEÓN CON AVATAR MÁS GRANDE Y CORONA DORADA) -->
+        {% if podio_1 %}
+        <div class="iq-podium-item rank-1">
+          <div class="iq-podium-avatar-wrap">
+            <!-- Corona Real Flotante -->
+            <div class="iq-crown-wrap" title="Campeón Supremo">
+              <i class="bi bi-crown-fill"></i>
+            </div>
+            <!-- Anillo Halo Radiante -->
+            <div class="iq-halo-ring"></div>
+            <img src="{{ podio_1.usuario.avatar_url }}" alt="{{ podio_1.usuario.alias }}" class="iq-podium-avatar-img">
+            <div class="iq-podium-medal gold" title="1° Lugar">1</div>
+          </div>
+          <div class="iq-podium-pedestal gold">
+            <div class="iq-podium-plaque gold">
+              <div class="iq-podium-name gold-glow">{{ podio_1.usuario.alias }}</div>
+              <div class="iq-podium-stats">Nv. {{ podio_1.nivel }} &bull; {{ podio_1.xp|intcomma }} XP</div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- 3° LUGAR (DERECHA) -->
+        {% if podio_3 %}
+        <div class="iq-podium-item rank-3">
+          <div class="iq-podium-banner-back">
+            <i class="bi bi-shield-shaded"></i>
+          </div>
+          <div class="iq-podium-avatar-wrap">
+            <img src="{{ podio_3.usuario.avatar_url }}" alt="{{ podio_3.usuario.alias }}" class="iq-podium-avatar-img">
+            <div class="iq-podium-medal bronze" title="3° Lugar">3</div>
+          </div>
+          <div class="iq-podium-pedestal bronze">
+            <div class="iq-podium-plaque bronze">
+              <div class="iq-podium-name">{{ podio_3.usuario.alias }}</div>
+              <div class="iq-podium-stats">Nv. {{ podio_3.nivel }} &bull; {{ podio_3.xp|intcomma }} XP</div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- TABLA DE CLASIFICACIÓN COMPLETA (INCLUYE A TODOS LOS USUARIOS, INCLUYENDO EL PODIO) -->
+      <div class="iq-ranking-table-card">
+        <div class="iq-table-wrapper">
+          <table class="iq-ranking-table" id="rankingTable">
+            <thead>
+              <tr>
+                <th style="width: 55px; text-align: center;">#</th>
+                <th>Jugador</th>
+                <th style="width: 100px; text-align: center;">Nivel</th>
+                <th style="width: 130px; text-align: right; padding-right: 20px;">XP</th>
+              </tr>
+            </thead>
+            <tbody id="rankingTableBody">
+              {% for p in ranking_jugadores %}
+              <tr class="iq-rank-row {% if p.usuario_id == usuario.id %}is-current-user{% endif %}" data-user-id="{{ p.usuario_id }}" data-area="{{ p.usuario.area|default:'' }}">
+                <td class="iq-td-rank">
+                  {% if forloop.counter == 1 %}
+                    <span class="iq-rank-crown gold" title="1° Lugar - Oro"><i class="bi bi-crown-fill"></i></span>
+                  {% elif forloop.counter == 2 %}
+                    <span class="iq-rank-crown silver" title="2° Lugar - Plata"><i class="bi bi-crown-fill"></i></span>
+                  {% elif forloop.counter == 3 %}
+                    <span class="iq-rank-crown bronze" title="3° Lugar - Bronce"><i class="bi bi-crown-fill"></i></span>
+                  {% else %}
+                    <span class="iq-rank-num">{{ forloop.counter }}</span>
+                  {% endif %}
+                </td>
+                <td class="iq-td-player">
+                  <div class="iq-player-info-cell">
+                    <div class="iq-cell-avatar-wrap">
+                      <img src="{{ p.usuario.avatar_url }}" alt="{{ p.usuario.alias }}" class="iq-cell-avatar-img" onerror="this.src='/static/img/avatars/necromancer_1.png'">
+                    </div>
+                    <span class="iq-cell-player-alias">{{ p.usuario.alias }}</span>
+                  </div>
+                </td>
+                <td class="iq-td-level">Nv. {{ p.nivel }}</td>
+                <td class="iq-td-xp">{{ p.xp|intcomma }} XP</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" style="text-align: center; padding: 24px; color: #94a3b8;">No hay registros de jugadores en la clasificación.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginación de la Tabla (< 1 / 10 >) -->
+        <div class="iq-ranking-pagination">
+          <button type="button" class="iq-page-btn" id="btnRankPrev" onclick="prevRankPage();" title="Página anterior">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="iq-page-display" id="rankPageDisplay">1 / 1</span>
+          <button type="button" class="iq-page-btn" id="btnRankNext" onclick="nextRankPage();" title="Siguiente página">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLUMNA 3 VISTA 1: LATERAL DEL LOBBY "TUS ESTADÍSTICAS" (DATOS REALES DE BD) -->
+    <aside id="viewLobbyRight" class="iq-necro-stats-col">
+      <div class="iq-stats-title">
+        <i class="bi bi-bar-chart-fill"></i>
+        <span>Tus Estadísticas</span>
+      </div>
+
+      <!-- Nivel y XP Real del Usuario -->
+      <div class="iq-stats-level-card">
+        <div class="iq-stats-level-shield">
+          <span>Nv.</span>
+          <span>{{ progreso.nivel }}</span>
+        </div>
+        <div class="iq-stats-xp-details">
+          <div class="iq-stats-xp-bar-wrap">
+            <div class="iq-stats-xp-bar-fill" style="width: {{ pct_xp }}%;"></div>
+          </div>
+          <div class="iq-stats-xp-nums">
+            {{ xp_en_nivel|intcomma }} / {{ xp_meta_nivel|intcomma }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila de 3 Indicadores de Desempeño Reales -->
+      <div class="iq-metrics-row">
+        <div class="iq-metric-item">
+          <span class="iq-metric-label"><i class="bi bi-swords" style="color: #c084fc;"></i> Victorias</span>
+          <span class="iq-metric-value">{{ total_victorias|intcomma }}</span>
+        </div>
+
+        <div class="iq-metric-item">
+          <span class="iq-metric-label"><i class="bi bi-star-fill" style="color: #fbbf24;"></i> Partidas</span>
+          <span class="iq-metric-value">{{ total_partidas|intcomma }}</span>
+        </div>
+
+        <div class="iq-metric-item">
+          <span class="iq-metric-label"><i class="bi bi-bullseye" style="color: #06b6d4;"></i> Tasa Victoria</span>
+          <span class="iq-metric-value">{{ tasa_victoria }}%</span>
+        </div>
+      </div>
+
+      <!-- Sección Tu Colección (Avatares del Sistema) -->
+      <div class="iq-collection-block">
+        <div class="iq-block-title">
+          <i class="bi bi-person-badge-fill" style="color: #a855f7;"></i>
+          <span>Tu Colección</span>
+        </div>
+        <div class="iq-collection-avatars-row">
+          {% for av in avatares_coleccion %}
+          <div class="iq-avatar-collect-card" title="{{ av.nombre }}" onclick="seleccionarAvatarRapido('{{ av.img }}');">
+            <img src="{{ av.img }}" alt="{{ av.nombre }}" class="iq-avatar-collect-img">
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Sección Progreso de Desafíos -->
+      <div class="iq-prog-challenges-block">
+        <div class="iq-block-title">
+          <i class="bi bi-stars" style="color: #c084fc;"></i>
+          <span>Progreso</span>
+        </div>
+        <div class="iq-challenge-bar-row">
+          <div class="iq-challenge-track">
+            <div class="iq-challenge-fill" style="width: {{ pct_desafios }}%;"></div>
+          </div>
+          <span class="iq-challenge-pct">{{ pct_desafios }}%</span>
+          <i class="bi bi-archive-fill iq-challenge-chest"></i>
+        </div>
+        <p class="iq-challenge-footer-text">
+          {% if desafios_faltantes > 0 %}
+          Completa {{ desafios_faltantes }} desafíos más para obtener una recompensa.
+          {% else %}
+          ¡Has alcanzado la meta de desafíos de este ciclo!
+          {% endif %}
+        </p>
+      </div>
+    </aside>
+
+    <!-- COLUMNA 3 VISTA 2: LATERAL DE CLASIFICACIÓN "TU POSICIÓN" + BOTÓN JUGAR -->
+    <aside id="viewRankingRight" class="iq-necro-ranking-right" style="display: none;">
+      <!-- Tarjeta Tu Posición -->
+      <div class="iq-my-pos-card">
+        <div class="iq-my-pos-header">
+          <span>Tu Posición</span>
+        </div>
+
+        <div class="iq-my-pos-content">
+          <div class="iq-my-pos-avatar-wrap">
+            <div class="iq-my-pos-aura"></div>
+            <img src="{{ usuario.avatar_url }}" alt="{{ usuario.alias }}" class="iq-my-pos-avatar-img" onerror="this.src='/static/img/avatars/necromancer_1.png'">
+          </div>
+
+          <div class="iq-my-pos-info">
+            <div class="iq-my-pos-alias">{{ usuario.alias|default:usuario.nombre_completo }}</div>
+            <div class="iq-my-pos-level">Nv. {{ progreso.nivel }}</div>
+          </div>
+
+          <!-- Corona de Laureles Dorada con Número de Posición -->
+          <div class="iq-laurel-rank-badge" title="Tu posición en el Ranking Global">
+            <svg class="iq-laurel-svg" viewBox="0 0 130 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Rama izquierda de laureles -->
+              <path d="M 22 56 C 14 42, 16 26, 32 12 C 28 19, 28 29, 34 37 C 37 42, 44 46, 50 49 C 43 51, 31 53, 22 56 Z" fill="#fbbf24"/>
+              <path d="M 16 42 C 10 32, 12 20, 22 14 C 20 22, 22 30, 26 36 Z" fill="#fde68a"/>
+              <path d="M 26 28 C 22 20, 26 12, 34 8 C 32 15, 34 22, 36 26 Z" fill="#f59e0b"/>
+              <path d="M 38 18 C 36 10, 42 4, 50 2 C 46 8, 46 14, 46 18 Z" fill="#fbbf24"/>
+              <!-- Rama derecha de laureles -->
+              <path d="M 108 56 C 116 42, 114 26, 98 12 C 102 19, 102 29, 96 37 C 93 42, 86 46, 80 49 C 87 51, 99 53, 108 56 Z" fill="#fbbf24"/>
+              <path d="M 114 42 C 120 32, 118 20, 108 14 C 110 22, 108 30, 104 36 Z" fill="#fde68a"/>
+              <path d="M 104 28 C 108 20, 104 12, 96 8 C 98 15, 96 22, 94 26 Z" fill="#f59e0b"/>
+              <path d="M 92 18 C 94 10, 88 4, 80 2 C 84 8, 84 14, 84 18 Z" fill="#fbbf24"/>
+            </svg>
+            <span class="iq-laurel-rank-text">#{{ user_rank }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón JUGAR Inferior Derecho -->
+      <div class="iq-rank-play-wrap">
+        <a href="{% url 'core:mapas' %}" class="btn-rank-play" title="Comenzar auditoría / reto en el Mapa ISO">
+          <i class="bi bi-swords"></i>
+          <span>JUGAR</span>
+        </a>
+      </div>
+    </aside>
+  </main>
+
+
+  <!-- MODAL: SELECCIONAR MAPA / JUGAR -->
+  <div id="modalPlay" class="iq-modal-overlay">
+    <div class="iq-modal-box">
+      <div class="iq-modal-header">
+        <h3 class="iq-modal-title"><i class="bi bi-swords" style="color: #a855f7;"></i> Seleccionar Mundo ISO</h3>
+        <button type="button" class="btn-modal-close" onclick="closeModal('modalPlay');">&times;</button>
+      </div>
+      <p style="color: #8b95b5; font-size: 13px; margin-bottom: 16px;">Elige una norma para iniciar la batalla de cumplimiento:</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px;">
+        {% for m in mundos_data %}
+        <div style="background: #141738; border: 1.5px solid #252c58; border-radius: 12px; padding: 16px; text-align: center;">
+          <div style="font-size: 32px; color: #38bdf8; margin-bottom: 8px;"><i class="bi bi-shield-check"></i></div>
+          <div style="font-size: 14px; font-weight: 800; color: #ffffff;">{{ m.codigo_iso }}</div>
+          <div style="font-size: 11.5px; color: #8b95b5; margin-bottom: 12px;">{{ m.nombre_tematico }}</div>
+          <div style="font-size: 11.5px; color: #c084fc; font-weight: 700; margin-bottom: 10px;">{{ m.niveles_ganados }}/{{ m.total_niveles }} Niveles ({{ m.porcentaje }}%)</div>
+          <button type="button" style="width: 100%; padding: 8px; background: #7c3aed; color: #fff; border: none; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer;">Jugar Reto</button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: COLECCIÓN COMPLETA -->
+  <div id="modalColeccion" class="iq-modal-overlay">
+    <div class="iq-modal-box">
+      <div class="iq-modal-header">
+        <h3 class="iq-modal-title"><i class="bi bi-archive-fill" style="color: #a855f7;"></i> Tu Colección</h3>
+        <button type="button" class="btn-modal-close" onclick="closeModal('modalColeccion');">&times;</button>
+      </div>
+      <h4 style="font-size: 13px; color: #c084fc; margin-bottom: 12px;">Personajes y Avatares Nigromantes:</h4>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px;">
+        {% for av in avatares_coleccion %}
+        <div style="background: #141738; border: 1px solid #252c58; border-radius: 10px; padding: 10px; text-align: center; cursor: pointer;" onclick="seleccionarAvatarRapido('{{ av.img }}');">
+          <img src="{{ av.img }}" alt="{{ av.nombre }}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 1.5px solid #a855f7; margin-bottom: 6px;">
+          <div style="font-size: 11.5px; font-weight: 800; color: #fff;">{{ av.nombre }}</div>
+          <span style="font-size: 10px; color: #10b981; font-weight: 700;">Usar Avatar</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- MODAL: ACADEMIA ISO -->
+  <div id="modalAcademia" class="iq-modal-overlay">
+    <div class="iq-modal-box">
+      <div class="iq-modal-header">
+        <h3 class="iq-modal-title"><i class="bi bi-mortarboard-fill" style="color: #a855f7;"></i> Academia ISO</h3>
+        <button type="button" class="btn-modal-close" onclick="closeModal('modalAcademia');">&times;</button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="background: #141738; padding: 14px; border-radius: 10px; border-left: 3px solid #7c3aed;">
+          <strong style="color: #fff; font-size: 13.5px;">ISO/IEC 27001:2022 - Seguridad de la Información</strong>
+          <p style="font-size: 12px; color: #8b95b5; margin-top: 4px;">Aprende sobre gestión de accesos, controles criptográficos y respuesta a incidentes de seguridad.</p>
+        </div>
+        <div style="background: #141738; padding: 14px; border-radius: 10px; border-left: 3px solid #0284c7;">
+          <strong style="color: #fff; font-size: 13.5px;">ISO/IEC 27017 - Seguridad en la Nube</strong>
+          <p style="font-size: 12px; color: #8b95b5; margin-top: 4px;">Controles avanzados para servicios Cloud, aislamiento de inquilinos y responsabilidades compartidas.</p>
+        </div>
+        <div style="background: #141738; padding: 14px; border-radius: 10px; border-left: 3px solid #10b981;">
+          <strong style="color: #fff; font-size: 13.5px;">ISO/IEC 20000-1 - Gestión de Servicios de TI</strong>
+          <p style="font-size: 12px; color: #8b95b5; margin-top: 4px;">Excelencia en entrega, ciclo de vida, soporte y cumplimiento de acuerdos SLA en servicios tecnológicos.</p>
+        </div>
+        <div style="background: #141738; padding: 14px; border-radius: 10px; border-left: 3px solid #06b6d4;">
+          <strong style="color: #fff; font-size: 13.5px;">ISO 22301 - Continuidad del Negocio</strong>
+          <p style="font-size: 12px; color: #8b95b5; margin-top: 4px;">Estrategias BIA y DRP para garantizar la resiliencia operativa y recuperación ante contingencias.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TIENDA -->
+  <div id="modalTienda" class="iq-modal-overlay">
+    <div class="iq-modal-box">
+      <div class="iq-modal-header">
+        <h3 class="iq-modal-title"><i class="bi bi-cart3" style="color: #10b981;"></i> Tienda Arcana</h3>
+        <button type="button" class="btn-modal-close" onclick="closeModal('modalTienda');">&times;</button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px;">
+        <div style="background: #141738; border: 1px solid #252c58; border-radius: 12px; padding: 14px; text-align: center;">
+          <div style="font-size: 32px; color: #fbbf24; margin-bottom: 6px;"><i class="bi bi-shield-plus"></i></div>
+          <div style="font-size: 13.5px; font-weight: 800; color: #fff;">Escudo Protector Arcano</div>
+          <div style="font-size: 11px; color: #8b95b5; margin-bottom: 10px;">Protección ante incidentes críticos.</div>
+          <button type="button" style="padding: 7px 14px; background: #fbbf24; color: #000; border: none; border-radius: 6px; font-weight: 800; font-size: 12px; cursor: pointer;">250 Oro</button>
+        </div>
+        <div style="background: #141738; border: 1px solid #252c58; border-radius: 12px; padding: 14px; text-align: center;">
+          <div style="font-size: 32px; color: #f472b6; margin-bottom: 6px;"><i class="bi bi-lightning-charge-fill"></i></div>
+          <div style="font-size: 13.5px; font-weight: 800; color: #fff;">Poción de Doble XP</div>
+          <div style="font-size: 11px; color: #8b95b5; margin-bottom: 10px;">Multiplica tu ganancia de experiencia.</div>
+          <button type="button" style="padding: 7px 14px; background: #ec4899; color: #fff; border: none; border-radius: 6px; font-weight: 800; font-size: 12px; cursor: pointer;">15 Gemas</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MENSAJES -->
+  <div id="modalMensajes" class="iq-modal-overlay">
+    <div class="iq-modal-box" style="max-width: 500px;">
+      <div class="iq-modal-header">
+        <h3 class="iq-modal-title"><i class="bi bi-envelope-fill" style="color: #38bdf8;"></i> Buzón de Mensajes</h3>
+        <button type="button" class="btn-modal-close" onclick="closeModal('modalMensajes');">&times;</button>
+      </div>
+      <div style="background: #141738; padding: 14px; border-radius: 12px; border: 1px solid #252c58;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <strong style="color: #fff; font-size: 13px;">¡Bienvenido al Concilio de Compliance!</strong>
+          <span style="font-size: 11px; color: #8b95b5;">Hoy</span>
+        </div>
+        <p style="font-size: 12px; color: #94a3b8; line-height: 1.4;">Comienza tus auditorías en el Mundo ISO/IEC 27001:2022 para obtener oro, gemas y subir de nivel.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NOTIFICACIONES -->
+  <div id="modalNotifs" class="iq-modal-overlay">
+    <div class="iq-modal-box" style="max-width: 500px;">
+      <div class="iq-modal-header">
+        <h3 class="iq-modal-title"><i class="bi bi-bell-fill" style="color: #fbbf24;"></i> Notificaciones</h3>
+        <button type="button" class="btn-modal-close" onclick="closeModal('modalNotifs');">&times;</button>
+      </div>
+      <p style="color: #8b95b5; font-size: 12.5px;">No hay nuevas alertas pendientes en este momento.</p>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT DE CONTROL Y MODIFICACIÓN DE PERFIL -->
+  <script id="lobby-data" type="application/json">
+{
+  "avatarUrl": "{{ usuario.avatar_url }}",
+  "userArea": "{{ usuario.area|default:''|escapejs }}"
+}
+</script>
+<script src="{% static 'js/usuario/lobby.js' %}"></script>
+</body>
+</html>

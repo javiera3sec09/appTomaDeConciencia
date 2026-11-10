@@ -1,0 +1,124 @@
+{% load static humanize %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colección Arcana | ISO QUEST</title>
+
+  <!-- Google Fonts: Cinzel & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/usuarios/coleccion.css' %}">
+</head>
+<body>
+
+  <!-- ============================================================= -->
+  <!-- 1. TOPBAR SUPERIOR IDÉNTICA (HUD DE JUGADOR)                  -->
+  <!-- ============================================================= -->
+  {% include 'usuario/includes/player_topbar.html' %}
+
+  <!-- ============================================================= -->
+  <!-- 2. WORKSPACE DE COLECCIÓN CON MENÚ LATERAL                    -->
+  <!-- ============================================================= -->
+  <main class="iq-page-workspace">
+    <!-- MENÚ LATERAL IZQUIERDO -->
+    <aside class="iq-cl-sidebar">
+      <a href="{% url 'core:lobby' %}" class="iq-cl-nav-btn" title="Ir al Lobby Principal">
+        <i class="bi bi-shield-shaded"></i>
+        <span>Lobby</span>
+      </a>
+
+      <a href="{% url 'core:mapas' %}" class="iq-cl-nav-btn" title="Ir a los Mapas de Auditoría">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>Mapas</span>
+      </a>
+
+      <!-- ACTIVO: COLECCIÓN -->
+      <a href="{% url 'core:coleccion' %}" class="iq-cl-nav-btn active" title="Colección de Cartas y Avatares">
+        <i class="bi bi-archive-fill"></i>
+        <span>Colección</span>
+        <span class="iq-menu-alert-dot"></span>
+      </a>
+
+      <a href="{% url 'core:academia' %}" class="iq-cl-nav-btn" title="Academia ISO">
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>Academia ISO</span>
+      </a>
+
+      <a href="{% url 'core:clasificacion' %}" class="iq-cl-nav-btn" title="Tabla de Clasificación">
+        <i class="bi bi-trophy-fill"></i>
+        <span>Clasificación</span>
+      </a>
+
+      <a href="{% url 'core:tienda' %}" class="iq-cl-nav-btn" title="Tienda Arcana ISO">
+        <i class="bi bi-cart3"></i>
+        <span>Tienda</span>
+      </a>
+    </aside>
+
+    <!-- PANEL CENTRAL: COLECCIÓN -->
+    <section class="iq-content-card">
+      <div class="iq-section-header">
+        <h2 class="iq-section-title">
+          <i class="bi bi-archive-fill" style="color: #a855f7;"></i> Tu Colección Arcana
+        </h2>
+      </div>
+
+      <!-- SECCIÓN 1: AVATARES DEL JUGADOR -->
+      <div>
+        <div class="iq-sub-title"><i class="bi bi-person-bounding-box" style="color: #c084fc;"></i> Avatares Nigromantes Desbloqueados</div>
+        <div class="iq-avatars-row">
+          {% for av in avatares_coleccion %}
+          <div class="iq-avatar-card-item {% if av.img in usuario.avatar_url %}selected{% endif %}" onclick="selectAvatarFromColeccion('{{ av.img }}', this);">
+            <img src="{{ av.img }}" alt="{{ av.nombre }}" onerror="this.src='/static/img/avatars/necromancer_1.png'">
+            <span class="iq-avatar-card-name">{{ av.nombre }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- SECCIÓN 2: CARTAS ARCANAS DE AUDITORÍA -->
+      <div style="margin-top: 10px;">
+        <div class="iq-sub-title"><i class="bi bi-suit-spade-fill" style="color: #fbbf24;"></i> Cartas Arcanas de Mitigación ISO</div>
+        <div class="iq-cards-grid">
+          <div class="iq-carta-card">
+            <span class="iq-carta-badge">Control Técnico</span>
+            <div class="iq-carta-title">Cifrado Cuántico AES-256</div>
+            <div class="iq-carta-desc">Protege bases de datos contra ataques de inyección y filtraciones masivas de credenciales.</div>
+            <div class="iq-carta-power"><i class="bi bi-shield-fill-check"></i> +85 Poder de Mitigación</div>
+          </div>
+
+          <div class="iq-carta-card">
+            <span class="iq-carta-badge">Control Organizacional</span>
+            <div class="iq-carta-title">Política de Privilegios Mínimos</div>
+            <div class="iq-carta-desc">Restringe accesos a infraestructura crítica de compliance únicamente al personal autorizado.</div>
+            <div class="iq-carta-power"><i class="bi bi-shield-fill-check"></i> +90 Poder de Mitigación</div>
+          </div>
+
+          <div class="iq-carta-card">
+            <span class="iq-carta-badge">Defensa Activa</span>
+            <div class="iq-carta-title">Escudo Anti-Phishing por IA</div>
+            <div class="iq-carta-desc">Filtra automáticamente correos maliciosos y enlaces sospechosos dirigidos a colaboradores.</div>
+            <div class="iq-carta-power"><i class="bi bi-shield-fill-check"></i> +75 Poder de Mitigación</div>
+          </div>
+
+          <div class="iq-carta-card">
+            <span class="iq-carta-badge">Auditoría Ética</span>
+            <div class="iq-carta-title">Canal Ético y Línea de Denuncia</div>
+            <div class="iq-carta-desc">Garantiza el anonimato y protección de testigos en investigaciones de sobornos corporativos.</div>
+            <div class="iq-carta-power"><i class="bi bi-shield-fill-check"></i> +95 Poder de Mitigación</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="{% static 'js/usuario/coleccion.js' %}"></script>
+</body>
+</html>

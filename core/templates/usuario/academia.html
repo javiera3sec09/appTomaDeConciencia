@@ -1,0 +1,125 @@
+{% load static humanize %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academia ISO | ISO QUEST</title>
+
+  <!-- Google Fonts: Cinzel & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/usuarios/academia.css' %}">
+</head>
+<body>
+
+  <!-- ============================================================= -->
+  <!-- 1. TOPBAR SUPERIOR IDÉNTICA (HUD DE JUGADOR)                  -->
+  <!-- ============================================================= -->
+  {% include 'usuario/includes/player_topbar.html' %}
+
+  <!-- ============================================================= -->
+  <!-- 2. WORKSPACE DE ACADEMIA CON MENÚ LATERAL                     -->
+  <!-- ============================================================= -->
+  <main class="iq-page-workspace">
+    <!-- MENÚ LATERAL IZQUIERDO -->
+    <aside class="iq-cl-sidebar">
+      <a href="{% url 'core:lobby' %}" class="iq-cl-nav-btn" title="Ir al Lobby Principal">
+        <i class="bi bi-shield-shaded"></i>
+        <span>Lobby</span>
+      </a>
+
+      <a href="{% url 'core:mapas' %}" class="iq-cl-nav-btn" title="Ir a los Mapas de Auditoría">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>Mapas</span>
+      </a>
+
+      <a href="{% url 'core:coleccion' %}" class="iq-cl-nav-btn" title="Colección de Cartas y Avatares">
+        <i class="bi bi-archive-fill"></i>
+        <span>Colección</span>
+        <span class="iq-menu-alert-dot"></span>
+      </a>
+
+      <!-- ACTIVO: ACADEMIA ISO -->
+      <a href="{% url 'core:academia' %}" class="iq-cl-nav-btn active" title="Academia ISO">
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>Academia ISO</span>
+      </a>
+
+      <a href="{% url 'core:clasificacion' %}" class="iq-cl-nav-btn" title="Tabla de Clasificación">
+        <i class="bi bi-trophy-fill"></i>
+        <span>Clasificación</span>
+      </a>
+
+      <a href="{% url 'core:tienda' %}" class="iq-cl-nav-btn" title="Tienda Arcana ISO">
+        <i class="bi bi-cart3"></i>
+        <span>Tienda</span>
+      </a>
+    </aside>
+
+    <!-- PANEL CENTRAL: ACADEMIA ISO -->
+    <section class="iq-content-card">
+      <div class="iq-section-header">
+        <h2 class="iq-section-title">
+          <i class="bi bi-mortarboard-fill" style="color: #c084fc;"></i> Academia ISO: Conocimiento y Mitigación
+        </h2>
+      </div>
+
+      <div class="iq-modules-grid">
+        <!-- Módulo ISO/IEC 27001:2022 -->
+        <div class="iq-module-card">
+          <span class="iq-module-badge"><i class="bi bi-shield-lock-fill"></i> ISO/IEC 27001:2022</span>
+          <div class="iq-module-title">Seguridad de la Información, Ciberseguridad & Privacidad</div>
+          <div class="iq-module-desc">Aprende sobre autenticación multifactor, cifrado de datos en reposo y tránsito, control de accesos, políticas de seguridad y respuesta a incidentes.</div>
+          <div class="iq-module-meta">
+            <span><i class="bi bi-journal-check"></i> 10 Niveles</span>
+            <span style="color: #34d399;"><i class="bi bi-star-fill"></i> +250 XP</span>
+          </div>
+          <a href="{% url 'core:mapas' %}" class="iq-module-btn">Iniciar Auditoría en Mapas</a>
+        </div>
+
+        <!-- Módulo ISO/IEC 27017 -->
+        <div class="iq-module-card">
+          <span class="iq-module-badge"><i class="bi bi-cloud-check-fill"></i> ISO/IEC 27017</span>
+          <div class="iq-module-title">Seguridad para Servicios en la Nube (Cloud Security)</div>
+          <div class="iq-module-desc">Controles y directrices avanzadas para proveedores (CSP) y clientes de la nube (CSC), aislamiento multi-inquilino y protección de datos en la nube.</div>
+          <div class="iq-module-meta">
+            <span><i class="bi bi-journal-check"></i> 5 Niveles</span>
+            <span style="color: #34d399;"><i class="bi bi-star-fill"></i> +180 XP</span>
+          </div>
+          <a href="{% url 'core:mapas' %}" class="iq-module-btn">Iniciar Auditoría en Mapas</a>
+        </div>
+
+        <!-- Módulo ISO/IEC 20000-1 -->
+        <div class="iq-module-card">
+          <span class="iq-module-badge"><i class="bi bi-hdd-network-fill"></i> ISO/IEC 20000-1</span>
+          <div class="iq-module-title">Gestión de Servicios de TI & Acuerdos de Nivel (ITSM)</div>
+          <div class="iq-module-desc">Planificación, diseño, transición, entrega y mejora continua de servicios tecnológicos alineados con los Acuerdos de Nivel de Servicio (SLA).</div>
+          <div class="iq-module-meta">
+            <span><i class="bi bi-journal-check"></i> 5 Niveles</span>
+            <span style="color: #34d399;"><i class="bi bi-star-fill"></i> +180 XP</span>
+          </div>
+          <a href="{% url 'core:mapas' %}" class="iq-module-btn">Iniciar Auditoría en Mapas</a>
+        </div>
+
+        <!-- Módulo ISO 22301 -->
+        <div class="iq-module-card">
+          <span class="iq-module-badge"><i class="bi bi-life-preserver"></i> ISO 22301</span>
+          <div class="iq-module-title">Sistemas de Continuidad del Negocio & Resiliencia</div>
+          <div class="iq-module-desc">Análisis de Impacto en el Negocio (BIA), estrategias de recuperación ante desastres (DRP) y salvaguarda de operaciones críticas de la organización.</div>
+          <div class="iq-module-meta">
+            <span><i class="bi bi-journal-check"></i> 5 Niveles</span>
+            <span style="color: #34d399;"><i class="bi bi-star-fill"></i> +200 XP</span>
+          </div>
+          <a href="{% url 'core:mapas' %}" class="iq-module-btn">Iniciar Auditoría en Mapas</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

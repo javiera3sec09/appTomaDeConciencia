@@ -1,0 +1,331 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}Catálogo de Cartas | ISO QUEST Admin{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/core/carta/change_list.css' %}">
+
+<div class="iq-cartas-page">
+
+  <!-- CABECERA -->
+  <div class="iq-cartas-header">
+    <div class="iq-cartas-title-box">
+      <div class="iq-cartas-title-icon">
+        <i class="bi bi-stack"></i>
+      </div>
+      <div class="iq-cartas-title-text">
+        <h1>Catálogo de Cartas</h1>
+        <p>Gestiona el catálogo de cartas del juego</p>
+      </div>
+    </div>
+    <a href="{% url 'admin:core_carta_add' %}" class="btn-new-carta">
+      <i class="bi bi-plus-lg"></i>
+      <span>Nueva Carta</span>
+    </a>
+  </div>
+
+  <!-- FILA DE 4 TARJETAS KPI -->
+  <div class="iq-cartas-kpis">
+    <!-- KPI 1: Total Cartas con fan de cartas -->
+    <div class="iq-kpi-card deck-featured">
+      <img src="{% static 'img/cartas/cards_deck_kpi.png' %}"
+           alt="Baraja de Cartas"
+           class="iq-deck-kpi-img" />
+      <div class="iq-kpi-icon-box iq-icon-purple-sq" style="width: 40px; height: 40px; font-size: 18px;">
+        <i class="bi bi-copy"></i>
+      </div>
+      <div class="iq-kpi-content">
+        <span class="iq-kpi-label">Total de Cartas</span>
+        <span class="iq-kpi-value">{{ kpi_total_cartas }}</span>
+        <span class="iq-kpi-subtext green">↑ +2 nuevas</span>
+      </div>
+    </div>
+
+    <!-- KPI 2: Cartas Activas -->
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon-box iq-icon-circle-controller">
+        <i class="bi bi-controller"></i>
+      </div>
+      <div class="iq-kpi-content">
+        <span class="iq-kpi-label">Cartas Activas</span>
+        <span class="iq-kpi-value">{{ kpi_cartas_activas }}</span>
+        <span class="iq-kpi-subtext">{{ kpi_pct_activas }}% del total</span>
+      </div>
+    </div>
+
+    <!-- KPI 3: Normas ISO -->
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon-box iq-icon-circle-star">
+        <i class="bi bi-star-fill"></i>
+      </div>
+      <div class="iq-kpi-content">
+        <span class="iq-kpi-label">Normas ISO</span>
+        <span class="iq-kpi-value">{{ kpi_normas_count }}</span>
+        <span class="iq-kpi-subtext">(27001, 22301...)</span>
+      </div>
+    </div>
+
+    <!-- KPI 4: Fuerza Promedio -->
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon-box iq-icon-circle-lightning">
+        <i class="bi bi-lightning-charge-fill"></i>
+      </div>
+      <div class="iq-kpi-content">
+        <span class="iq-kpi-label">Fuerza Promedio</span>
+        <span class="iq-kpi-value">{{ kpi_fuerza_promedio }}</span>
+        <div class="iq-kpi-progress-bar">
+          <div class="iq-kpi-progress-fill" style="width: {{ kpi_fuerza_promedio }}%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARRA DE BÚSQUEDA Y FILTROS -->
+  <div class="iq-filter-bar">
+    <div class="iq-search-box">
+      <i class="bi bi-search"></i>
+      <input type="text"
+             id="searchCartaInput"
+             placeholder="Buscar carta por nombre, norma o concepto..."
+             oninput="applyCardsFilter()" />
+    </div>
+
+    <div class="iq-filters-group">
+      <!-- Filtro Norma ISO -->
+      <select class="iq-select-filter" id="filterNorma" onchange="applyCardsFilter()">
+        <option value="">Todas las Normas</option>
+        {% for n in normas_list %}
+        <option value="{{ n }}">{{ n }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Filtro Estado -->
+      <select class="iq-select-filter" id="filterEstado" onchange="applyCardsFilter()">
+        <option value="">Todos los Estados</option>
+        {% for val, lbl in estados_choices %}
+        <option value="{{ val }}">{{ lbl }}</option>
+        {% endfor %}
+      </select>
+
+      <button type="button" class="btn-filter-action" onclick="applyCardsFilter()">
+        <i class="bi bi-funnel"></i>
+        <span>Filtrar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- CUADRÍCULA DE CARTAS (GRID) -->
+  <div class="iq-cartas-grid" id="cartasGrid">
+    {% for c in cartas_list %}
+    <div class="iq-carta-card"
+         data-id="{{ c.id }}"
+         data-nombre="{{ c.nombre|lower }}"
+         data-norma="{{ c.norma_iso }}"
+         data-concepto="{{ c.concepto|lower }}"
+         data-estado="{{ c.estado }}">
+      <div class="iq-carta-artwork-box">
+        <img src="{{ c.imagen_url }}"
+             alt="{{ c.nombre }}"
+             class="iq-carta-img" />
+        <span class="iq-carta-iso-badge">{{ c.norma_iso }}</span>
+      </div>
+      <div class="iq-carta-body">
+        <h3 class="iq-carta-title" title="{{ c.nombre }}">{{ c.nombre }}</h3>
+        <p class="iq-carta-desc" title="{{ c.descripcion }}">{{ c.descripcion }}</p>
+
+        <!-- Stats Fila: Fuerza (espada) y Defensa (escudo) -->
+        <div class="iq-carta-stats">
+          <span class="iq-carta-stat-item iq-stat-fuerza" title="Fuerza / Mitigación">
+            <i class="bi bi-lightning-fill"></i> {{ c.fuerza }}
+          </span>
+          <span class="iq-carta-stat-item iq-stat-defensa" title="Defensa / Cumplimiento">
+            <i class="bi bi-shield-fill"></i> {{ c.defensa }}
+          </span>
+        </div>
+
+        <!-- Estado pill -->
+        <div>
+          {% if c.estado == 'activo' %}
+          <span class="iq-pill-estado-activo">Activo</span>
+          {% else %}
+          <span class="iq-pill-estado-inactivo">Inactivo</span>
+          {% endif %}
+        </div>
+
+        <!-- Acciones: Ver y Editar -->
+        <div class="iq-carta-actions">
+          <button type="button" class="btn-carta-view" title="Ver Carta" onclick="openViewCartaModal({{ c.id }})">
+            <i class="bi bi-eye"></i>
+          </button>
+          <a href="{% url 'admin:core_carta_change' c.id %}" class="btn-carta-edit" title="Editar Carta">
+            <i class="bi bi-pencil"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+      No hay cartas en el catálogo. ¡Haz clic en "+ Nueva Carta" para agregar la primera!
+    </div>
+    {% endfor %}
+    <div id="noCardsMatch" style="display: none; grid-column: 1 / -1; text-align: center; padding: 48px 20px; color: #94a3b8; font-size: 14px;">
+      <i class="bi bi-search" style="font-size: 32px; color: #64748b; display: block; margin-bottom: 10px;"></i>
+      No se encontraron cartas que coincidan con la búsqueda o filtros aplicados.
+    </div>
+  </div>
+
+  <!-- FOOTER PAGINADOR -->
+  <div class="iq-pagination-container">
+    <div>
+      Mostrando <span id="pagStart">1</span> - <span id="pagEnd">5</span> de <span id="pagTotal">{{ cartas_list|length }}</span> cartas
+    </div>
+    <div class="iq-pagination">
+      <button type="button" class="iq-page-btn" onclick="prevPage()"><i class="bi bi-chevron-left"></i></button>
+      <div id="pageButtons" style="display: flex; gap: 4px; flex-wrap: wrap;"></div>
+      <button type="button" class="iq-page-btn" onclick="nextPage()"><i class="bi bi-chevron-right"></i></button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL NUEVA CARTA -->
+<div class="iq-modal-backdrop" id="modalNewCarta">
+  <div class="iq-modal-box">
+    <div class="iq-modal-header">
+      <h3><i class="bi bi-plus-circle" style="color: #a855f7;"></i> Nueva Carta</h3>
+      <button type="button" class="iq-modal-close" onclick="closeModal('modalNewCarta')">&times;</button>
+    </div>
+    <form id="formNewCarta" onsubmit="submitNewCarta(event)">
+      <div class="iq-modal-body">
+        <div class="iq-form-group">
+          <label>Nombre de la Carta</label>
+          <input type="text" id="newCartaNombre" placeholder="Ej. Ciberseguridad Avanzada" required />
+        </div>
+
+        <div class="iq-form-row">
+          <div class="iq-form-group">
+            <label>Norma ISO</label>
+            <input type="text" id="newCartaNorma" placeholder="Ej. ISO 27001" required />
+          </div>
+          <div class="iq-form-group">
+            <label>Concepto / Control</label>
+            <input type="text" id="newCartaConcepto" placeholder="Ej. Control de Accesos" required />
+          </div>
+        </div>
+
+        <div class="iq-form-group">
+          <label>Descripción Pedagógica</label>
+          <textarea id="newCartaDescripcion" rows="2" placeholder="Explica cómo esta salvaguarda mitiga el incidente..."></textarea>
+        </div>
+
+        <div class="iq-form-row">
+          <div class="iq-form-group">
+            <label>Puntos de Fuerza (Ataque)</label>
+            <input type="number" id="newCartaFuerza" value="70" min="0" max="100" required />
+          </div>
+          <div class="iq-form-group">
+            <label>Puntos de Defensa (Cumplimiento)</label>
+            <input type="number" id="newCartaDefensa" value="70" min="0" max="100" required />
+          </div>
+        </div>
+
+        <div class="iq-form-group">
+          <label>Estado</label>
+          <select id="newCartaEstado">
+            <option value="activo" selected>Activo</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+        </div>
+      </div>
+      <div class="iq-modal-footer">
+        <button type="button" class="btn-modal-cancel" onclick="closeModal('modalNewCarta')">Cancelar</button>
+        <button type="submit" class="btn-modal-save">Crear Carta</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL EDITAR CARTA -->
+<div class="iq-modal-backdrop" id="modalEditCarta">
+  <div class="iq-modal-box">
+    <div class="iq-modal-header">
+      <h3><i class="bi bi-pencil-square" style="color: #38bdf8;"></i> Editar Carta</h3>
+      <button type="button" class="iq-modal-close" onclick="closeModal('modalEditCarta')">&times;</button>
+    </div>
+    <form id="formEditCarta" onsubmit="submitEditCarta(event)">
+      <input type="hidden" id="editCartaId" />
+      <div class="iq-modal-body">
+        <div class="iq-form-group">
+          <label>Nombre de la Carta</label>
+          <input type="text" id="editCartaNombre" required />
+        </div>
+
+        <div class="iq-form-row">
+          <div class="iq-form-group">
+            <label>Norma ISO</label>
+            <input type="text" id="editCartaNorma" required />
+          </div>
+          <div class="iq-form-group">
+            <label>Concepto / Control</label>
+            <input type="text" id="editCartaConcepto" required />
+          </div>
+        </div>
+
+        <div class="iq-form-group">
+          <label>Descripción Pedagógica</label>
+          <textarea id="editCartaDescripcion" rows="2"></textarea>
+        </div>
+
+        <div class="iq-form-row">
+          <div class="iq-form-group">
+            <label>Puntos de Fuerza</label>
+            <input type="number" id="editCartaFuerza" min="0" max="100" required />
+          </div>
+          <div class="iq-form-group">
+            <label>Puntos de Defensa</label>
+            <input type="number" id="editCartaDefensa" min="0" max="100" required />
+          </div>
+        </div>
+
+        <div class="iq-form-group">
+          <label>Estado</label>
+          <select id="editCartaEstado">
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+        </div>
+      </div>
+      <div class="iq-modal-footer">
+        <button type="button" class="btn-modal-cancel" onclick="closeModal('modalEditCarta')">Cancelar</button>
+        <button type="submit" class="btn-modal-save">Guardar Cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL VER DETALLE DE CARTA -->
+<div class="iq-modal-backdrop" id="modalViewCarta">
+  <div class="iq-modal-box">
+    <div class="iq-modal-header">
+      <h3><i class="bi bi-eye" style="color: #a855f7;"></i> Detalle de la Carta</h3>
+      <button type="button" class="iq-modal-close" onclick="closeModal('modalViewCarta')">&times;</button>
+    </div>
+    <div class="iq-modal-body" id="viewCartaBody">
+      <!-- Dinámico -->
+    </div>
+    <div class="iq-modal-footer">
+      <button type="button" class="btn-modal-cancel" onclick="closeModal('modalViewCarta')">Cerrar</button>
+      <button type="button" class="btn-modal-save" id="btnViewToEditCarta">Editar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="iq-toast" id="iqToast">
+  <i class="bi bi-check-circle-fill" style="color: #34d399; font-size: 18px;"></i>
+  <span id="toastMessage">Operación realizada con éxito</span>
+</div>
+
+<script src="{% static 'js/admin/core/carta/change_list.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,605 @@
+:root {
+    --iq-purple-glow: rgba(124, 58, 237, 0.4);
+    --iq-card-bg: #13172e;
+    --iq-card-border: #252c58;
+    --iq-border-subtle: #1e2448;
+    --iq-green: #10b981;
+    --iq-red: #ef4444;
+    --iq-cyan: #06b6d4;
+    --iq-purple: #a855f7;
+  }
+
+  .iq-audit-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 40px;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* CABECERA PRINCIPAL                                            */
+  /* ------------------------------------------------------------- */
+  .iq-audit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .iq-audit-title-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .iq-audit-title-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: radial-gradient(circle at 30% 30%, #a855f7, #6d28d9);
+    border: 1.5px solid rgba(168, 85, 247, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 24px;
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.45);
+  }
+
+  .iq-audit-title-text h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.4px;
+    line-height: 1.2;
+  }
+
+  .iq-audit-title-text p {
+    margin: 4px 0 0 0;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* BARRA DE FILTROS SUPERIOR (TARJETAS HORIZONTALES)              */
+  /* ------------------------------------------------------------- */
+  .iq-audit-filters {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr 1fr auto;
+    gap: 14px;
+    align-items: center;
+    background: #10132b;
+    border: 1px solid var(--iq-card-border);
+    border-radius: 14px;
+    padding: 14px 18px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  @media (max-width: 1200px) {
+    .iq-audit-filters {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 650px) {
+    .iq-audit-filters {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .iq-filter-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    background: rgba(19, 23, 46, 0.6);
+    border: 1px solid var(--iq-border-subtle);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+  }
+
+  .iq-filter-card:focus-within {
+    border-color: #7c3aed;
+    box-shadow: 0 0 12px rgba(124, 58, 237, 0.35);
+  }
+
+  .iq-filter-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: rgba(124, 58, 237, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c084fc;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  .iq-filter-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .iq-filter-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .iq-filter-select {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 700;
+    width: 100%;
+    outline: none;
+    cursor: pointer;
+    padding: 2px 0;
+  }
+
+  .iq-filter-select option {
+    background: #10132b;
+    color: #ffffff;
+    padding: 8px;
+  }
+
+  .btn-clear-filters {
+    background: rgba(124, 58, 237, 0.1);
+    border: 1.5px solid rgba(124, 58, 237, 0.4);
+    color: #c084fc !important;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+  }
+
+  .btn-clear-filters:hover {
+    background: rgba(124, 58, 237, 0.25);
+    border-color: #a855f7;
+    color: #ffffff !important;
+    box-shadow: 0 0 14px rgba(124, 58, 237, 0.4);
+  }
+
+  /* ------------------------------------------------------------- */
+  /* LAYOUT DE 2 COLUMNAS (TABLA + DETALLES LATERALES)             */
+  /* ------------------------------------------------------------- */
+  .iq-audit-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (max-width: 1150px) {
+    .iq-audit-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ------------------------------------------------------------- */
+  /* TABLA DE AUDITORÍA FORENSE                                    */
+  /* ------------------------------------------------------------- */
+  .iq-audit-table-panel {
+    background: var(--iq-card-bg);
+    border: 1px solid var(--iq-card-border);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+
+  .iq-audit-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .iq-audit-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .iq-audit-table th {
+    text-align: left;
+    padding: 12px 14px;
+    color: #8b95b5;
+    font-size: 12px;
+    font-weight: 700;
+    border-bottom: 1px solid var(--iq-card-border);
+    white-space: nowrap;
+    background: transparent;
+  }
+
+  .iq-audit-table td {
+    padding: 14px 14px;
+    border-bottom: 1px solid rgba(37, 44, 88, 0.4);
+    color: #f1f5f9;
+    vertical-align: middle;
+  }
+
+  .iq-audit-row {
+    transition: background 0.15s ease;
+    cursor: pointer;
+  }
+
+  .iq-audit-row:hover {
+    background: rgba(124, 58, 237, 0.08);
+  }
+
+  .iq-audit-row.active {
+    background: rgba(124, 58, 237, 0.15);
+    border-left: 3px solid #7c3aed;
+  }
+
+  .iq-audit-date {
+    font-weight: 600;
+    color: #cbd5e1;
+    white-space: nowrap;
+    font-size: 12.5px;
+  }
+
+  /* Usuario con Avatar */
+  .iq-audit-user {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    white-space: nowrap;
+  }
+
+  .iq-audit-user-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid rgba(168, 85, 247, 0.5);
+    background: #0c0e1e;
+    flex-shrink: 0;
+  }
+
+  .iq-audit-user-alias {
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 13px;
+  }
+
+  /* Badges de Acción temáticos */
+  .iq-action-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  .iq-action-badge.editar {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #10b981;
+  }
+
+  .iq-action-badge.eliminar {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #ef4444;
+  }
+
+  .iq-action-badge.cambiar_config {
+    background: rgba(6, 182, 212, 0.15);
+    border: 1px solid rgba(6, 182, 212, 0.35);
+    color: #06b6d4;
+  }
+
+  .iq-action-badge.reiniciar_progreso {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #c084fc;
+  }
+
+  .iq-action-badge.crear {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #10b981;
+  }
+
+  .iq-audit-module {
+    font-weight: 600;
+    color: #cbd5e1;
+    white-space: nowrap;
+  }
+
+  .iq-audit-regid {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .iq-audit-ip {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  /* Botón Ver Detalles */
+  .btn-view-details {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(124, 58, 237, 0.15);
+    border: 1px solid rgba(124, 58, 237, 0.35);
+    color: #c084fc;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-view-details:hover {
+    background: #7c3aed;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(124, 58, 237, 0.6);
+  }
+
+  /* Paginador Inferior */
+  .iq-table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid var(--iq-card-border);
+  }
+
+  .iq-showing-text {
+    font-size: 12.5px;
+    color: #8b95b5;
+    font-weight: 600;
+  }
+
+  .iq-pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .iq-page-btn {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 8px;
+    background: #10132b;
+    border: 1px solid var(--iq-border-subtle);
+    color: #cbd5e1;
+    font-size: 12.5px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .iq-page-btn:hover {
+    background: rgba(124, 58, 237, 0.2);
+    color: #ffffff;
+    border-color: #7c3aed;
+  }
+
+  .iq-page-btn.active {
+    background: #7c3aed;
+    color: #ffffff;
+    border-color: #7c3aed;
+    box-shadow: 0 0 12px rgba(124, 58, 237, 0.5);
+  }
+
+  .iq-page-btn.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* PANEL LATERAL: DETALLES DEL REGISTRO                          */
+  /* ------------------------------------------------------------- */
+  .iq-details-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Portada con marco cibernético */
+  .iq-audit-art-card {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1.5px solid rgba(6, 182, 212, 0.4);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+    height: 160px;
+    background: #0a0c1a;
+  }
+
+  .iq-audit-art-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .iq-audit-art-badge {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(16, 19, 43, 0.88);
+    border: 1px solid rgba(168, 85, 247, 0.6);
+    color: #ffffff;
+    padding: 5px 20px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 14px rgba(124, 58, 237, 0.45);
+    white-space: nowrap;
+  }
+
+  /* Card Ficha de Detalles */
+  .iq-details-card {
+    background: var(--iq-card-bg);
+    border: 1px solid var(--iq-card-border);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .iq-details-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: #ffffff;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--iq-border-subtle);
+  }
+
+  .iq-detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12.5px;
+  }
+
+  .iq-detail-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #8b95b5;
+    font-weight: 600;
+  }
+
+  .iq-detail-label i {
+    color: #c084fc;
+    font-size: 15px;
+  }
+
+  .iq-detail-val {
+    font-weight: 700;
+    color: #ffffff;
+    text-align: right;
+  }
+
+  /* Subsección Datos del Cambio */
+  .iq-changes-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 1px solid var(--iq-border-subtle);
+  }
+
+  .iq-changes-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .iq-changes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .iq-json-box {
+    background: #0c0e1e;
+    border: 1px solid var(--iq-card-border);
+    border-radius: 8px;
+    padding: 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11px;
+    color: #06b6d4;
+    overflow-x: auto;
+    max-height: 120px;
+    line-height: 1.4;
+  }
+
+  .iq-json-box-title {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #8b95b5;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  /* Card inferior de inmutabilidad */
+  .iq-immutable-notice {
+    background: rgba(124, 58, 237, 0.08);
+    border: 1.5px solid rgba(124, 58, 237, 0.4);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 0 16px rgba(124, 58, 237, 0.15);
+  }
+
+  .iq-immutable-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(124, 58, 237, 0.2);
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c084fc;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .iq-immutable-text {
+    font-size: 12px;
+    color: #cbd5e1;
+    line-height: 1.4;
+    font-weight: 500;
+  }

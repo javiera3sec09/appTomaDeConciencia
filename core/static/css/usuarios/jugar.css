@@ -1,0 +1,1525 @@
+:root {
+      --bg-dark: #070414;
+      --primary-purple: #9333ea;
+      --bright-purple: #c084fc;
+      --neon-purple: #d8b4fe;
+      --deep-purple: #581c87;
+      --glow-purple: rgba(168, 85, 247, 0.85);
+      --border-gothic: rgba(168, 85, 247, 0.45);
+      --accent-gold: #fbbf24;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #ffffff;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Fondo exacto con la Nigromante y el Castillo Púrpura */
+    .iq-gameplay-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #080416 url('/static/img/gameplay_bg.jpg') no-repeat center center;
+      background-size: cover;
+      z-index: 1;
+    }
+
+    .iq-gameplay-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at 65% 40%, rgba(12, 6, 28, 0.15) 0%, rgba(6, 3, 16, 0.65) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* ------------------------------------------------------------- */
+    /* 1. TOPBAR EXACTA AL MOCKUP                                    */
+    /* ------------------------------------------------------------- */
+    .iq-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 68px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10001;
+      background: linear-gradient(180deg, rgba(8, 4, 20, 0.95) 0%, rgba(8, 4, 20, 0.5) 80%, rgba(8, 4, 20, 0) 100%);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .iq-player-identity {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .iq-avatar-wrap {
+      position: relative;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+    }
+
+    .iq-avatar-aura {
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(192, 132, 252, 0.9) 0%, rgba(124, 58, 237, 0.15) 75%);
+      filter: blur(4px);
+      z-index: 1;
+    }
+
+    .iq-avatar-img {
+      position: relative;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #c084fc;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.9);
+      z-index: 2;
+      background: #14112e;
+    }
+
+    .iq-player-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .iq-player-name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .iq-player-username {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.3px;
+    }
+
+    .iq-player-lvl {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #c084fc;
+    }
+
+    .iq-xp-bar-bg {
+      width: 150px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .iq-xp-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #7c3aed, #c084fc);
+      box-shadow: 0 0 8px #c084fc;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .iq-xp-bar-text {
+      font-size: 9px;
+      color: #cbd5e1;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    .iq-btn-circle-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(30, 14, 60, 0.7);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      color: #e9d5ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .iq-btn-circle-icon:hover {
+      background: rgba(147, 51, 234, 0.4);
+      border-color: #c084fc;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+    }
+
+    .iq-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .iq-resource-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(16, 9, 36, 0.75);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      padding: 4px 10px 4px 10px;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .iq-resource-pill i {
+      font-size: 13.5px;
+    }
+
+    .iq-resource-pill.gemas i { color: #ec4899; filter: drop-shadow(0 0 5px #ec4899); }
+    .iq-resource-pill.oro i { color: #fbbf24; filter: drop-shadow(0 0 5px #fbbf24); }
+    .iq-resource-pill.energy i { color: #c084fc; filter: drop-shadow(0 0 5px #c084fc); }
+
+    .iq-resource-val {
+      font-size: 12px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .iq-resource-plus {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #7c3aed;
+      color: #ffffff;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      line-height: 1;
+      font-weight: 900;
+      margin-left: 2px;
+      border: none;
+    }
+
+    .iq-resource-plus:hover {
+      background: #9333ea;
+      box-shadow: 0 0 8px #c084fc;
+    }
+
+    .iq-badge-dot {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 6px #ef4444;
+    }
+
+    .btn-exit-map {
+      background: rgba(30, 14, 60, 0.7);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      color: #cbd5e1;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-exit-map:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: #f87171;
+      color: #ffffff;
+    }
+
+    /* ------------------------------------------------------------- */
+    /* 2. ÁREA PRINCIPAL DE JUEGO (EXACTA AL MOCKUP)                 */
+    /* ------------------------------------------------------------- */
+    .iq-game-stage {
+      position: relative;
+      z-index: 10;
+      width: 100vw;
+      height: 100vh;
+      max-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-top: 72px;
+      padding-bottom: 14px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* Placa Gótica Superior: Caso #1 / ISO... */
+    .iq-header-plaque-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .iq-plaque-skull-crest {
+      position: absolute;
+      top: -14px;
+      width: 28px;
+      height: 28px;
+      z-index: 12;
+      filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.9));
+    }
+
+    .iq-header-plaque {
+      position: relative;
+      background: rgba(14, 8, 32, 0.88);
+      border: 1.5px solid rgba(192, 132, 252, 0.55);
+      border-radius: 8px 8px 18px 18px;
+      padding: 6px 32px 5px 32px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(168, 85, 247, 0.35);
+      min-width: 280px;
+    }
+
+    .iq-header-plaque::before, .iq-header-plaque::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      border: 1.5px solid #c084fc;
+      transform: translateY(-50%) rotate(45deg);
+      background: #140b2e;
+    }
+    .iq-header-plaque::before { left: -6px; }
+    .iq-header-plaque::after { right: -6px; }
+
+    .iq-caso-title {
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px rgba(192, 132, 252, 0.7);
+      margin-bottom: 1px;
+      line-height: 1.2;
+    }
+
+    .iq-caso-subtitle {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #c084fc;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* Fila de Escenario / Caso + Reloj de Arena */
+    .iq-scenario-timer-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 960px;
+      margin-bottom: 10px;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+
+    /* Caja de Escenario / Caso */
+    .iq-scenario-box {
+      position: relative;
+      flex: 1;
+      max-width: 720px;
+      background: rgba(12, 6, 28, 0.86);
+      border: 1.5px solid rgba(168, 85, 247, 0.5);
+      border-radius: 14px;
+      padding: 12px 20px 10px 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(147, 51, 234, 0.2);
+    }
+
+    .iq-scenario-tag {
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1b0e38;
+      border: 1px solid #c084fc;
+      border-radius: 20px;
+      padding: 2px 16px;
+      font-family: 'Cinzel', serif;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.8px;
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+      white-space: nowrap;
+    }
+
+    .iq-scenario-text {
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: #f1f5f9;
+      text-align: center;
+      margin: 0;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      max-height: 70px;
+      overflow-y: auto;
+    }
+
+    /* Widget Reloj de Arena (Tiempo Restante) */
+    .iq-hourglass-widget {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(14, 8, 32, 0.8);
+      border: 1.5px solid rgba(168, 85, 247, 0.4);
+      border-radius: 12px;
+      padding: 6px 14px;
+      min-width: 95px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      flex-shrink: 0;
+    }
+
+    .iq-hourglass-icon {
+      font-size: 20px;
+      color: #c084fc;
+      filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.9));
+      animation: hourglassPulse 2.5s infinite ease-in-out;
+      margin-bottom: 1px;
+    }
+
+    @keyframes hourglassPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px #c084fc); }
+      50% { transform: scale(1.1); filter: drop-shadow(0 0 14px #e879f9); }
+    }
+
+    .iq-hourglass-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 1px;
+    }
+
+    .iq-timer-digits {
+      font-family: 'Cinzel', serif;
+      font-size: 19px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(192, 132, 252, 0.8);
+      line-height: 1;
+    }
+
+    .iq-timer-digits.urgent {
+      color: #f87171 !important;
+      text-shadow: 0 0 12px #ef4444 !important;
+      animation: timerAlert 0.8s infinite alternate;
+    }
+
+    @keyframes timerAlert {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); }
+    }
+
+    /* ------------------------------------------------------------- */
+    /* 3. FILA DE CARTAS (A, B, C, D)                                */
+    /* ------------------------------------------------------------- */
+    .iq-cards-deck-row {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 14px;
+      width: 100%;
+      max-width: 960px;
+      padding: 0 16px;
+      margin-bottom: 12px;
+      flex-shrink: 1;
+    }
+
+    .iq-card-item {
+      position: relative;
+      flex: 1;
+      max-width: 215px;
+      background: rgba(14, 8, 34, 0.88);
+      border: 1.5px solid rgba(168, 85, 247, 0.45);
+      border-radius: 14px;
+      padding: 12px 10px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+      transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .iq-card-item:hover {
+      transform: translateY(-4px);
+      border-color: #c084fc;
+      box-shadow: 0 12px 30px rgba(168, 85, 247, 0.4);
+    }
+
+    /* ESTADO SELECCIONADO (IDÉNTICO A LA CARTA B EN EL MOCKUP) */
+    .iq-card-item.selected {
+      border: 2.5px solid #d8b4fe !important;
+      box-shadow: 0 0 35px rgba(192, 132, 252, 0.95), inset 0 0 18px rgba(168, 85, 247, 0.5) !important;
+      background: rgba(28, 14, 60, 0.94) !important;
+      transform: translateY(-6px) scale(1.02);
+    }
+
+    /* Diamante de Letra Superior (A, B, C, D) */
+    .iq-card-letter-diamond {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 24px;
+      height: 24px;
+      background: #180c38;
+      border: 1.5px solid #c084fc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.7);
+      z-index: 5;
+    }
+
+    .iq-card-letter-diamond span {
+      transform: rotate(-45deg);
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .iq-card-item.selected .iq-card-letter-diamond {
+      border-color: #ffffff;
+      background: #4c1d95;
+      box-shadow: 0 0 14px #d8b4fe;
+    }
+
+    /* Marco de Arte / Ilustración de la Carta */
+    .iq-card-art-box {
+      width: 100%;
+      height: 95px;
+      max-height: 100px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #090416;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 4px;
+      margin-bottom: 6px;
+      position: relative;
+      flex-shrink: 1;
+    }
+
+    .iq-card-art-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .iq-card-item:hover .iq-card-art-box img {
+      transform: scale(1.05);
+    }
+
+    .iq-card-art-box::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+      pointer-events: none;
+    }
+
+    /* Título y Descripción de la Carta */
+    .iq-card-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      color: #ffffff;
+      text-align: center;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .iq-card-desc {
+      font-size: 10px;
+      color: #cbd5e1;
+      text-align: center;
+      line-height: 1.3;
+      margin-top: auto;
+    }
+
+    /* ------------------------------------------------------------- */
+    /* 4. BOTÓN INFERIOR DERECHO [⚔ CONFIRMAR] (EXACTO AL MOCKUP)    */
+    /* ------------------------------------------------------------- */
+    .iq-bottom-actions-row {
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+
+    .btn-confirmar-action {
+      position: relative;
+      background: linear-gradient(135deg, rgba(42, 16, 92, 0.95) 0%, rgba(18, 8, 42, 0.98) 100%);
+      border: 2px solid #c084fc;
+      border-radius: 40px;
+      padding: 9px 30px;
+      color: #ffffff;
+      font-size: 14.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+      backdrop-filter: blur(8px);
+      transition: all 0.22s ease;
+    }
+
+    .btn-confirmar-action i {
+      font-size: 17px;
+      color: #d8b4fe;
+    }
+
+    .btn-confirmar-action:hover:not(:disabled) {
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      border-color: #ffffff;
+      box-shadow: 0 0 30px rgba(192, 132, 252, 0.9);
+      transform: translateY(-2px);
+    }
+
+    .btn-confirmar-action:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      border-color: rgba(168, 85, 247, 0.3);
+      box-shadow: none;
+    }
+
+    @media (max-height: 750px) {
+      .iq-game-stage {
+        padding-top: 68px;
+        padding-bottom: 10px;
+      }
+      .iq-card-art-box {
+        height: 78px;
+      }
+      .iq-cards-deck-row {
+        margin-bottom: 8px;
+      }
+      .iq-scenario-timer-row {
+        margin-bottom: 8px;
+      }
+      .iq-header-plaque-wrap {
+        margin-bottom: 6px;
+      }
+    }
+
+    @media (max-height: 650px) {
+      .iq-card-art-box {
+        height: 62px;
+      }
+      .iq-card-title {
+        font-size: 11px;
+        min-height: 24px;
+      }
+      .iq-card-desc {
+        font-size: 9.5px;
+      }
+      .btn-confirmar-action {
+        padding: 7px 24px;
+        font-size: 13.5px;
+      }
+    }
+
+    /* ------------------------------------------------------------- */
+    /* 5. MODALES SENCILLOS DE DERROTA                               */
+    /* ------------------------------------------------------------- */
+    .iq-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 2, 12, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .iq-modal-overlay.show {
+      display: flex;
+      animation: modalFadeIn 0.25s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .iq-simple-modal {
+      background: rgba(15, 8, 36, 0.96);
+      border: 2px solid #c084fc;
+      border-radius: 20px;
+      padding: 32px 36px;
+      max-width: 460px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 45px rgba(168, 85, 247, 0.6);
+      position: relative;
+    }
+
+    .iq-simple-modal.victory {
+      border-color: #fbbf24;
+      box-shadow: 0 0 50px rgba(251, 191, 36, 0.5);
+    }
+
+    .iq-simple-modal.defeat {
+      border-color: #ef4444;
+      box-shadow: 0 0 50px rgba(239, 68, 68, 0.5);
+    }
+
+    .iq-modal-icon-big {
+      font-size: 54px;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .iq-simple-modal.victory .iq-modal-icon-big {
+      color: #fbbf24;
+      filter: drop-shadow(0 0 18px #fbbf24);
+    }
+
+    .iq-simple-modal.defeat .iq-modal-icon-big {
+      color: #f87171;
+      filter: drop-shadow(0 0 18px #ef4444);
+    }
+
+    .iq-modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .iq-simple-modal.victory .iq-modal-title {
+      color: #fbbf24;
+    }
+
+    .iq-simple-modal.defeat .iq-modal-title {
+      color: #f87171;
+    }
+
+    .iq-modal-msg {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .iq-rewards-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .iq-reward-badge {
+      background: rgba(22, 12, 50, 0.8);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: 12px;
+      padding: 8px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .iq-reward-badge i { font-size: 18px; }
+    .iq-reward-badge.xp i { color: #c084fc; }
+    .iq-reward-badge.oro i { color: #fbbf24; }
+    .iq-reward-badge.gemas i { color: #ec4899; }
+
+    .iq-reward-badge-val {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .iq-modal-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn-modal-action {
+      background: linear-gradient(135deg, #7c3aed, #581c87);
+      border: 1.5px solid #c084fc;
+      border-radius: 30px;
+      color: #ffffff;
+      padding: 10px 22px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-modal-action:hover {
+      background: linear-gradient(135deg, #9333ea, #6b21a8);
+      box-shadow: 0 0 20px #c084fc;
+    }
+
+    .btn-modal-secondary {
+      background: rgba(30, 15, 65, 0.8);
+      border: 1.5px solid rgba(168, 85, 247, 0.4);
+      border-radius: 30px;
+      color: #cbd5e1;
+      padding: 10px 20px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-modal-secondary:hover {
+      background: rgba(50, 25, 100, 0.9);
+      color: #ffffff;
+      border-color: #c084fc;
+    }
+
+    /* ------------------------------------------------------------- */
+    /* 5.1 PANTALLA GÓTICA MONUMENTAL DE VICTORIA / LEVEL UP          */
+    /* ------------------------------------------------------------- */
+    .iq-victory-fullscreen {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #04010a url('/static/img/victoria_bg.jpg') no-repeat center center;
+      background-size: cover;
+      display: none;
+      align-items: center;
+      justify-content: flex-end;
+      padding-top: 68px;
+      padding-bottom: 14px;
+      padding-right: 5vw;
+      box-sizing: border-box;
+      z-index: 9990;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .iq-victory-fullscreen.show {
+      display: flex;
+      animation: vicFadeIn 0.35s ease-out;
+    }
+
+    @keyframes vicFadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .iq-vic-backdrop-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(6, 2, 14, 0.25) 40%, rgba(6, 2, 14, 0.75) 65%, rgba(6, 2, 14, 0.92) 100%);
+      pointer-events: none;
+    }
+
+    .iq-vic-right-pane {
+      position: relative;
+      width: 50%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 6px 16px;
+      margin: auto 0;
+      z-index: 2;
+      box-sizing: border-box;
+    }
+
+    .iq-vic-banner-img {
+      max-width: 310px;
+      max-height: 100px;
+      width: 78%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 24px rgba(168, 85, 247, 0.85));
+      margin-bottom: 2px;
+      user-select: none;
+      pointer-events: none;
+      animation: vicGlowPulse 3s infinite alternate ease-in-out;
+    }
+
+    @keyframes vicGlowPulse {
+      0% { filter: drop-shadow(0 0 18px rgba(168, 85, 247, 0.7)); }
+      100% { filter: drop-shadow(0 0 32px rgba(216, 180, 254, 0.95)); }
+    }
+
+    .iq-vic-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e9d5ff;
+      text-shadow: 0 0 12px rgba(192, 132, 252, 0.6);
+      margin: 0 0 10px 0;
+      letter-spacing: 0.5px;
+      line-height: 1.35;
+    }
+
+    .iq-vic-world-notice {
+      background: rgba(147, 51, 234, 0.45);
+      border: 1.5px solid #c084fc;
+      border-radius: 10px;
+      padding: 6px 14px;
+      margin-bottom: 8px;
+      color: #fdf4ff;
+      font-weight: 800;
+      font-size: 12px;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+    }
+
+    .iq-vic-rewards-card {
+      position: relative;
+      width: 100%;
+      max-width: 470px;
+      background: rgba(13, 6, 28, 0.85);
+      border: 1.5px solid rgba(168, 85, 247, 0.75);
+      border-radius: 14px;
+      padding: 16px 12px 10px 12px;
+      box-shadow: 0 0 35px rgba(147, 51, 234, 0.4), inset 0 0 20px rgba(126, 34, 206, 0.25);
+      margin-bottom: 10px;
+      backdrop-filter: blur(8px);
+      box-sizing: border-box;
+    }
+
+    .iq-vic-rewards-badge {
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #2b0d52, #140528);
+      border: 1.5px solid #c084fc;
+      border-radius: 6px;
+      padding: 2px 18px;
+      box-shadow: 0 0 18px rgba(168, 85, 247, 0.6);
+      white-space: nowrap;
+    }
+
+    .iq-vic-rewards-badge span {
+      font-family: 'Cinzel', serif;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #f3e8ff;
+      letter-spacing: 1px;
+    }
+
+    .iq-vic-rewards-grid {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .iq-vic-reward-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 88px;
+    }
+
+    .iq-vic-reward-slot {
+      position: relative;
+      width: 66px;
+      height: 66px;
+      background: radial-gradient(circle, rgba(126, 34, 206, 0.45) 0%, rgba(18, 7, 36, 0.95) 100%);
+      border: 1.5px solid rgba(192, 132, 252, 0.7);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 18px rgba(168, 85, 247, 0.35), inset 0 0 12px rgba(147, 51, 234, 0.25);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .iq-vic-reward-slot:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(192, 132, 252, 0.6);
+    }
+
+    .iq-vic-reward-slot.level-up {
+      border-color: #fbbf24;
+      background: radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, rgba(18, 7, 36, 0.95) 100%);
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.45), inset 0 0 10px rgba(245, 158, 11, 0.2);
+    }
+
+    .iq-vic-slot-icon {
+      max-width: 42px;
+      max-height: 42px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.6));
+    }
+
+    .iq-vic-slot-qty {
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+      font-family: 'Cinzel', sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 0 4px #000, 0 1px 3px #000;
+    }
+
+    .iq-vic-slot-name {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-top: 5px;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .iq-vic-footer-lore {
+      margin-bottom: 10px;
+      max-width: 440px;
+    }
+
+    .iq-vic-lore-quote {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-style: italic;
+      font-size: 12px;
+      color: #e2e8f0;
+      line-height: 1.35;
+      margin: 0 0 3px 0;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .iq-vic-lore-callout {
+      font-family: 'Cinzel', serif;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #fdf4ff;
+      margin: 0 0 4px 0;
+      text-shadow: 0 0 12px rgba(192, 132, 252, 0.7);
+    }
+
+    .iq-vic-skull-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 2px;
+      opacity: 0.8;
+    }
+
+    .iq-vic-divider-diamond {
+      color: #c084fc;
+      font-size: 10px;
+      text-shadow: 0 0 8px #c084fc;
+    }
+
+    .iq-vic-btn-continuar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 9px 38px;
+      background: linear-gradient(135deg, #7e22ce 0%, #4c1d95 60%, #3b0764 100%);
+      border: 1.8px solid #c084fc;
+      border-radius: 30px;
+      color: #ffffff;
+      text-decoration: none;
+      font-family: 'Cinzel', serif;
+      font-size: 14.5px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.65), inset 0 0 12px rgba(192, 132, 252, 0.4);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .iq-vic-btn-continuar:hover {
+      background: linear-gradient(135deg, #9333ea 0%, #6b21a8 60%, #4c1d95 100%);
+      border-color: #f0abfc;
+      box-shadow: 0 0 35px rgba(216, 180, 254, 0.9), inset 0 0 16px rgba(232, 121, 249, 0.6);
+      color: #ffffff;
+      transform: scale(1.03);
+    }
+
+    .iq-vic-btn-chevrons {
+      color: #e9d5ff;
+      font-size: 15px;
+      letter-spacing: -2px;
+    }
+
+    @media (max-width: 900px) {
+      .iq-victory-fullscreen {
+        justify-content: center;
+        padding-right: 0;
+        background-position: 25% center;
+        padding-top: 72px;
+        padding-bottom: 20px;
+      }
+      .iq-vic-backdrop-gradient {
+        background: rgba(6, 2, 14, 0.85);
+      }
+      .iq-vic-right-pane {
+        width: 94%;
+        max-width: 480px;
+        background: rgba(8, 3, 18, 0.82);
+        border-radius: 20px;
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(168, 85, 247, 0.3);
+      }
+    }
+
+    /* ------------------------------------------------------------- */
+    /* 5.2 PANTALLA GÓTICA MONUMENTAL DE DERROTA                     */
+    /* ------------------------------------------------------------- */
+    .iq-derrota-fullscreen {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #04010a url('/static/img/derrota_bg.jpg') no-repeat center center;
+      background-size: cover;
+      display: none;
+      align-items: center;
+      justify-content: flex-end;
+      padding-top: 68px;
+      padding-bottom: 14px;
+      padding-right: 5vw;
+      box-sizing: border-box;
+      z-index: 9990;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .iq-derrota-fullscreen.show {
+      display: flex;
+      animation: derrotaFadeIn 0.35s ease-out;
+    }
+
+    @keyframes derrotaFadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .iq-derrota-backdrop-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(6, 2, 14, 0.25) 40%, rgba(6, 2, 14, 0.75) 65%, rgba(6, 2, 14, 0.92) 100%);
+      pointer-events: none;
+    }
+
+    .iq-derrota-right-pane {
+      position: relative;
+      width: 50%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 6px 16px;
+      margin: auto 0;
+      z-index: 2;
+      box-sizing: border-box;
+    }
+
+    .iq-derrota-banner-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+
+    .iq-derrota-banner-img {
+      max-width: 290px;
+      max-height: 90px;
+      width: 75%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 24px rgba(168, 85, 247, 0.85));
+      user-select: none;
+      pointer-events: none;
+      animation: derrotaGlowPulse 3s infinite alternate ease-in-out;
+    }
+
+    @keyframes derrotaGlowPulse {
+      0% { filter: drop-shadow(0 0 18px rgba(168, 85, 247, 0.7)); }
+      100% { filter: drop-shadow(0 0 32px rgba(216, 180, 254, 0.95)); }
+    }
+
+    .iq-derrota-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e9d5ff;
+      text-shadow: 0 0 12px rgba(192, 132, 252, 0.6);
+      margin: 0 0 10px 0;
+      letter-spacing: 0.5px;
+      line-height: 1.35;
+    }
+
+    .iq-derrota-rewards-card {
+      position: relative;
+      width: 100%;
+      max-width: 470px;
+      background: rgba(13, 6, 28, 0.85);
+      border: 1.5px solid rgba(168, 85, 247, 0.75);
+      border-radius: 14px;
+      padding: 16px 12px 10px 12px;
+      box-shadow: 0 0 35px rgba(147, 51, 234, 0.4), inset 0 0 20px rgba(126, 34, 206, 0.25);
+      margin-bottom: 8px;
+      backdrop-filter: blur(8px);
+      box-sizing: border-box;
+    }
+
+    .iq-derrota-rewards-badge {
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #2b0d52, #140528);
+      border: 1.5px solid #c084fc;
+      border-radius: 6px;
+      padding: 2px 18px;
+      box-shadow: 0 0 18px rgba(168, 85, 247, 0.6);
+      white-space: nowrap;
+    }
+
+    .iq-derrota-rewards-badge span {
+      font-family: 'Cinzel', serif;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #f3e8ff;
+      letter-spacing: 1px;
+    }
+
+    .iq-derrota-rewards-grid {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .iq-derrota-reward-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 88px;
+    }
+
+    .iq-derrota-reward-slot {
+      position: relative;
+      width: 66px;
+      height: 66px;
+      background: radial-gradient(circle, rgba(126, 34, 206, 0.35) 0%, rgba(18, 7, 36, 0.95) 100%);
+      border: 1.5px solid rgba(192, 132, 252, 0.6);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 18px rgba(168, 85, 247, 0.3), inset 0 0 12px rgba(147, 51, 234, 0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .iq-derrota-reward-slot:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(192, 132, 252, 0.6);
+      border-color: #c084fc;
+    }
+
+    .iq-derrota-slot-icon {
+      max-width: 42px;
+      max-height: 42px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.6));
+    }
+
+    .iq-derrota-slot-qty {
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+      font-family: 'Cinzel', sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 0 4px #000, 0 1px 3px #000;
+    }
+
+    .iq-derrota-slot-name {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-top: 5px;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .iq-derrota-footer-lore {
+      margin-bottom: 8px;
+      max-width: 440px;
+    }
+
+    .iq-derrota-lore-quote {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 13px;
+      color: #e2e8f0;
+      line-height: 1.35;
+      margin: 0 0 3px 0;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .iq-derrota-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 2px;
+      opacity: 0.85;
+    }
+
+    .iq-derrota-divider-line {
+      width: 55px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.6), transparent);
+    }
+
+    .iq-derrota-divider-skull {
+      color: #c084fc;
+      font-size: 11px;
+      text-shadow: 0 0 8px #c084fc;
+    }
+
+    /* Feedback de error pedagógico */
+    .iq-derrota-feedback-box {
+      width: 100%;
+      max-width: 450px;
+      background: rgba(35, 12, 24, 0.7);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      font-size: 11.5px;
+      color: #fecaca;
+      text-align: left;
+      line-height: 1.35;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+      box-sizing: border-box;
+    }
+
+    .iq-derrota-buttons-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-derrota-gothic {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 22px;
+      background: linear-gradient(135deg, rgba(88, 28, 135, 0.75) 0%, rgba(30, 14, 65, 0.95) 100%);
+      border: 1.8px solid #a855f7;
+      border-radius: 30px;
+      color: #ffffff;
+      text-decoration: none;
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.45), inset 0 0 10px rgba(192, 132, 252, 0.25);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .btn-derrota-gothic:hover {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(88, 28, 135, 0.95) 100%);
+      border-color: #c084fc;
+      box-shadow: 0 0 30px rgba(192, 132, 252, 0.8), inset 0 0 14px rgba(216, 180, 254, 0.4);
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    .btn-derrota-gothic.retry {
+      border-color: #c084fc;
+    }
+
+    .btn-derrota-gothic i {
+      font-size: 15px;
+    }
+
+    @media (max-width: 900px) {
+      .iq-derrota-fullscreen {
+        justify-content: center;
+        padding-right: 0;
+        background-position: 25% center;
+        padding-top: 72px;
+        padding-bottom: 20px;
+      }
+      .iq-derrota-backdrop-gradient {
+        background: rgba(6, 2, 14, 0.85);
+      }
+      .iq-derrota-right-pane {
+        width: 94%;
+        max-width: 480px;
+        background: rgba(8, 3, 18, 0.82);
+        border-radius: 20px;
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(168, 85, 247, 0.3);
+      }
+    }
+
+    @media (max-height: 750px) {
+      .iq-vic-banner-img {
+        max-height: 80px;
+        max-width: 260px;
+      }
+      .iq-derrota-banner-img {
+        max-height: 75px;
+        max-width: 250px;
+      }
+      .iq-vic-reward-slot, .iq-derrota-reward-slot {
+        width: 58px;
+        height: 58px;
+      }
+      .iq-vic-slot-icon, .iq-derrota-slot-icon {
+        max-width: 36px;
+        max-height: 36px;
+      }
+      .iq-vic-rewards-card, .iq-derrota-rewards-card {
+        padding: 14px 10px 8px 10px;
+        margin-bottom: 8px;
+      }
+      .iq-vic-footer-lore, .iq-derrota-footer-lore {
+        margin-bottom: 8px;
+      }
+      .iq-vic-btn-continuar {
+        padding: 8px 34px;
+        font-size: 14px;
+      }
+      .btn-derrota-gothic {
+        padding: 7px 20px;
+        font-size: 12.5px;
+      }
+    }
+        border-radius: 20px;
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(168, 85, 247, 0.3);
+      }
+    }
+
+    /* Toast flotante */
+    .iq-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(18, 10, 42, 0.95);
+      border: 1.5px solid #c084fc;
+      border-radius: 30px;
+      padding: 10px 24px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.7);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      z-index: 150;
+      pointer-events: none;
+    }
+
+    .iq-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }

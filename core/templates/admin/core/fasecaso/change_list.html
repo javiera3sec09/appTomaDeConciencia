@@ -1,0 +1,139 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}Fases de Caso / Incidentes | ISO QUEST Admin{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/core/fasecaso/change_list.css' %}">
+
+<div class="iq-fases-page">
+
+  <!-- CABECERA -->
+  <div class="iq-fases-header">
+    <div class="iq-fases-title-box">
+      <div class="iq-fases-title-icon">
+        <i class="bi bi-puzzle-fill"></i>
+      </div>
+      <div class="iq-fases-title-text">
+        <h1>Fases de Caso / Incidentes</h1>
+        <p>Configura y audita los incidentes pedagógicos de compliance para cada nivel</p>
+      </div>
+    </div>
+
+    <a href="/admin/core/fasecaso/add/" class="btn-new-fase">
+      <i class="bi bi-plus-lg"></i>
+      <span>Crear Fase / Caso</span>
+    </a>
+  </div>
+
+  <!-- KPIS PRINCIPALES -->
+  <div class="iq-kpis-grid">
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon"><i class="bi bi-puzzle"></i></div>
+      <div>
+        <div class="iq-kpi-val">{{ kpi_total_fases }}</div>
+        <div class="iq-kpi-label">Fases Registradas</div>
+      </div>
+    </div>
+
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon"><i class="bi bi-check-circle"></i></div>
+      <div>
+        <div class="iq-kpi-val">{{ kpi_fases_activas }} <small style="font-size: 13px; color: #10b981;">({{ kpi_pct_activas }}%)</small></div>
+        <div class="iq-kpi-label">Fases Activas</div>
+      </div>
+    </div>
+
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon"><i class="bi bi-layers"></i></div>
+      <div>
+        <div class="iq-kpi-val">{{ kpi_total_niveles }}</div>
+        <div class="iq-kpi-label">Niveles con Desafíos</div>
+      </div>
+    </div>
+
+    <div class="iq-kpi-card">
+      <div class="iq-kpi-icon"><i class="bi bi-globe-americas"></i></div>
+      <div>
+        <div class="iq-kpi-val">{{ kpi_total_mundos }}</div>
+        <div class="iq-kpi-label">Mundos ISO Disponibles</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PESTAÑAS DE FILTRO POR MUNDO -->
+  <div class="iq-worlds-tabs">
+    <a href="/admin/core/fasecaso/" class="iq-world-pill {% if not selected_mundo %}active{% endif %}">
+      <i class="bi bi-grid-fill"></i> Todos los Mundos
+    </a>
+    {% for m in mundos_list %}
+    <a href="/admin/core/fasecaso/?mundo={{ m.id }}" class="iq-world-pill {% if selected_mundo and selected_mundo.id == m.id %}active{% endif %}">
+      <i class="bi bi-shield-check"></i> {{ m.codigo_iso }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- GRILLA DE FASES -->
+  <div class="iq-fases-grid">
+    {% for f in fases_list %}
+    <div class="iq-fase-card" id="card-fase-{{ f.id }}">
+      
+      <!-- Top Art -->
+      <div class="iq-fase-card-top">
+        <img src="/static/img/incidentes/hacker_art_hq.png" alt="{{ f.titulo_incidente }}" />
+        <div class="iq-fase-card-badge">Fase {{ f.numero_fase }}</div>
+      </div>
+
+      <!-- Body -->
+      <div class="iq-fase-card-body">
+        <h3 class="iq-fase-incident-title">{{ f.titulo_incidente }}</h3>
+        
+        <div class="iq-fase-pills-row">
+          <span class="iq-fase-threat-pill">{{ f.amenaza }}</span>
+          <span class="iq-diff-pill {{ f.dificultad }}">{{ f.get_dificultad_display }}</span>
+          <span style="font-size: 11px; color: #8b95b5;">{{ f.nivel.mundo.codigo_iso }} · Nivel {{ f.nivel.numero_nivel }}</span>
+        </div>
+
+        <p class="iq-fase-context-snippet">{{ f.caso_contexto }}</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="iq-fase-card-footer">
+        <div class="iq-fase-rewards-mini">
+          <span class="iq-reward-pill"><i class="bi bi-coin" style="color: #f59e0b;"></i> {{ f.recompensa_oro }}</span>
+          <span class="iq-reward-pill"><i class="bi bi-star-fill" style="color: #c084fc;"></i> {{ f.recompensa_xp }}</span>
+        </div>
+
+        <div class="iq-fase-actions-btns">
+          <a href="/admin/core/fasecaso/{{ f.id }}/change/" class="iq-btn-card-action" title="Editar Fase">
+            <i class="bi bi-pencil-fill"></i>
+          </a>
+          <button type="button" class="iq-btn-card-action iq-btn-card-delete" onclick="eliminarFase({{ f.id }}, '{{ f.titulo_incidente|escapejs }}')" title="Eliminar Fase">
+            <i class="bi bi-trash-fill"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+    {% empty %}
+    <div class="iq-empty-state">
+      <div class="iq-empty-icon">
+        <i class="bi bi-puzzle"></i>
+      </div>
+      <h3 style="margin: 0; color: #ffffff; font-size: 18px; font-weight: 800;">No hay fases registradas aún</h3>
+      <p style="margin: 0; color: #8b95b5; font-size: 13.5px; max-width: 420px;">
+        Crea la primera fase con su caso de incidente, amenaza, recompensas y vista previa interactiva.
+      </p>
+      <a href="/admin/core/fasecaso/add/" class="btn-new-fase" style="margin-top: 10px;">
+        <i class="bi bi-plus-lg"></i>
+        <span>Crear Primera Fase</span>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<!-- SCRIPT DE ELIMINACIÓN RÁPIDA CON CONFIRMACIÓN -->
+<script src="{% static 'js/admin/core/fasecaso/change_list.js' %}"></script>
+{% endblock %}

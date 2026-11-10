@@ -1,0 +1,946 @@
+/* ----------------------------------------------------------------- */
+  /* ESTILOS EXACTOS DE LA BARRA SUPERIOR (TOPBAR HUD)                  */
+  /* ----------------------------------------------------------------- */
+  .iq-cl-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 68px;
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 10001;
+    background: linear-gradient(180deg, rgba(8, 3, 24, 0.96) 0%, rgba(8, 3, 24, 0.65) 80%, rgba(8, 3, 24, 0) 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-sizing: border-box;
+    pointer-events: auto;
+  }
+
+  /* Identidad del Jugador (Avatar, Aura, Alias, Tuerca, Nivel, XP) */
+  .iq-player-identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s ease;
+  }
+
+  .iq-player-identity:hover {
+    transform: translateY(-1px);
+  }
+
+  .iq-player-avatar-wrap {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .iq-player-avatar-aura {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.95) 0%, rgba(124, 58, 237, 0.3) 65%, transparent 100%);
+    filter: blur(5px);
+    animation: iqAuraPulse 2.5s infinite alternate ease-in-out;
+  }
+
+  @keyframes iqAuraPulse {
+    0% { transform: scale(0.95); opacity: 0.75; }
+    100% { transform: scale(1.1); opacity: 1; filter: blur(7px); }
+  }
+
+  .iq-player-avatar-img {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #c084fc;
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.95);
+    z-index: 2;
+    background: #14112e;
+  }
+
+  .iq-player-details {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .iq-player-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.2;
+  }
+
+  .iq-player-alias {
+    font-size: 15.5px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+    text-shadow: 0 0 12px rgba(192, 132, 252, 0.6);
+  }
+
+  .btn-settings-gear {
+    background: transparent;
+    border: none;
+    color: #c084fc;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.25s ease;
+    filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.8));
+  }
+
+  .btn-settings-gear:hover {
+    color: #ffffff;
+    transform: rotate(60deg) scale(1.18);
+  }
+
+  .iq-player-level-xp-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1;
+  }
+
+  .iq-player-level-tag {
+    font-size: 12px;
+    font-weight: 800;
+    color: #e2e8f0;
+    white-space: nowrap;
+  }
+
+  .iq-topbar-xp-bar-wrap {
+    width: 140px;
+    height: 8px;
+    background: #120a2e;
+    border-radius: 8px;
+    border: 1px solid rgba(168, 85, 247, 0.45);
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+    position: relative;
+  }
+
+  .iq-topbar-xp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7c3aed 0%, #c084fc 100%);
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.95);
+    border-radius: 8px;
+    transition: width 0.4s ease;
+  }
+
+  .iq-topbar-xp-text {
+    font-size: 11px;
+    color: #cbd5e1;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  /* Recursos Superiores Derecha (Gemas, Dinero/Oro, Energía, Mensajes, Notificaciones) */
+  .iq-topbar-stats-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .iq-stat-pill {
+    background: rgba(16, 8, 38, 0.85);
+    border: 1.5px solid rgba(168, 85, 247, 0.45);
+    border-radius: 24px;
+    padding: 4px 6px 4px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 800;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    user-select: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .iq-stat-pill:hover {
+    border-color: rgba(192, 132, 252, 0.7);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  }
+
+  .iq-stat-pill.gemas i {
+    color: #e879f9;
+    font-size: 15px;
+    filter: drop-shadow(0 0 8px #d946ef);
+  }
+
+  .iq-stat-pill.oro i {
+    color: #fbbf24;
+    font-size: 15px;
+    filter: drop-shadow(0 0 8px #f59e0b);
+  }
+
+  .iq-stat-pill.energia i {
+    color: #c084fc;
+    font-size: 15px;
+    filter: drop-shadow(0 0 8px #a855f7);
+  }
+
+  .iq-stat-pill span {
+    color: #ffffff;
+    letter-spacing: 0.3px;
+  }
+
+  .iq-pill-btn-add {
+    background: rgba(88, 28, 135, 0.9);
+    border: 1px solid #c084fc;
+    color: #ffffff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+    padding: 0;
+  }
+
+  .iq-pill-btn-add:hover {
+    background: #9333ea;
+    transform: scale(1.15);
+    box-shadow: 0 0 12px rgba(192, 132, 252, 1);
+  }
+
+  .iq-topbar-icon-btn {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(16, 8, 38, 0.85);
+    border: 1.5px solid rgba(168, 85, 247, 0.45);
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    padding: 0;
+  }
+
+  .iq-topbar-icon-btn:hover {
+    color: #ffffff;
+    border-color: #c084fc;
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.8);
+    transform: scale(1.08);
+  }
+
+  .iq-icon-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 9.5px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #080318;
+    box-shadow: 0 0 8px #ef4444;
+    line-height: 1;
+  }
+
+  /* Botón Salir / Cerrar Sesión en Topbar */
+  .btn-topbar-exit {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1.5px solid rgba(239, 68, 68, 0.45);
+    color: #fca5a5 !important;
+    padding: 7px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none !important;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.22s ease;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.25);
+    user-select: none;
+    line-height: 1;
+    margin-left: 2px;
+  }
+
+  .btn-topbar-exit:hover {
+    background: #ef4444;
+    border-color: #f87171;
+    color: #ffffff !important;
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.75);
+    transform: translateY(-1px);
+  }
+
+  .btn-topbar-exit i {
+    font-size: 14.5px;
+    transition: transform 0.2s ease;
+  }
+
+  .btn-topbar-exit:hover i {
+    transform: translateX(2px);
+  }
+
+  /* ----------------------------------------------------------------- */
+  /* MODAL EXACTO DE PERFIL (IDÉNTICO A LA IMAGEN)                     */
+  /* ----------------------------------------------------------------- */
+  .iq-profile-modal-overlay,
+  .iq-global-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(4, 2, 14, 0.84);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .iq-profile-modal-overlay.active,
+  .iq-profile-modal-overlay.show,
+  .iq-global-modal-overlay.active,
+  .iq-global-modal-overlay.show {
+    display: flex !important;
+    opacity: 1 !important;
+  }
+
+  .iq-profile-card-exact {
+    position: relative;
+    width: 92%;
+    max-width: 680px;
+    background: linear-gradient(180deg, #130728 0%, #0c041c 100%);
+    border: 2px solid #a855f7;
+    border-radius: 28px;
+    padding: 38px 42px 32px 42px;
+    box-shadow: 0 0 35px rgba(168, 85, 247, 0.65), 0 0 85px rgba(124, 58, 237, 0.3), inset 0 0 16px rgba(168, 85, 247, 0.15);
+    color: #ffffff;
+    animation: iqProfilePopIn 0.25s ease forwards;
+    box-sizing: border-box;
+  }
+
+  @keyframes iqProfilePopIn {
+    from { transform: scale(0.94); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* Escudo Superior Central idéntico a la imagen */
+  .iq-profile-shield-crest {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 46px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.9));
+  }
+
+  /* Botón de Cierre Circular */
+  .iq-profile-close-btn {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(26, 13, 54, 0.85);
+    border: 1.5px solid rgba(168, 85, 247, 0.55);
+    color: #c084fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .iq-profile-close-btn:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+    transform: scale(1.08);
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.8);
+  }
+
+  /* Título PERFIL */
+  .iq-profile-title-exact {
+    text-align: center;
+    font-family: 'Cinzel', Georgia, 'Times New Roman', serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 7px;
+    text-transform: uppercase;
+    text-shadow: 0 0 14px rgba(192, 132, 252, 0.7);
+    margin: 0 0 28px 0;
+    line-height: 1.2;
+  }
+
+  /* Grid 2 Columnas */
+  .iq-profile-grid-exact {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+
+  @media (max-width: 660px) {
+    .iq-profile-grid-exact {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: 24px;
+    }
+  }
+
+  /* Columna Izquierda: Avatar Circular y Controles */
+  .iq-profile-avatar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .iq-profile-avatar-circle-frame {
+    position: relative;
+    width: 165px;
+    height: 165px;
+    border-radius: 50%;
+    border: 3px solid #c084fc;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.95), 0 0 50px rgba(147, 51, 234, 0.4), inset 0 0 15px rgba(168, 85, 247, 0.4);
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(12, 6, 26, 0.8) 75%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .iq-profile-avatar-img-exact {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    background: #14112e;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+  }
+
+  .iq-profile-avatar-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .btn-avatar-nav-arrow {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(22, 11, 48, 0.9);
+    border: 1.5px solid #a855f7;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+    transition: all 0.2s ease;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .btn-avatar-nav-arrow:hover {
+    background: #7c3aed;
+    border-color: #d8b4fe;
+    transform: scale(1.1);
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.9);
+  }
+
+  .btn-avatar-nav-action {
+    background: rgba(22, 11, 48, 0.9);
+    border: 1.5px solid #a855f7;
+    border-radius: 20px;
+    padding: 6px 14px;
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+    transition: all 0.2s ease;
+  }
+
+  .btn-avatar-nav-action:hover {
+    background: #7c3aed;
+    border-color: #d8b4fe;
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.9);
+  }
+
+  .btn-avatar-nav-action i {
+    color: #c084fc;
+    font-size: 13.5px;
+  }
+
+  /* Columna Derecha: Formulario (Alias & Nivel) */
+  .iq-profile-form-col {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+  }
+
+  .iq-profile-field-block {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .iq-profile-field-label-exact {
+    font-size: 13px;
+    font-weight: 700;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .iq-profile-field-label-exact i {
+    color: #c084fc;
+    font-size: 14.5px;
+  }
+
+  .iq-profile-alias-input-wrap {
+    position: relative;
+    background: rgba(14, 7, 34, 0.9);
+    border: 1.5px solid rgba(168, 85, 247, 0.5);
+    border-radius: 12px;
+    padding: 9px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+  }
+
+  .iq-profile-alias-input-wrap:focus-within {
+    border-color: #c084fc;
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.65);
+  }
+
+  .iq-profile-alias-input-field {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-size: 15.5px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    padding-right: 10px;
+  }
+
+  .iq-profile-alias-pencil {
+    color: #c084fc;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .iq-profile-alias-pencil:hover {
+    color: #ffffff;
+    transform: scale(1.15);
+  }
+
+  .iq-profile-level-card-exact {
+    background: rgba(14, 7, 34, 0.55);
+    border: 1.5px solid rgba(168, 85, 247, 0.35);
+    border-radius: 14px;
+    padding: 13px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-sizing: border-box;
+  }
+
+  .iq-profile-level-tag-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
+    border: 1.5px solid #c084fc;
+    box-shadow: 0 0 14px rgba(168, 85, 247, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .iq-profile-level-tag-badge span:first-child {
+    font-size: 9px;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .iq-profile-level-tag-badge span:last-child {
+    font-size: 18px;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.1;
+  }
+
+  .iq-profile-level-progress-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .iq-profile-level-bar-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(22, 11, 46, 0.95);
+    border-radius: 6px;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .iq-profile-level-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7c3aed 0%, #c084fc 100%);
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.9);
+    border-radius: 6px;
+    transition: width 0.35s ease;
+  }
+
+  .iq-profile-level-xp-text {
+    text-align: right;
+    font-size: 12px;
+    font-weight: 800;
+    color: #cbd5e1;
+    margin-top: 6px;
+  }
+
+  /* Botón Guardar Cambios Centrado */
+  .iq-profile-action-center {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-save-profile-exact {
+    background: linear-gradient(90deg, #7c3aed 0%, #9333ea 50%, #a855f7 100%);
+    border: 1.5px solid #d8b4fe;
+    color: #ffffff;
+    padding: 12px 42px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.8);
+    transition: all 0.25s ease;
+  }
+
+  .btn-save-profile-exact:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 35px rgba(192, 132, 252, 1);
+    filter: brightness(1.1);
+  }
+
+  .btn-save-profile-exact:active {
+    transform: translateY(0);
+  }
+
+  .btn-save-profile-exact i {
+    font-size: 17px;
+  }
+
+  .iq-profile-status-feedback {
+    min-height: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  /* Modales Estándar (Tienda, Mensajes, Notificaciones) */
+  .iq-global-modal-card {
+    background: linear-gradient(135deg, rgba(24, 12, 50, 0.96) 0%, rgba(12, 6, 30, 0.98) 100%);
+    border: 2px solid #a855f7;
+    border-radius: 20px;
+    box-shadow: 0 0 45px rgba(168, 85, 247, 0.5), inset 0 0 20px rgba(168, 85, 247, 0.15);
+    padding: 26px 30px;
+    position: relative;
+    max-width: 580px;
+    width: 92%;
+    color: #ffffff;
+    animation: iqModalIn 0.25s ease forwards;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+
+  @keyframes iqModalIn {
+    from { transform: scale(0.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .iq-global-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    color: #c084fc;
+    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .iq-global-modal-close:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+    transform: rotate(90deg);
+  }
+
+  .iq-global-modal-title {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+    padding-bottom: 12px;
+  }
+
+  .iq-global-input-group {
+    margin-bottom: 18px;
+  }
+
+  .iq-global-input-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #cbd5e1;
+    margin-bottom: 8px;
+    letter-spacing: 0.2px;
+  }
+
+  .iq-global-text-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(10, 5, 25, 0.8);
+    border: 1.5px solid rgba(168, 85, 247, 0.45);
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 14.5px;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+  }
+
+  .iq-global-text-input:focus {
+    border-color: #c084fc;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+  }
+
+  .iq-global-avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .iq-global-avatar-card {
+    background: rgba(14, 7, 34, 0.7);
+    border: 2px solid rgba(168, 85, 247, 0.3);
+    border-radius: 14px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .iq-global-avatar-card:hover {
+    border-color: #c084fc;
+    background: rgba(88, 28, 135, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+  }
+
+  .iq-global-avatar-card.selected {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.7);
+  }
+
+  .iq-global-avatar-card img {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #a855f7;
+  }
+
+  .iq-global-avatar-card.selected img {
+    border-color: #38bdf8;
+  }
+
+  .iq-global-avatar-name {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+
+  .iq-btn-primary-gothic {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px 18px;
+    background: linear-gradient(90deg, #7c3aed 0%, #9333ea 50%, #c084fc 100%);
+    border: none;
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 14.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.6);
+    transition: all 0.25s ease;
+  }
+
+  .iq-btn-primary-gothic:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 25px rgba(192, 132, 252, 0.9);
+  }
+
+  /* Grid de Tienda */
+  .iq-shop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .iq-shop-item-card {
+    background: rgba(14, 7, 34, 0.85);
+    border: 1.5px solid rgba(168, 85, 247, 0.35);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+
+  .iq-shop-item-card:hover {
+    border-color: #c084fc;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .iq-shop-item-icon {
+    font-size: 32px;
+  }
+
+  .iq-shop-item-title {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .iq-shop-item-desc {
+    font-size: 11px;
+    color: #94a3b8;
+  }
+
+  .iq-shop-item-btn {
+    background: rgba(88, 28, 135, 0.8);
+    border: 1px solid #c084fc;
+    color: #ffffff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .iq-shop-item-btn:hover {
+    background: #9333ea;
+    box-shadow: 0 0 12px rgba(192, 132, 252, 0.8);
+  }

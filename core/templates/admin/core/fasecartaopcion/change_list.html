@@ -1,0 +1,255 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}Barajas / Opciones de Cartas por Fase | ISO QUEST Admin{% endblock %}
+
+{% block extrastyle %}
+<link rel="stylesheet" href="{% static 'css/admin/core/fasecartaopcion/change_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="iq-deck-page">
+  <!-- CABECERA -->
+  <div class="iq-deck-header">
+    <div class="iq-deck-title-box">
+      <div class="iq-deck-title-icon">
+        <i class="bi bi-collection"></i>
+      </div>
+      <div class="iq-deck-title-text">
+        <h1 id="headerMainTitle">
+          Opciones de Cartas - Fase <span id="headerFaseNum">{{ selected_fase.numero_fase|default:"1" }}</span>
+        </h1>
+        <p>Configura las cartas disponibles para esta fase del caso</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARRA DE SELECCIÓN EN CASCADA (MUNDO -> NIVEL -> FASE) -->
+  <div class="iq-cascade-bar">
+    <!-- Bloque Mundo -->
+    <div class="iq-cascade-block">
+      <div class="iq-cascade-icon">
+        <i class="bi bi-globe2"></i>
+      </div>
+      <div class="iq-cascade-info">
+        <span class="iq-cascade-label">Mundo</span>
+        <select id="selectMundo" class="iq-cascade-select" title="Seleccionar Mundo">
+          {% for m in mundos_list %}
+          <option value="{{ m.id }}" {% if selected_mundo and selected_mundo.id == m.id %}selected{% endif %}>
+            {{ m.codigo_iso }}
+          </option>
+          {% endfor %}
+        </select>
+        <span id="subtextMundo" class="iq-cascade-subtext">
+          {{ selected_mundo.nombre_tematico|default:"Seguridad de la Información" }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Bloque Nivel -->
+    <div class="iq-cascade-block">
+      <div class="iq-cascade-icon">
+        <i class="bi bi-layers"></i>
+      </div>
+      <div class="iq-cascade-info">
+        <span class="iq-cascade-label">Nivel</span>
+        <select id="selectNivel" class="iq-cascade-select" title="Seleccionar Nivel">
+          {% for n in niveles_list %}
+          <option value="{{ n.id }}" {% if selected_nivel and selected_nivel.id == n.id %}selected{% endif %}>
+            {{ n.numero_nivel }} - {{ n.titulo }}
+          </option>
+          {% empty %}
+          <option value="">Sin niveles</option>
+          {% endfor %}
+        </select>
+        <span id="subtextNivel" class="iq-cascade-subtext">
+          {% if selected_nivel %}{{ selected_nivel.titulo }}{% else %}Selecciona un nivel{% endif %}
+        </span>
+      </div>
+    </div>
+
+    <!-- Bloque Fase -->
+    <div class="iq-cascade-block">
+      <div class="iq-cascade-icon">
+        <i class="bi bi-shield-lock"></i>
+      </div>
+      <div class="iq-cascade-info">
+        <span class="iq-cascade-label">Fase</span>
+        <select id="selectFase" class="iq-cascade-select" title="Seleccionar Fase de Caso">
+          {% for f in fases_list %}
+          <option value="{{ f.id }}" {% if selected_fase and selected_fase.id == f.id %}selected{% endif %}>
+            {{ f.numero_fase }} - {{ f.titulo_incidente }}
+          </option>
+          {% empty %}
+          <option value="">Sin fases creadas</option>
+          {% endfor %}
+        </select>
+        <span id="subtextFase" class="iq-cascade-subtext">
+          {% if selected_fase %}{{ selected_fase.titulo_incidente }}{% else %}Sin fase seleccionada{% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR PRINCIPAL: 2 COLUMNAS -->
+  <div class="iq-deck-grid">
+    <!-- COLUMNA PRINCIPAL (CARTAS DE LA FASE) -->
+    <div class="iq-card-panel">
+      <!-- Encabezado del Panel -->
+      <div class="iq-panel-head">
+        <div class="iq-panel-title">
+          <i class="bi bi-card-heading"></i>
+          <span>Cartas de la Fase</span>
+        </div>
+        <button type="button" id="btnOpenAddModal" class="btn-add-card">
+          <i class="bi bi-plus-circle-fill"></i>
+          <span>Agregar Carta</span>
+        </button>
+      </div>
+
+      <!-- Alerta Informativa -->
+      <div class="iq-info-pill">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>Máximo 5 cartas por fase. Actualmente: <strong id="cartasCountBadge">{{ cartas_asignadas_count }}/5</strong></span>
+      </div>
+
+      <!-- Lista de Cartas Asignadas -->
+      <div id="cartasContainer" class="iq-cards-list">
+        <!-- Renderizado dinámico vía JavaScript -->
+      </div>
+
+      <!-- Slot Dashed para agregar más cartas -->
+      <div id="addMoreSlot" class="iq-add-dashed-slot">
+        <div class="iq-add-dashed-title">
+          <i class="bi bi-plus-lg"></i>
+          <span>Agregar más cartas</span>
+        </div>
+        <div id="addMoreSubtext" class="iq-add-dashed-subtitle">
+          Puedes añadir hasta 2 cartas más (máximo 5)
+        </div>
+      </div>
+
+      <!-- Barra de Acciones al Pie -->
+      <div class="iq-actions-footer">
+        <button type="button" id="btnCancelChanges" class="btn-cancel">
+          <i class="bi bi-x-lg"></i>
+          <span>Cancelar</span>
+        </button>
+        <button type="button" id="btnSaveDeck" class="btn-save-deck">
+          <i class="bi bi-floppy2-fill"></i>
+          <span>Guardar Configuración</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- COLUMNA LATERAL (VISTA PREVIA Y VALIDACIÓN) -->
+    <div class="iq-side-col">
+      <!-- VISTA PREVIA DE LA FASE -->
+      <div class="iq-preview-card">
+        <div class="iq-preview-head">
+          <i class="bi bi-eye"></i>
+          <span>Vista Previa de la Fase</span>
+        </div>
+
+        <div class="iq-preview-art-wrap">
+          <img id="previewArtImg" src="/static/img/incidentes/preview_card_full.png" alt="Vista Previa de la Fase" class="iq-preview-art">
+          <div class="iq-preview-badge-fase">
+            Fase <span id="previewFaseNumBadge">{{ selected_fase.numero_fase|default:"1" }}</span>
+          </div>
+        </div>
+
+        <h4 id="previewFaseTitle" class="iq-preview-title">
+          {{ selected_fase.titulo_incidente|default:"Introducción a la Ciberseguridad" }}
+        </h4>
+
+        <div class="iq-preview-deck-box">
+          <div class="iq-preview-deck-title">
+            <span>Cartas disponibles (<span id="previewCountText">{{ cartas_asignadas_count }}/5</span>)</span>
+          </div>
+          <div id="previewCardsList" class="iq-preview-list">
+            <!-- Items de vista previa renderizados dinámicamente -->
+          </div>
+        </div>
+      </div>
+
+      <!-- REGLAS DE VALIDACIÓN -->
+      <div class="iq-rules-card">
+        <div class="iq-rules-head">
+          <i class="bi bi-shield-check"></i>
+          <span>Reglas de Validación</span>
+        </div>
+        <ul class="iq-rules-list">
+          <li>Máximo 5 cartas por fase.</li>
+          <li>Debe existir al menos 1 carta correcta.</li>
+          <li>Se valida automáticamente en el método clean() del modelo.</li>
+        </ul>
+        <div id="validationStatusBadge" class="iq-validation-status valid">
+          <i class="bi bi-check-circle-fill"></i>
+          <span id="validationStatusText">Cumple con todas las reglas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: AGREGAR CARTA DEL CATÁLOGO ACTIVO -->
+<div id="addCardModal" class="iq-modal-overlay">
+  <div class="iq-modal-card">
+    <div class="iq-modal-header">
+      <h3 class="iq-modal-title">
+        <i class="bi bi-collection-play-fill"></i>
+        <span>Agregar Carta a la Fase</span>
+      </h3>
+      <button type="button" id="btnCloseModal" class="btn-modal-close" title="Cerrar modal">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="iq-modal-filters">
+      <div class="iq-modal-search">
+        <i class="bi bi-search"></i>
+        <input type="text" id="inputSearchModal" placeholder="Buscar por nombre, norma ISO o concepto..." autocomplete="off">
+      </div>
+
+      <!-- Filtro por Estado de Asignación / Uso -->
+      <div class="iq-modal-usage-pills" id="usagePillsContainer">
+        <button type="button" class="iq-usage-filter-btn active" data-usage="ALL">
+          <i class="bi bi-collection-fill"></i> Todas las Cartas
+        </button>
+        <button type="button" class="iq-usage-filter-btn" data-usage="AVAILABLE">
+          <i class="bi bi-stars" style="color: #22d3ee;"></i> Disponibles (Sin usar)
+        </button>
+        <button type="button" class="iq-usage-filter-btn" data-usage="USED">
+          <i class="bi bi-layers-fill" style="color: #c084fc;"></i> Ya Agregadas / En Uso
+        </button>
+      </div>
+
+      <div id="isoPillsContainer" class="iq-modal-iso-pills">
+        <button type="button" class="iq-iso-pill active" data-iso="ALL">Todas las Normas</button>
+      </div>
+    </div>
+
+    <div id="modalCatalogBody" class="iq-modal-body">
+      <!-- Tarjetas del catálogo activas -->
+    </div>
+  </div>
+</div>
+
+<!-- TOAST FEEDBACK -->
+<div id="iqToast" class="iq-toast">
+  <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 18px;"></i>
+  <span id="toastMessage">Operación realizada con éxito.</span>
+</div>
+
+<script id="fasecarta-data" type="application/json">
+{
+  "jerarquia": {{ jerarquia_json|safe }},
+  "cartasActivas": {{ cartas_activas_json|safe }},
+  "currentMundoId": {{ selected_mundo.id|default:"null" }},
+  "currentNivelId": {{ selected_nivel.id|default:"null" }},
+  "currentFaseId": {{ selected_fase.id|default:"null" }},
+  "currentDeck": {{ cartas_asignadas_json|safe }}
+}
+</script>
+<script src="{% static 'js/admin/core/fasecartaopcion/change_list.js' %}"></script>
+{% endblock %}

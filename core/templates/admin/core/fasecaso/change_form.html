@@ -1,0 +1,391 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}{% if is_edit %}Editar Fase: {{ fase_obj.titulo_incidente }}{% else %}Crear Fase / Caso{% endif %} | ISO QUEST Admin{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/core/fasecaso/change_form.css' %}">
+
+<div class="iq-fase-editor-page">
+
+  <!-- ============================================================= -->
+  <!-- 1. CABECERA: TÍTULO Y SUBTÍTULO                                -->
+  <!-- ============================================================= -->
+  <div class="iq-editor-header">
+    <div class="iq-editor-header-icon">
+      <i class="bi bi-puzzle-fill"></i>
+    </div>
+    <div class="iq-editor-header-text">
+      <h1>{% if is_edit %}Editar Fase / Caso{% else %}Crear Fase / Caso{% endif %}</h1>
+      <p>Configura una fase del nivel con su incidente y recompensas</p>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- 2. TARJETAS DE CONTEXTO SUPERIORES: MUNDO Y NIVEL             -->
+  <!-- ============================================================= -->
+  <div class="iq-context-cards-row">
+    <!-- Tarjeta Mundo -->
+    <div class="iq-context-card">
+      <div class="iq-mundo-thumb-wrapper">
+        <img id="topMundoImg" src="{{ selected_mundo.imagen_url }}" alt="{{ selected_mundo.nombre_tematico }}" />
+      </div>
+      <div class="iq-context-info">
+        <div class="iq-context-header-line">
+          <span class="iq-context-tag">Mundo</span>
+        </div>
+        <select id="mundoSelector" class="iq-card-select" onchange="onMundoSelectChange(this.value)">
+          {% for m in mundos_list %}
+          <option value="{{ m.id }}" {% if selected_mundo.id == m.id %}selected{% endif %}>
+            {{ m.codigo_iso }} – {{ m.nombre_tematico }}
+          </option>
+          {% endfor %}
+        </select>
+        <div class="iq-context-desc" id="topMundoDesc">
+          {{ selected_mundo.descripcion_tematica }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta Nivel -->
+    <div class="iq-context-card">
+      <div class="iq-nivel-icon-box">
+        <i class="bi bi-layers-fill"></i>
+      </div>
+      <div class="iq-context-info">
+        <div class="iq-context-header-line">
+          <span class="iq-context-tag">Nivel</span>
+        </div>
+        <select id="nivelQuickSelector" class="iq-card-select" onchange="onNivelSelectChange(this.value)">
+          {% for n in niveles_list %}
+            {% if n.mundo_id == selected_mundo.id %}
+            <option value="{{ n.id }}" data-numero="{{ n.numero_nivel }}" data-titulo="{{ n.titulo }}" {% if selected_nivel.id == n.id %}selected{% endif %}>
+              {{ n.numero_nivel }} – {{ n.titulo }}
+            </option>
+            {% endif %}
+          {% endfor %}
+        </select>
+        <div class="iq-context-desc" id="topNivelDesc">
+          Aprende a proteger el acceso a la información.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- 3. GRID PRINCIPAL: FORMULARIO + VISTA PREVIA                  -->
+  <!-- ============================================================= -->
+  <div class="iq-editor-grid">
+
+    <!-- COLUMNA IZQUIERDA: FORMULARIO -->
+    <form method="post" id="faseForm" class="iq-form-container">
+      {% csrf_token %}
+
+      <!-- Soporte para Inline Formsets de Django Admin -->
+      {% for inline_admin_formset in inline_admin_formsets %}
+        {{ inline_admin_formset.formset.management_form }}
+        {% for inline_form in inline_admin_formset.formset %}
+          {% for hidden in inline_form.hidden_fields %}
+            {{ hidden }}
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+
+      <!-- Campo Oculto Nivel (sincronizado automáticamente con el selector superior) -->
+      <input type="hidden" name="nivel" id="id_nivel" value="{{ selected_nivel.id }}" required />
+
+      <!-- Banner de confirmación visual del Mundo y Nivel asignado -->
+      <div class="iq-assigned-banner">
+        <div class="iq-assigned-label">
+          <i class="bi bi-geo-alt-fill" style="color: #a855f7;"></i>
+          <span>Destino del Caso:</span>
+        </div>
+        <div class="iq-assigned-content">
+          <span class="iq-assigned-chip mundo" id="assignedMundoChip">{{ selected_mundo.codigo_iso }}</span>
+          <i class="bi bi-chevron-right iq-assigned-arrow"></i>
+          <span class="iq-assigned-chip nivel" id="assignedNivelChip">{{ selected_nivel.numero_nivel }} – {{ selected_nivel.titulo }}</span>
+        </div>
+      </div>
+
+      {% if form.errors %}
+      <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 10px; padding: 12px 16px; color: #fca5a5; font-size: 13px;">
+        <i class="bi bi-exclamation-triangle-fill" style="margin-right: 6px;"></i>
+        <strong>Por favor corrige los siguientes errores:</strong>
+        <ul style="margin: 6px 0 0 16px; padding: 0;">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+            <li>{{ field }}: {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- FILA 1: NÚMERO DE FASE Y TÍTULO DEL INCIDENTE -->
+      <div class="iq-form-row-2">
+        <!-- Número de Fase -->
+        <div class="iq-field-group">
+          <label for="id_numero_fase" class="iq-field-label">
+            Número de Fase <span class="iq-req">*</span>
+          </label>
+          <div class="iq-badge-input-wrapper">
+            <div class="iq-input-badge">#</div>
+            <input type="number"
+                   name="numero_fase"
+                   id="id_numero_fase"
+                   class="iq-badge-input"
+                   min="1"
+                   value="{{ form.numero_fase.value|default:1 }}"
+                   required
+                   oninput="syncPreview()" />
+            <div class="iq-stepper-btns">
+              <button type="button" class="iq-step-btn" onclick="stepNumber('id_numero_fase', 1)">▲</button>
+              <button type="button" class="iq-step-btn" onclick="stepNumber('id_numero_fase', -1)">▼</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Título del Incidente -->
+        <div class="iq-field-group">
+          <label for="id_titulo_incidente" class="iq-field-label">
+            Título del Incidente <span class="iq-req">*</span>
+          </label>
+          <div class="iq-badge-input-wrapper">
+            <div class="iq-input-badge">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <input type="text"
+                   name="titulo_incidente"
+                   id="id_titulo_incidente"
+                   class="iq-badge-input"
+                   placeholder="Acceso No Autorizado"
+                   maxlength="150"
+                   value="{{ form.titulo_incidente.value|default:'Acceso No Autorizado' }}"
+                   required
+                   oninput="syncPreview()" />
+          </div>
+        </div>
+      </div>
+
+      <!-- FILA 2: AMENAZA Y DIFICULTAD -->
+      <div class="iq-form-row-2">
+        <!-- Amenaza -->
+        <div class="iq-field-group">
+          <label for="id_amenaza" class="iq-field-label">
+            Amenaza <span class="iq-req">*</span>
+          </label>
+          <div class="iq-badge-input-wrapper">
+            <div class="iq-input-badge">
+              <i class="bi bi-shield-fill"></i>
+            </div>
+            <select name="amenaza" id="id_amenaza" class="iq-badge-select" required onchange="syncPreview()">
+              {% for a in amenazas_sugeridas %}
+              <option value="{{ a }}" {% if form.amenaza.value == a or not form.amenaza.value and forloop.first %}selected{% endif %}>
+                {{ a }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- Dificultad -->
+        <div class="iq-field-group">
+          <label for="id_dificultad" class="iq-field-label">
+            Dificultad <span class="iq-req">*</span>
+          </label>
+          <div class="iq-badge-input-wrapper">
+            <div class="iq-input-badge">
+              <i class="bi bi-bar-chart-fill"></i>
+            </div>
+            <div class="iq-diff-select-wrapper">
+              <span id="diffPillDisplay" class="iq-diff-pill-btn {{ form.dificultad.value|default:'normal' }}">
+                {% if form.dificultad.value == 'facil' %}Fácil{% elif form.dificultad.value == 'dificil' %}Difícil{% else %}Normal{% endif %}
+              </span>
+              <i class="bi bi-chevron-down iq-diff-chevron"></i>
+              <select name="dificultad" id="id_dificultad" class="iq-select-overlay" required onchange="onDiffChange(this)">
+                <option value="facil" {% if form.dificultad.value == 'facil' %}selected{% endif %}>Fácil</option>
+                <option value="normal" {% if form.dificultad.value == 'normal' or not form.dificultad.value %}selected{% endif %}>Normal</option>
+                <option value="dificil" {% if form.dificultad.value == 'dificil' %}selected{% endif %}>Difícil</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILA 3: CONTEXTO DEL CASO -->
+      <div class="iq-field-group">
+        <label for="id_caso_contexto" class="iq-field-label">
+          Contexto del Caso <span class="iq-req">*</span>
+        </label>
+        <div class="iq-badge-textarea-wrapper">
+          <div class="iq-textarea-badge">
+            <i class="bi bi-file-earmark-text-fill"></i>
+          </div>
+          <textarea name="caso_contexto"
+                    id="id_caso_contexto"
+                    class="iq-badge-textarea"
+                    rows="4"
+                    maxlength="500"
+                    placeholder="Un empleado recibe un correo sospechoso con un enlace para &quot;actualizar su cuenta&quot;. ¿Qué debe hacer?"
+                    required
+                    oninput="syncPreview()">{{ form.caso_contexto.value|default:'Un empleado recibe un correo sospechoso con un enlace para "actualizar su cuenta". ¿Qué debe hacer?' }}</textarea>
+          <span class="iq-textarea-counter-box" id="casoCounter">98/500</span>
+        </div>
+      </div>
+
+      <!-- FILA 4: RECOMPENSA ORO, RECOMPENSA XP Y ESTADO -->
+      <div class="iq-form-row-3">
+        <!-- Recompensa Oro -->
+        <div class="iq-field-group">
+          <label for="id_recompensa_oro" class="iq-field-label">
+            Recompensa Oro <span class="iq-req">*</span>
+          </label>
+          <div class="iq-badge-input-wrapper">
+            <div class="iq-input-badge">
+              <i class="bi bi-coin" style="color: #f59e0b;"></i>
+            </div>
+            <input type="number"
+                   name="recompensa_oro"
+                   id="id_recompensa_oro"
+                   class="iq-badge-input"
+                   min="0"
+                   value="{{ form.recompensa_oro.value|default:10 }}"
+                   required
+                   oninput="syncPreview()" />
+            <div class="iq-stepper-btns">
+              <button type="button" class="iq-step-btn" onclick="stepNumber('id_recompensa_oro', 5)">▲</button>
+              <button type="button" class="iq-step-btn" onclick="stepNumber('id_recompensa_oro', -5)">▼</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recompensa XP -->
+        <div class="iq-field-group">
+          <label for="id_recompensa_xp" class="iq-field-label">
+            Recompensa XP <span class="iq-req">*</span>
+          </label>
+          <div class="iq-badge-input-wrapper">
+            <div class="iq-input-badge">
+              <i class="bi bi-star-fill" style="color: #c084fc;"></i>
+            </div>
+            <input type="number"
+                   name="recompensa_xp"
+                   id="id_recompensa_xp"
+                   class="iq-badge-input"
+                   min="0"
+                   value="{{ form.recompensa_xp.value|default:20 }}"
+                   required
+                   oninput="syncPreview()" />
+            <div class="iq-stepper-btns">
+              <button type="button" class="iq-step-btn" onclick="stepNumber('id_recompensa_xp', 5)">▲</button>
+              <button type="button" class="iq-step-btn" onclick="stepNumber('id_recompensa_xp', -5)">▼</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado Toggle Switch -->
+        <div class="iq-field-group">
+          <label class="iq-field-label">Estado</label>
+          <div class="iq-toggle-container">
+            <label class="iq-switch">
+              <input type="checkbox"
+                     id="estadoToggle"
+                     {% if form.estado.value == 'activo' or not form.estado.value %}checked{% endif %}
+                     onchange="toggleEstado(this.checked)" />
+              <span class="iq-slider"></span>
+            </label>
+            <input type="hidden"
+                   name="estado"
+                   id="id_estado"
+                   value="{{ form.estado.value|default:'activo' }}" />
+            <span id="estadoText" class="iq-estado-text {% if form.estado.value == 'inactivo' %}inactivo{% endif %}">
+              {% if form.estado.value == 'inactivo' %}Inactivo{% else %}Activo{% endif %}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN: CANCELAR Y GUARDAR FASE -->
+      <div class="iq-form-actions">
+        <a href="/admin/core/fasecaso/" class="iq-btn-cancel">
+          <i class="bi bi-x-lg"></i> Cancelar
+        </a>
+        <button type="submit" name="_save" class="iq-btn-save">
+          <i class="bi bi-floppy-fill"></i> Guardar Fase
+        </button>
+      </div>
+
+    </form>
+
+    <!-- COLUMNA DERECHA: VISTA PREVIA (CARTA HOLOGRÁFICA) -->
+    <div class="iq-preview-container">
+      <div class="iq-preview-header">
+        <i class="bi bi-eye"></i>
+        <span>Vista Previa</span>
+      </div>
+
+      <!-- MARCO FUTURISTA / CYBERPUNK -->
+      <div class="iq-cyber-card-outer">
+        <div class="iq-cyber-card-inner">
+          
+          <!-- ARTE / IMAGEN DEL HACKER CON INCIDENTE -->
+          <div class="iq-cyber-art-box">
+            <img id="previewImage" src="/static/img/incidentes/hacker_art_hq.png" alt="Incidente Ciberseguridad" />
+            
+            <!-- CINTA / BADGE OVERLAY: FASE 1 -->
+            <div class="iq-fase-ribbon" id="previewFaseBadge">
+              Fase {{ form.numero_fase.value|default:1 }}
+            </div>
+          </div>
+
+          <!-- DETALLES DE LA CARTA -->
+          <div class="iq-cyber-card-body">
+            <h3 class="iq-cyber-incident-title" id="previewTitulo">
+              {{ form.titulo_incidente.value|default:'Acceso No Autorizado' }}
+            </h3>
+
+            <div class="iq-cyber-meta-pill">
+              <span id="previewAmenaza">Amenaza: {{ form.amenaza.value|default:'Phishing' }}</span>
+              <span>•</span>
+              <span id="previewDificultad">Dificultad: {{ form.dificultad.value|default:'Normal'|capfirst }}</span>
+            </div>
+
+            <p class="iq-cyber-case-text" id="previewContexto">
+              {{ form.caso_contexto.value|default:'Un empleado recibe un correo sospechoso con un enlace para "actualizar su cuenta". ¿Qué debe hacer?' }}
+            </p>
+          </div>
+
+          <!-- BARRA INFERIOR DE RECOMPENSAS -->
+          <div class="iq-cyber-rewards-bar">
+            <div class="iq-cyber-reward-item">
+              <i class="bi bi-coin iq-reward-coin"></i>
+              <span id="previewOro">{{ form.recompensa_oro.value|default:10 }}</span>
+            </div>
+            
+            <div class="iq-cyber-reward-divider"></div>
+
+            <div class="iq-cyber-reward-item">
+              <i class="bi bi-star-fill iq-reward-xp"></i>
+              <span id="previewXP">{{ form.recompensa_xp.value|default:20 }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ============================================================= -->
+<!-- JAVASCRIPT: SINCRONIZACIÓN EN TIEMPO REAL Y SELECTORES         -->
+<!-- ============================================================= -->
+<script id="fasecaso-data" type="application/json">
+{
+  "mundosData": {{ mundos_json|safe }},
+  "nivelesData": {{ niveles_json|safe }}
+}
+</script>
+<script src="{% static 'js/admin/core/fasecaso/change_form.js' %}"></script>
+{% endblock %}

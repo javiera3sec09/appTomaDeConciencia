@@ -1,0 +1,429 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}Auditoría Inmutable | ISO QUEST Admin{% endblock %}
+
+{% block extrastyle %}
+<link rel="stylesheet" href="{% static 'css/admin/core/registroauditoria/change_list.css' %}">
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="iq-audit-page">
+  <!-- CABECERA PRINCIPAL -->
+  <div class="iq-audit-header">
+    <div class="iq-audit-title-box">
+      <div class="iq-audit-title-icon">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div class="iq-audit-title-text">
+        <h1>Auditoría Inmutable</h1>
+        <p>Historial completo de acciones realizadas en el sistema</p>
+      </div>
+    </div>
+    <div class="iq-audit-header-actions">
+      <button type="button" class="btn-purge-audit" onclick="abrirModalDepurarAuditoria()">
+        <i class="bi bi-trash3-fill"></i>
+        <span>Borrar Acciones Antiguas</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- BARRA DE FILTROS SUPERIOR -->
+  <form id="auditFilterForm" method="GET" action="" class="iq-audit-filters">
+    <!-- Bloque 1: Rango de fechas -->
+    <div class="iq-filter-card">
+      <div class="iq-filter-icon">
+        <i class="bi bi-calendar3"></i>
+      </div>
+      <div class="iq-filter-info">
+        <span class="iq-filter-label">Rango de fechas</span>
+        <select name="rango" id="filterRango" class="iq-filter-select" onchange="document.getElementById('auditFilterForm').submit();">
+          <option value="30" {% if selected_rango == '30' %}selected{% endif %}>Últimos 30 días</option>
+          <option value="7" {% if selected_rango == '7' %}selected{% endif %}>Últimos 7 días</option>
+          <option value="hoy" {% if selected_rango == 'hoy' %}selected{% endif %}>Hoy</option>
+          <option value="todo" {% if selected_rango == 'todo' %}selected{% endif %}>Todo el historial</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Bloque 2: Usuario -->
+    <div class="iq-filter-card">
+      <div class="iq-filter-icon">
+        <i class="bi bi-person"></i>
+      </div>
+      <div class="iq-filter-info">
+        <span class="iq-filter-label">Usuario</span>
+        <select name="usuario" id="filterUsuario" class="iq-filter-select" onchange="document.getElementById('auditFilterForm').submit();">
+          <option value="todos" {% if not selected_usuario or selected_usuario == 'todos' %}selected{% endif %}>Todos</option>
+          {% for u in usuarios_list %}
+          <option value="{{ u.id }}" {% if selected_usuario == u.id|stringformat:"s" %}selected{% endif %}>
+            {{ u.alias|default:u.nombre_completo }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Bloque 3: Módulo -->
+    <div class="iq-filter-card">
+      <div class="iq-filter-icon">
+        <i class="bi bi-layers"></i>
+      </div>
+      <div class="iq-filter-info">
+        <span class="iq-filter-label">Módulo</span>
+        <select name="modulo" id="filterModulo" class="iq-filter-select" onchange="document.getElementById('auditFilterForm').submit();">
+          <option value="todos" {% if not selected_modulo or selected_modulo == 'todos' %}selected{% endif %}>Todos</option>
+          {% for mod in modulos_disponibles %}
+          <option value="{{ mod.valor }}" {% if selected_modulo == mod.valor %}selected{% endif %}>
+            {{ mod.nombre }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Bloque 4: Acción -->
+    <div class="iq-filter-card">
+      <div class="iq-filter-icon">
+        <i class="bi bi-lightning-charge"></i>
+      </div>
+      <div class="iq-filter-info">
+        <span class="iq-filter-label">Acción</span>
+        <select name="accion" id="filterAccion" class="iq-filter-select" onchange="document.getElementById('auditFilterForm').submit();">
+          <option value="todas" {% if not selected_accion or selected_accion == 'todas' %}selected{% endif %}>Todas</option>
+          {% for act in acciones_disponibles %}
+          <option value="{{ act.valor }}" {% if selected_accion == act.valor %}selected{% endif %}>
+            {{ act.nombre }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Botón Limpiar Filtros -->
+    <a href="?" class="btn-clear-filters" title="Restablecer todos los filtros">
+      <i class="bi bi-arrow-counterclockwise"></i>
+      <span>Limpiar filtros</span>
+    </a>
+  </form>
+
+  <!-- CONTENIDO: 2 COLUMNAS -->
+  <div class="iq-audit-grid">
+    <!-- COLUMNA IZQUIERDA: TABLA FORENSE -->
+    <div class="iq-audit-table-panel">
+      <div class="iq-audit-table-wrap">
+        <table class="iq-audit-table">
+          <thead>
+            <tr>
+              <th>Fecha y Hora</th>
+              <th>Usuario</th>
+              <th>Acción</th>
+              <th>Módulo</th>
+              <th>Registro ID</th>
+              <th>IP</th>
+              <th style="text-align: center;">Detalles</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in page_obj %}
+            <tr class="iq-audit-row {% if forloop.first %}active{% endif %}" data-id="{{ r.id }}" onclick="selectAuditRecord({{ r.id }});">
+              <td>
+                <span class="iq-audit-date">{{ r.created_at|date:"d/m/Y - H:i" }}</span>
+              </td>
+              <td>
+                <div class="iq-audit-user">
+                  <img src="{{ r.admin_avatar_url }}" alt="{{ r.admin_alias }}" class="iq-audit-user-avatar" onerror="this.src='/static/img/avatars/necromancer_1.png'">
+                  <span class="iq-audit-user-alias">{{ r.admin_alias }}</span>
+                </div>
+              </td>
+              <td>
+                {% if r.accion == 'EDITAR' %}
+                <span class="iq-action-badge editar">
+                  <i class="bi bi-pencil-fill"></i> EDITAR
+                </span>
+                {% elif r.accion == 'ELIMINAR' %}
+                <span class="iq-action-badge eliminar">
+                  <i class="bi bi-trash3-fill"></i> ELIMINAR
+                </span>
+                {% elif r.accion == 'CAMBIAR_CONFIG' %}
+                <span class="iq-action-badge cambiar_config">
+                  <i class="bi bi-gear-fill"></i> CAMBIAR_CONFIG
+                </span>
+                {% elif r.accion == 'REINICIAR_PROGRESO' %}
+                <span class="iq-action-badge reiniciar_progreso">
+                  <i class="bi bi-arrow-repeat"></i> REINICIAR_PROGRESO
+                </span>
+                {% else %}
+                <span class="iq-action-badge crear">
+                  <i class="bi bi-plus-circle-fill"></i> {{ r.get_accion_display }}
+                </span>
+                {% endif %}
+              </td>
+              <td>
+                <span class="iq-audit-module">{{ r.modulo_display }}</span>
+              </td>
+              <td>
+                <span class="iq-audit-regid">{{ r.registro_codigo }}</span>
+              </td>
+              <td>
+                <span class="iq-audit-ip">{{ r.direccion_ip|default:"127.0.0.1" }}</span>
+              </td>
+              <td style="text-align: center;">
+                <button type="button" class="btn-view-details" title="Ver detalles del registro" onclick="event.stopPropagation(); selectAuditRecord({{ r.id }});">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 40px; color: #8b95b5;">
+                <i class="bi bi-shield-slash" style="font-size: 28px; display: block; margin-bottom: 8px; color: #616b8d;"></i>
+                No se encontraron registros de auditoría para los filtros seleccionados.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGINACIÓN -->
+      <div class="iq-table-footer">
+        <span class="iq-showing-text">
+          Mostrando {{ page_obj.start_index|default:0 }} - {{ page_obj.end_index|default:0 }} de {{ total_registros }} registros
+        </span>
+        <div class="iq-pagination">
+          {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}&rango={{ selected_rango }}&usuario={{ selected_usuario }}&modulo={{ selected_modulo }}&accion={{ selected_accion }}" class="iq-page-btn" title="Página anterior">
+            <i class="bi bi-chevron-left"></i>
+          </a>
+          {% else %}
+          <span class="iq-page-btn disabled"><i class="bi bi-chevron-left"></i></span>
+          {% endif %}
+
+          {% for p in page_obj.paginator.page_range %}
+            {% if p == page_obj.number %}
+              <span class="iq-page-btn active">{{ p }}</span>
+            {% elif p > page_obj.number|add:"-3" and p < page_obj.number|add:"3" %}
+              <a href="?page={{ p }}&rango={{ selected_rango }}&usuario={{ selected_usuario }}&modulo={{ selected_modulo }}&accion={{ selected_accion }}" class="iq-page-btn">{{ p }}</a>
+            {% elif p == 1 or p == page_obj.paginator.num_pages %}
+              <a href="?page={{ p }}&rango={{ selected_rango }}&usuario={{ selected_usuario }}&modulo={{ selected_modulo }}&accion={{ selected_accion }}" class="iq-page-btn">{{ p }}</a>
+            {% elif p == page_obj.number|add:"-3" or p == page_obj.number|add:"3" %}
+              <span class="iq-page-btn disabled">...</span>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}&rango={{ selected_rango }}&usuario={{ selected_usuario }}&modulo={{ selected_modulo }}&accion={{ selected_accion }}" class="iq-page-btn" title="Página siguiente">
+            <i class="bi bi-chevron-right"></i>
+          </a>
+          {% else %}
+          <span class="iq-page-btn disabled"><i class="bi bi-chevron-right"></i></span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: PANEL DE DETALLES DEL REGISTRO -->
+    <div class="iq-details-panel">
+      <!-- Arte Cibernético del Escudo -->
+      <div class="iq-audit-art-card">
+        <img src="/static/img/incidentes/preview_card_full.png" alt="Registro Inmutable" class="iq-audit-art-img">
+        <div class="iq-audit-art-badge">
+          Registro Inmutable
+        </div>
+      </div>
+
+      <!-- Ficha de Detalles -->
+      <div class="iq-details-card">
+        <h3 class="iq-details-title">Detalles del Registro</h3>
+
+        <div class="iq-detail-row">
+          <span class="iq-detail-label"><i class="bi bi-calendar3"></i> Fecha y Hora:</span>
+          <span id="detFechaHora" class="iq-detail-val">
+            {{ selected_registro.created_at|date:"d/m/Y - H:i:s"|default:"-" }}
+          </span>
+        </div>
+
+        <div class="iq-detail-row">
+          <span class="iq-detail-label"><i class="bi bi-person-fill"></i> Usuario:</span>
+          <span id="detUsuario" class="iq-detail-val">
+            {{ selected_registro.admin_alias|default:"admin" }}
+          </span>
+        </div>
+
+        <div class="iq-detail-row">
+          <span class="iq-detail-label"><i class="bi bi-lightning-charge-fill"></i> Acción:</span>
+          <span id="detAccion" class="iq-detail-val">
+            {% if selected_registro %}
+              {% if selected_registro.accion == 'EDITAR' %}
+              <span class="iq-action-badge editar"><i class="bi bi-pencil-fill"></i> EDITAR</span>
+              {% elif selected_registro.accion == 'ELIMINAR' %}
+              <span class="iq-action-badge eliminar"><i class="bi bi-trash3-fill"></i> ELIMINAR</span>
+              {% elif selected_registro.accion == 'CAMBIAR_CONFIG' %}
+              <span class="iq-action-badge cambiar_config"><i class="bi bi-gear-fill"></i> CAMBIAR_CONFIG</span>
+              {% elif selected_registro.accion == 'REINICIAR_PROGRESO' %}
+              <span class="iq-action-badge reiniciar_progreso"><i class="bi bi-arrow-repeat"></i> REINICIAR_PROGRESO</span>
+              {% else %}
+              <span class="iq-action-badge crear"><i class="bi bi-plus-circle-fill"></i> {{ selected_registro.get_accion_display }}</span>
+              {% endif %}
+            {% else %}
+              -
+            {% endif %}
+          </span>
+        </div>
+
+        <div class="iq-detail-row">
+          <span class="iq-detail-label"><i class="bi bi-box-seam-fill"></i> Módulo Afectado:</span>
+          <span id="detModulo" class="iq-detail-val">
+            {{ selected_registro.modulo_display|default:"-" }}
+          </span>
+        </div>
+
+        <div class="iq-detail-row">
+          <span class="iq-detail-label"><i class="bi bi-file-earmark-text-fill"></i> Registro ID:</span>
+          <span id="detRegistroId" class="iq-detail-val" style="font-family: monospace; color: #94a3b8;">
+            {{ selected_registro.registro_codigo|default:"-" }}
+          </span>
+        </div>
+
+        <div class="iq-detail-row">
+          <span class="iq-detail-label"><i class="bi bi-globe"></i> Dirección IP:</span>
+          <span id="detDireccionIp" class="iq-detail-val" style="font-family: monospace; color: #94a3b8;">
+            {{ selected_registro.direccion_ip|default:"127.0.0.1" }}
+          </span>
+        </div>
+
+        <!-- Subsección Datos del Cambio -->
+        <div class="iq-changes-section">
+          <div class="iq-changes-title">
+            <span>Datos del Cambio</span>
+            <i class="bi bi-chevron-right" style="font-size: 11px;"></i>
+          </div>
+          <div class="iq-changes-grid">
+            <div>
+              <div class="iq-json-box-title">Datos Anteriores:</div>
+              <div id="detDatosAnteriores" class="iq-json-box">
+                {{ selected_registro.datos_anteriores|default:"{}" }}
+              </div>
+            </div>
+            <div>
+              <div class="iq-json-box-title">Datos Nuevos:</div>
+              <div id="detDatosNuevos" class="iq-json-box">
+                {{ selected_registro.datos_nuevos|default:"{}" }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Inferior de Inmutabilidad -->
+      <div class="iq-immutable-notice">
+        <div class="iq-immutable-icon">
+          <i class="bi bi-lock-fill"></i>
+        </div>
+        <div class="iq-immutable-text">
+          Este registro es inmutable y no puede ser modificado o eliminado.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL DE DEPURACIÓN / BORRADO DE REGISTROS DE AUDITORÍA -->
+<div class="iq-modal-overlay" id="modalDepurarAuditoria" onclick="cerrarModalDepurarAuditoria(event)">
+  <div class="iq-modal-card iq-modal-card-danger" onclick="event.stopPropagation()">
+    <div class="iq-modal-header iq-modal-header-danger">
+      <h3>
+        <i class="bi bi-trash3-fill" style="color: #ef4444;"></i>
+        <span>Borrar Acciones de Auditoría</span>
+      </h3>
+      <button type="button" class="iq-modal-close" onclick="cerrarModalDepurarAuditoriaDirecto()">&times;</button>
+    </div>
+    <div class="iq-modal-body">
+      <div class="iq-reset-warning-banner">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>
+          <strong>¡Acción de Depuración del Historial!</strong>
+          <p>Esta operación eliminará permanentemente las acciones de auditoría registradas por administradores según la antigüedad que selecciones.</p>
+        </div>
+      </div>
+
+      <!-- Selector de Antigüedad -->
+      <div class="iq-purge-field-group">
+        <label for="purgeTiempoSelect" class="iq-purge-label">
+          <i class="bi bi-calendar-x"></i> Antigüedad a borrar:
+        </label>
+        <select id="purgeTiempoSelect" class="iq-purge-select" onchange="actualizarPreviewPurge()">
+          <option value="1" selected>Más antiguos de 1 mes (más de 30 días)</option>
+          <option value="2">Más antiguos de 2 meses (más de 60 días)</option>
+          <option value="3">Más antiguos de 3 meses (más de 90 días)</option>
+          <option value="6">Más antiguos de 6 meses (más de 180 días)</option>
+          <option value="12">Más antiguos de 1 año (más de 365 días)</option>
+          <option value="all">Todo el historial (Eliminar todas las acciones)</option>
+        </select>
+      </div>
+
+      <!-- Selector de Administrador Responsable -->
+      <div class="iq-purge-field-group">
+        <label for="purgeAdminSelect" class="iq-purge-label">
+          <i class="bi bi-person-badge"></i> Administrador responsable:
+        </label>
+        <select id="purgeAdminSelect" class="iq-purge-select" onchange="actualizarPreviewPurge()">
+          <option value="todos" selected>Todos los administradores</option>
+          {% for u in usuarios_list %}
+          <option value="{{ u.id }}">{{ u.alias|default:u.nombre_completo }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Selector de Tipo de Acción -->
+      <div class="iq-purge-field-group">
+        <label for="purgeAccionSelect" class="iq-purge-label">
+          <i class="bi bi-lightning-charge"></i> Tipo de acción:
+        </label>
+        <select id="purgeAccionSelect" class="iq-purge-select" onchange="actualizarPreviewPurge()">
+          <option value="todas" selected>Todas las acciones</option>
+          {% for act in acciones_disponibles %}
+          <option value="{{ act.valor }}">{{ act.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Tarjeta Dinámica de Registros Afectados -->
+      <div class="iq-purge-preview-card">
+        <div class="iq-purge-preview-icon">
+          <i class="bi bi-info-circle-fill"></i>
+        </div>
+        <div class="iq-purge-preview-info">
+          <span class="iq-purge-preview-title">Registros coincidentes:</span>
+          <span id="purgeCountPreview" class="iq-purge-preview-count">Calculando...</span>
+        </div>
+      </div>
+
+      <!-- Checkbox de Confirmación -->
+      <div class="iq-purge-confirm-checkbox">
+        <label class="iq-checkbox-container">
+          <input type="checkbox" id="checkConfirmarPurge" onchange="verificarConfirmacionPurge(this.checked)">
+          <span class="iq-checkbox-text">Confirmo que deseo eliminar definitivamente los registros de auditoría seleccionados.</span>
+        </label>
+      </div>
+
+      <!-- Acciones del Modal -->
+      <div class="iq-modal-footer-actions">
+        <button type="button" class="iq-btn-cancelar" onclick="cerrarModalDepurarAuditoriaDirecto()">Cancelar</button>
+        <button type="button" id="btnEjecutarPurge" class="iq-btn-danger-confirm" disabled onclick="ejecutarPurgeAuditoria()">
+          <i class="bi bi-trash3-fill"></i>
+          <span>Eliminar Registros</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="registroauditoria-data" type="application/json">
+{{ registros_json|safe }}
+</script>
+<script src="{% static 'js/admin/core/registroauditoria/change_list.js' %}"></script>
+{% endblock %}

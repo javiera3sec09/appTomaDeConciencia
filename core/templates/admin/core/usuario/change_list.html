@@ -1,0 +1,601 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}Usuarios y Colaboradores | ISO QUEST Admin{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/core/usuario/change_list.css' %}">
+
+<div class="iq-users-page">
+  <!-- 1. Cabecera Principal -->
+  <div class="iq-users-header">
+    <div class="iq-users-title">
+      <div class="iq-users-title-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <div>
+        <h1>Usuarios</h1>
+        <p>Gestiona los colaboradores y su progreso en la plataforma</p>
+      </div>
+    </div>
+
+    <div class="iq-users-actions">
+      <a href="/admin/core/usuario/add/" class="btn-new-user">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>Nuevo Usuario</span>
+      </a>
+
+      <a href="/admin/quick-reset-progress/" onclick="return confirm('¿Confirmas el reinicio masivo del progreso de todos los colaboradores?');" class="btn-bulk-reset">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
+          <polyline points="1 4 1 10 7 10"></polyline>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+        </svg>
+        <span>Reiniciar progreso masivo</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 2. Tarjetas KPI de Usuarios -->
+  <div class="iq-users-kpis">
+    <div class="iq-ukpi-card">
+      <div class="iq-ukpi-icon uicon-purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <div class="iq-ukpi-info">
+        <span class="iq-ukpi-label">Total de usuarios</span>
+        <span class="iq-ukpi-val">{{ kpi_total_usuarios|intcomma }}</span>
+        <span class="iq-ukpi-sub" style="color: #10b981;">{{ kpi_usuarios_activos }} activos en plataforma</span>
+      </div>
+    </div>
+
+    <div class="iq-ukpi-card">
+      <div class="iq-ukpi-icon uicon-green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <polyline points="16 11 18 13 22 9"></polyline>
+        </svg>
+      </div>
+      <div class="iq-ukpi-info">
+        <span class="iq-ukpi-label">Usuarios activos</span>
+        <span class="iq-ukpi-val">{{ kpi_usuarios_activos|intcomma }}</span>
+        <span class="iq-ukpi-sub" style="color: var(--text-muted);">{{ pct_activos }}% del total</span>
+      </div>
+    </div>
+
+    <div class="iq-ukpi-card">
+      <div class="iq-ukpi-icon uicon-gray">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="7" r="4"></circle>
+          <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
+        </svg>
+      </div>
+      <div class="iq-ukpi-info">
+        <span class="iq-ukpi-label">Usuarios inactivos</span>
+        <span class="iq-ukpi-val">{{ kpi_usuarios_inactivos|intcomma }}</span>
+        <span class="iq-ukpi-sub" style="color: var(--text-muted);">{{ pct_inactivos }}% del total</span>
+      </div>
+    </div>
+
+    <div class="iq-ukpi-card">
+      <div class="iq-ukpi-icon uicon-violet">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 3h12l4 6-10 12L2 9z"></path>
+        </svg>
+      </div>
+      <div class="iq-ukpi-info">
+        <span class="iq-ukpi-label">Administradores</span>
+        <span class="iq-ukpi-val">{{ kpi_total_administradores|intcomma }}</span>
+        <span class="iq-ukpi-sub" style="color: var(--text-muted);">{{ pct_admin }}% del total</span>
+      </div>
+    </div>
+
+    <div class="iq-ukpi-card">
+      <div class="iq-ukpi-icon uicon-blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+          <line x1="6" y1="12" x2="10" y2="12"></line>
+          <line x1="8" y1="10" x2="8" y2="14"></line>
+          <line x1="15" y1="13" x2="15.01" y2="13"></line>
+          <line x1="18" y1="11" x2="18.01" y2="11"></line>
+        </svg>
+      </div>
+      <div class="iq-ukpi-info">
+        <span class="iq-ukpi-label">Jugadores</span>
+        <span class="iq-ukpi-val">{{ kpi_total_jugadores|intcomma }}</span>
+        <span class="iq-ukpi-sub" style="color: var(--text-muted);">{{ pct_jugadores }}% del total</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Barra de Búsqueda y Filtros -->
+  <div class="iq-filter-bar">
+    <div class="iq-search-input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="userSearchInput" class="iq-search-input" placeholder="Buscar por nombre, alias o correo...">
+    </div>
+
+    <select id="roleFilterSelect" class="iq-filter-select">
+      <option value="">Todos los roles</option>
+      <option value="empleado_jugador">Empleado / Jugador</option>
+      <option value="administrador">Administrador</option>
+    </select>
+
+    <select id="statusFilterSelect" class="iq-filter-select">
+      <option value="">Todos los estados</option>
+      <option value="activo">Activo</option>
+      <option value="inactivo">Inactivo</option>
+    </select>
+
+    <button type="button" class="iq-btn-filter" id="btnFilterTrigger">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+      </svg>
+      <span>Filtrar</span>
+    </button>
+  </div>
+
+  <!-- 4. Vista Dividida: Lista de Usuarios (Se minimiza al abrir el perfil) -->
+  <div class="iq-users-split-view" id="usersSplitView">
+    <!-- COLUMNA IZQUIERDA: TABLA Y DETALLE -->
+    <div class="iq-users-left-col">
+      <div class="iq-panel-card">
+        <div class="iq-panel-card-head">
+          <h3>Lista de Usuarios</h3>
+          <span class="iq-panel-hint" id="tableHintText">👆 Haz clic en un usuario o pulsa ✏️ para ver y editar su perfil</span>
+        </div>
+        
+        <div class="iq-tbl-responsive">
+          <table class="iq-table" id="usersTable">
+            <colgroup>
+              <col class="col-id">
+              <col class="col-name">
+              <col class="col-alias">
+              <col class="col-email">
+              <col class="col-area">
+              <col class="col-rol">
+              <col class="col-status">
+              <col class="col-actions">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre completo</th>
+                <th>Alias</th>
+                <th>Correo</th>
+                <th>Área</th>
+                <th>Rol</th>
+                <th style="text-align: center;">Estado</th>
+                <th style="text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="usersTbody">
+              {% for u in cl.result_list %}
+              <tr class="iq-utbody-row" 
+                  data-id="{{ u.id }}" 
+                  data-name="{{ u.nombre_completo }}"
+                  data-alias="{{ u.alias }}"
+                  data-email="{{ u.correo }}"
+                  data-area="{{ u.area }}"
+                  data-rol="{{ u.rol }}"
+                  data-status="{{ u.estado }}"
+                  onclick="seleccionarUsuario({{ u.id }}, this)">
+                <td><strong>{{ u.id }}</strong></td>
+                <td>
+                  <div class="iq-tbl-user">
+                    <div class="iq-tbl-avatar">
+                      <img src="{{ u.avatar_url }}" alt="{{ u.alias }}" loading="lazy">
+                    </div>
+                    <span class="iq-tbl-name" title="{{ u.nombre_completo }}">{{ u.nombre_completo }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="iq-cell-ellipsis" style="color: #93c5fd; font-family: monospace;" title="{{ u.alias }}">{{ u.alias }}</span>
+                </td>
+                <td>
+                  <span class="iq-cell-ellipsis" style="color: #cbd5e1;" title="{{ u.correo }}">{{ u.correo }}</span>
+                </td>
+                <td>
+                  <span class="iq-cell-ellipsis" style="color: #c4b5fd;" title="{{ u.area }}">{{ u.area }}</span>
+                </td>
+                <td>
+                  <span class="iq-cell-ellipsis" style="color: #94a3b8; font-size: 11px;" title="{{ u.rol }}">{{ u.rol }}</span>
+                </td>
+                <td style="text-align: center;">
+                  <span class="iq-badge-pill {% if u.estado == 'activo' %}pill-activo{% else %}pill-inactivo{% endif %}" id="badge-status-{{ u.id }}">
+                    {{ u.get_estado_display }}
+                  </span>
+                </td>
+                <td style="text-align: right;">
+                  <div class="iq-row-actions" onclick="event.stopPropagation();">
+                    <button type="button" class="iq-act-btn" title="Ver Perfil" onclick="seleccionarUsuario({{ u.id }})">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                    <button type="button" class="iq-act-btn" title="Editar Usuario y Estado" onclick="activarEdicionUsuario({{ u.id }})">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button type="button" class="iq-act-btn btn-act-delete" title="Eliminar Usuario y resecuenciar IDs" onclick="eliminarUsuario({{ u.id }}, '{{ u.alias|escapejs }}')" style="color: #ef4444;">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">No se encontraron usuarios en este filtro.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginador -->
+        <div class="iq-tbl-pagination">
+          <span>Mostrando 1 - {{ cl.result_list.count }} de {{ kpi_total_usuarios }} usuarios</span>
+          <div class="iq-pages-btns">
+            <span class="iq-pg-btn">&lsaquo;</span>
+            <span class="iq-pg-btn active">1</span>
+            <span class="iq-pg-btn">2</span>
+            <span class="iq-pg-btn">3</span>
+            <span class="iq-pg-btn">4</span>
+            <span class="iq-pg-btn">5</span>
+            <span style="color: var(--text-muted); font-size: 11px;">...</span>
+            <span class="iq-pg-btn">25</span>
+            <span class="iq-pg-btn">&rsaquo;</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Caja Inferior: Detalle de Usuario -->
+      <div class="iq-subdetail-box" id="subdetailBox">
+        <div class="iq-subdetail-col">
+          <h3>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#a855f7" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Detalle de Usuario
+          </h3>
+          <div class="iq-detail-grid">
+            <span class="dt-lbl">ID</span><span class="dt-val" id="dtId">1</span>
+            <span class="dt-lbl">Nombre completo</span><span class="dt-val" id="dtName">Juan Pérez García</span>
+            <span class="dt-lbl">Alias</span><span class="dt-val" style="color: #93c5fd;" id="dtAlias">juanperez</span>
+            <span class="dt-lbl">Correo</span><span class="dt-val" id="dtEmail">juan@empresa.com</span>
+            <span class="dt-lbl">Área</span><span class="dt-val" id="dtArea">Compliance</span>
+            <span class="dt-lbl">Rol</span><span class="dt-val" id="dtRol">empleado_jugador</span>
+            <span class="dt-lbl">Estado</span><span class="dt-val"><span class="iq-badge-pill pill-activo" id="dtEstado">Activo</span></span>
+          </div>
+        </div>
+
+        <div class="iq-subdetail-col">
+          <h3>Información de Creación y Actualización</h3>
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 12px;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8b5cf6" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <div>
+                <div style="color: var(--text-muted); font-size: 11px;">Creado el</div>
+                <strong style="color: #ffffff;" id="dtCreated">10 abr. 2025 10:15</strong>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 12px;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8b5cf6" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <div>
+                <div style="color: var(--text-muted); font-size: 11px;">Actualizado el</div>
+                <strong style="color: #ffffff;" id="dtUpdated">10 abr. 2025 14:20</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: PANEL LATERAL DE PERFIL DE USUARIO DINÁMICO -->
+    <div class="iq-profile-panel" id="userProfilePanel">
+      <!-- Botón de Cerrar Panel (Vuelve a expandir la tabla a ancho completo) -->
+      <div class="iq-profile-top-actions">
+        <button type="button" class="btn-close-panel" onclick="cerrarPanelPerfil()" title="Cerrar panel y expandir tabla de usuarios">
+          &times;
+        </button>
+      </div>
+
+      <!-- 1. IDENTIDAD SUPERIOR -->
+      <div class="iq-profile-header">
+        <div class="iq-avatar-large" id="profAvatar" style="overflow: hidden; padding: 0; border: 2.5px solid #a855f7; box-shadow: 0 0 16px rgba(168, 85, 247, 0.5);">
+          <img id="profAvatarImg" src="/static/img/avatars/necromancer_1.png" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">
+        </div>
+        <div class="iq-profile-identity">
+          <div class="iq-name-row">
+            <h2 id="profNombre">Juan Pérez García</h2>
+            <span class="iq-badge-pill pill-activo" id="profBadgeEstado">Activo</span>
+          </div>
+          <div class="iq-profile-sub">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span id="profAliasText">Alias: juanperez</span>
+          </div>
+          <div class="iq-profile-sub">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <span id="profEmailText">juan@empresa.com</span>
+          </div>
+          <div class="iq-profile-tags">
+            <span class="iq-ptag">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span id="profAreaBadge">Compliance</span>
+            </span>
+            <span class="iq-ptag">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="8" cy="12" r="2"></circle><circle cx="16" cy="12" r="2"></circle></svg>
+              <span id="profRolBadge">Empleado jugador</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. PESTAÑAS DEL PERFIL -->
+      <div class="iq-profile-tabs">
+        <div class="iq-ptab" onclick="cambiarTabPerfil('info')">Información</div>
+        <div class="iq-ptab active" onclick="cambiarTabPerfil('progreso')">Progreso</div>
+        <div class="iq-ptab" onclick="cambiarTabPerfil('historial')">Historial</div>
+        <div class="iq-ptab" onclick="cambiarTabPerfil('auditoria')">Auditoría</div>
+      </div>
+
+      <!-- 3. CONTENIDO EN MODO VISTA (PROGRESO) -->
+      <div class="iq-tab-content" id="tabContentProgreso">
+        <span class="iq-progress-headline">Progreso del Jugador</span>
+
+        <!-- Nivel y Barra XP -->
+        <div class="iq-level-bar-box">
+          <div class="iq-level-labels">
+            <span style="color: #ffffff; display: flex; align-items: center; gap: 6px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#a855f7" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              <span id="profNivelText">Nivel 5</span>
+            </span>
+            <span style="color: var(--text-muted); font-size: 11px;" id="profXpText">320 / 500 XP</span>
+          </div>
+          <div class="iq-xp-bar-bg">
+            <div class="iq-xp-bar-fill" id="profXpBar" style="width: 64%;"></div>
+          </div>
+        </div>
+
+        <!-- 3 Tarjetas de Economía -->
+        <div class="iq-eco-grid">
+          <div class="iq-eco-card">
+            <div class="iq-eco-icon icon-gold">🪙</div>
+            <div class="iq-eco-info">
+              <span class="iq-eco-lbl">Oro</span>
+              <span class="iq-eco-val" id="profOroVal">1,240</span>
+            </div>
+          </div>
+
+          <div class="iq-eco-card">
+            <div class="iq-eco-icon icon-violet">💎</div>
+            <div class="iq-eco-info">
+              <span class="iq-eco-lbl">Gemas</span>
+              <span class="iq-eco-val" id="profGemasVal">85</span>
+            </div>
+          </div>
+
+          <div class="iq-eco-card">
+            <div class="iq-eco-icon icon-red">❤️</div>
+            <div class="iq-eco-info">
+              <span class="iq-eco-lbl">Vidas</span>
+              <span class="iq-eco-val" id="profVidasVal">3/3</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cajas de Fechas de Reinicio -->
+        <div class="iq-meta-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <div class="iq-meta-texts">
+            <span class="t-lbl">Último reinicio de vidas</span>
+            <span class="t-val" id="profReinicioVidas">10 abr. 2025 12:30</span>
+          </div>
+        </div>
+
+        <div class="iq-meta-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+          <div class="iq-meta-texts">
+            <span class="t-lbl">Último reinicio de progreso</span>
+            <span class="t-val" id="profReinicioProgreso">Sin reinicio</span>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <button type="button" class="btn-profile-reset" id="btnResetSelectedUser" onclick="reiniciarProgresoUsuarioActual()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          <span>Reiniciar progreso de jugador</span>
+        </button>
+
+        <button type="button" class="btn-profile-edit" onclick="alternarModoEdicion(true)">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          <span>Editar datos y estado activo/inactivo</span>
+        </button>
+
+        <button type="button" class="btn-profile-pwd" onclick="alternarModoPassword(true)">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>Cambiar contraseña del usuario</span>
+        </button>
+      </div>
+
+      <!-- CONTENIDO EN MODO VISTA (INFORMACIÓN) -->
+      <div class="iq-tab-content" id="tabContentInfo" style="display: none;">
+        <span class="iq-progress-headline">Datos del Colaborador</span>
+        <div class="iq-meta-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <div class="iq-meta-texts">
+            <span class="t-lbl">Nombre y Alias</span>
+            <span class="t-val" id="infoNombreAlias">-</span>
+          </div>
+        </div>
+
+        <div class="iq-meta-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <div class="iq-meta-texts">
+            <span class="t-lbl">Correo Electrónico</span>
+            <span class="t-val" id="infoCorreo">-</span>
+          </div>
+        </div>
+
+        <div class="iq-meta-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <div class="iq-meta-texts">
+            <span class="t-lbl">Área y Rol</span>
+            <span class="t-val" id="infoAreaRol">-</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-profile-pwd" onclick="alternarModoPassword(true)">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>🔑 Cambiar contraseña</span>
+        </button>
+
+        <button type="button" class="btn-profile-edit" onclick="alternarModoEdicion(true)">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          <span>✏️ Editar datos y estado</span>
+        </button>
+
+        <button type="button" class="btn-profile-delete" onclick="eliminarUsuarioActual()" style="margin-top: 6px; width: 100%; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 9px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; transition: all 0.2s ease;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <span>🗑️ Eliminar Usuario</span>
+        </button>
+      </div>
+
+      <!-- 4. MODO EDICIÓN EN EL PANEL LATERAL (AL DARLE A EDITAR) -->
+      <form id="editUserForm" class="iq-edit-form" onsubmit="guardarEdicionUsuario(event)">
+        <h3 style="margin: 0 0 6px 0; font-size: 13.5px; font-weight: 700; color: #a855f7; display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          Editar Datos del Colaborador
+        </h3>
+
+        <div class="iq-form-group">
+          <label>Nombre Completo</label>
+          <input type="text" id="editNombre" required>
+        </div>
+
+        <div class="iq-form-group">
+          <label>Alias / Gamertag</label>
+          <input type="text" id="editAlias" required>
+        </div>
+
+        <div class="iq-form-group">
+          <label>Correo Electrónico</label>
+          <input type="email" id="editEmail" required>
+        </div>
+
+        <div class="iq-form-group">
+          <label>Área Organizacional</label>
+          <input type="text" id="editArea" required list="areasDatalist">
+          <datalist id="areasDatalist">
+            {% for a in areas_list %}
+            <option value="{{ a }}">
+            {% endfor %}
+          </datalist>
+        </div>
+
+        <div class="iq-form-group">
+          <label>Rol en Plataforma</label>
+          <select id="editRol">
+            <option value="empleado_jugador">Empleado / Jugador</option>
+            <option value="administrador">Administrador</option>
+          </select>
+        </div>
+
+        <!-- Selector de Estado Activo o Inactivo -->
+        <div class="iq-form-group">
+          <label>Estado del Colaborador</label>
+          <div class="iq-status-selector">
+            <div class="iq-status-opt selected-active" id="optActivo" onclick="setEstadoForm('activo')">
+              ✓ Activo
+            </div>
+            <div class="iq-status-opt" id="optInactivo" onclick="setEstadoForm('inactivo')">
+              ✕ Inactivo
+            </div>
+          </div>
+          <input type="hidden" id="editEstado" value="activo">
+        </div>
+
+        <div class="iq-edit-actions">
+          <button type="submit" class="btn-save-edit" id="btnSaveUserEdit">
+            💾 Guardar Cambios
+          </button>
+          <button type="button" class="btn-cancel-edit" onclick="alternarModoEdicion(false)">
+            Cancelar
+          </button>
+        </div>
+      </form>
+
+      <!-- 5. MODO CAMBIO DE CONTRASEÑA INDEPENDIENTE -->
+      <form id="changePasswordForm" class="iq-pwd-form" onsubmit="guardarCambioPassword(event)">
+        <h3 style="margin: 0 0 4px 0; font-size: 13.5px; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          Cambiar Contraseña
+        </h3>
+        <p style="margin: 0 0 8px 0; font-size: 11px; color: var(--text-muted);">
+          Establece una nueva clave para: <strong id="pwdTargetUser" style="color: #ffffff;">Usuario</strong>
+        </p>
+
+        <div class="iq-form-group">
+          <label>Nueva Contraseña</label>
+          <div style="position: relative;">
+            <input type="password" id="inputNuevaPassword" required placeholder="Mínimo 6 caracteres" style="width: 100%; box-sizing: border-box; padding-right: 32px !important;">
+            <button type="button" class="btn-toggle-eye" id="eyeToggleNueva" onclick="togglePasswordVisibility('inputNuevaPassword', this)" title="Ver/Ocultar">👁️</button>
+          </div>
+        </div>
+
+        <div class="iq-form-group">
+          <label>Confirmar Nueva Contraseña</label>
+          <div style="position: relative;">
+            <input type="password" id="inputConfirmarPassword" required placeholder="Repite la contraseña" style="width: 100%; box-sizing: border-box; padding-right: 32px !important;">
+            <button type="button" class="btn-toggle-eye" id="eyeToggleConfirmar" onclick="togglePasswordVisibility('inputConfirmarPassword', this)" title="Ver/Ocultar">👁️</button>
+          </div>
+        </div>
+
+        <div class="iq-edit-actions">
+          <button type="submit" class="btn-save-pwd" id="btnSavePassword">
+            🔑 Guardar Contraseña
+          </button>
+          <button type="button" class="btn-cancel-edit" onclick="alternarModoPassword(false)">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- JAVASCRIPT DINÁMICO: EXPANSIÓN, MINIMIZACIÓN, EDICIÓN Y REINICIO        -->
+<!-- ======================================================================= -->
+<script src="{% static 'js/admin/core/usuario/change_list.js' %}"></script>
+{% endblock %}

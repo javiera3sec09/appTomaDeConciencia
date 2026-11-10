@@ -1,0 +1,601 @@
+.iq-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Cabecera del Panel */
+  .iq-dash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .iq-dash-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .iq-dash-title-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(124, 58, 237, 0.2);
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a855f7;
+  }
+
+  .iq-dash-title-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .iq-dash-title h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+  }
+
+  .iq-dash-title p {
+    margin: 3px 0 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ------------------------------------------------------------- */
+  /* GRID DE 6 TARJETAS KPI (TOP ROW)                              */
+  /* ------------------------------------------------------------- */
+  .iq-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 1400px) {
+    .iq-kpi-row {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .iq-kpi-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .iq-kpi-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .iq-kpi-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(124, 58, 237, 0.4);
+  }
+
+  .iq-kpi-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .iq-kpi-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .icon-purple { background: rgba(124, 58, 237, 0.2); color: #a855f7; }
+  .icon-green  { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+  .icon-red    { background: rgba(239, 68, 68, 0.2);  color: #ef4444; }
+  .icon-gold   { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+  .icon-violet { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+  .icon-blue   { background: rgba(14, 165, 233, 0.2); color: #38bdf8; }
+
+  .iq-kpi-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .iq-kpi-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .iq-kpi-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+    margin: 2px 0;
+  }
+
+  .iq-kpi-subtext {
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .sub-green { color: #10b981; }
+  .sub-muted { color: var(--text-muted); }
+
+  /* ------------------------------------------------------------- */
+  /* FILA MEDIA: GRÁFICOS, ÁREAS Y ACTIVIDAD                       */
+  /* ------------------------------------------------------------- */
+  .iq-mid-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1.1fr 0.9fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 1400px) {
+    .iq-mid-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .iq-mid-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .iq-panel {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .iq-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .iq-panel-head h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  .iq-chart-legend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+  }
+
+  .dot-purple { background-color: #8b5cf6; }
+  .dot-cyan   { background-color: #06b6d4; }
+  .dot-green  { background-color: #10b981; }
+  .dot-red    { background-color: #ef4444; }
+
+  /* Donut Widget */
+  .iq-donut-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    height: 100%;
+  }
+
+  .iq-donut-canvas-wrap {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    flex-shrink: 0;
+  }
+
+  .iq-donut-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .iq-donut-center-text .num {
+    font-size: 16px;
+    font-weight: 800;
+    color: #ffffff;
+    display: block;
+    line-height: 1;
+  }
+
+  .iq-donut-center-text .lbl {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .iq-donut-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .iq-donut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+
+  .iq-donut-item-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .iq-donut-item-right {
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  /* Barras de Áreas */
+  .iq-area-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .iq-area-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+  }
+
+  .iq-area-name {
+    width: 80px;
+    color: var(--text-muted);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .iq-area-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: #1c2242;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .iq-area-bar-fill {
+    height: 100%;
+    background: #8b5cf6;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+
+  .iq-area-pct {
+    width: 30px;
+    text-align: right;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  /* Timeline de Actividad Reciente */
+  .iq-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .iq-timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .iq-timeline-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .iq-timeline-icon svg {
+    width: 13px;
+    height: 13px;
+    color: #ffffff;
+  }
+
+  .iq-timeline-body {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.25;
+  }
+
+  .iq-timeline-title {
+    font-size: 11.5px;
+    color: #ffffff;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .iq-timeline-time {
+    font-size: 10px;
+    color: var(--text-subtle);
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* FILA INFERIOR: ÚLTIMAS PARTIDAS, MUNDOS, ACCIONES RÁPIDAS      */
+  /* ------------------------------------------------------------- */
+  .iq-bot-row {
+    display: grid;
+    grid-template-columns: 1.8fr 1.2fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 1400px) {
+    .iq-bot-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .iq-bot-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Tablas Estilizadas del Dashboard */
+  .iq-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .iq-table th {
+    background: transparent !important;
+    color: var(--text-muted) !important;
+    font-weight: 600 !important;
+    text-align: left;
+    padding: 8px 10px !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    text-transform: none !important;
+    font-size: 11px !important;
+  }
+
+  .iq-table td {
+    padding: 9px 10px !important;
+    border-bottom: 1px solid rgba(30, 36, 72, 0.6) !important;
+    color: #ffffff !important;
+  }
+
+  .iq-user-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .iq-avatar-xs {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #1e1b4b;
+    border: 1.5px solid rgba(168, 85, 247, 0.5);
+    box-shadow: 0 0 8px rgba(124, 58, 237, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .iq-avatar-xs img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .iq-badge-res {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-win-dark  { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+  .badge-loss-dark { background: rgba(239, 68, 68, 0.2);  color: #ef4444; }
+
+  /* Lista de Mundos más jugados */
+  .iq-worlds-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .iq-world-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+
+  .iq-world-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .iq-world-rank {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    width: 12px;
+  }
+
+  .iq-world-shield {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .iq-world-shield svg {
+    width: 15px;
+    height: 15px;
+    color: #ffffff;
+  }
+
+  .iq-world-name {
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  .iq-world-stats {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  /* Botones de Acciones Rápidas */
+  .iq-quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .btn-iq-primary {
+    background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+    color: #ffffff !important;
+    padding: 11px 16px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none !important;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+    transition: all 0.2s ease;
+  }
+
+  .btn-iq-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.55);
+  }
+
+  .btn-iq-secondary {
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+    color: #ffffff !important;
+    padding: 11px 16px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none !important;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+    transition: all 0.2s ease;
+  }
+
+  .btn-iq-secondary:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn-iq-outline {
+    background: #181d3d;
+    border: 1px solid var(--border-subtle);
+    color: #cbd5e1 !important;
+    padding: 10px 16px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-iq-outline:hover {
+    background: #1f254e;
+    color: #ffffff !important;
+    border-color: #3b4584;
+  }
+
+  /* ------------------------------------------------------------- */
+  /* TABLA ANCHA INFERIOR: PARÁMETROS GLOBALES                     */
+  /* ------------------------------------------------------------- */
+  .iq-params-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 10px;
+  }
+
+  .iq-params-footer a {
+    color: #a855f7;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .iq-params-footer a:hover {
+    text-decoration: underline;
+  }

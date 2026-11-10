@@ -1,0 +1,486 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}Progreso de Usuarios | ISO QUEST Admin{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/core/progresousuario/change_list.css' %}">
+
+<div class="iq-prog-page">
+  <!-- 1. CABECERA PRINCIPAL: TÍTULO Y BOTONES DE ACCIÓN -->
+  <div class="iq-prog-header">
+    <div class="iq-prog-title-box">
+      <div class="iq-prog-title-icon">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <rect x="3" y="13" width="4" height="8" rx="1.5"></rect>
+          <rect x="10" y="8" width="4" height="13" rx="1.5"></rect>
+          <rect x="17" y="3" width="4" height="18" rx="1.5"></rect>
+        </svg>
+      </div>
+      <div class="iq-prog-title-text">
+        <h1>Progreso de Usuarios</h1>
+        <p>Consulta y gestiona el progreso actual de los jugadores</p>
+      </div>
+    </div>
+
+    <div class="iq-prog-actions">
+      <!-- Botón Exportar Reporte -->
+      <a href="/admin/core/progresousuario/export-csv/" class="btn-export-rep" title="Descargar reporte completo en formato CSV">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <span>Exportar Reporte</span>
+      </a>
+
+      <!-- Botón Actualizar -->
+      <button type="button" class="btn-refresh-page" id="btnPageRefresh" title="Actualizar datos y métricas">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-1.19"></path>
+        </svg>
+        <span>Actualizar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. FILA DE 4 TARJETAS KPI -->
+  <div class="iq-prog-kpis">
+    <!-- KPI 1: Total Jugadores -->
+    <div class="iq-pkpi-card">
+      <div class="iq-pkpi-icon kpi-icon-jugadores">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <div class="iq-pkpi-info">
+        <span class="iq-pkpi-label">Total Jugadores</span>
+        <span class="iq-pkpi-val" id="kpiValTotalJugadores">{{ kpi_total_jugadores }}</span>
+        <span class="iq-pkpi-sub" id="kpiSubTotalJugadores" style="color: #10b981;">{{ kpi_sub_jugadores|default:"Activos en plataforma" }}</span>
+      </div>
+    </div>
+
+    <!-- KPI 2: Nivel Promedio -->
+    <div class="iq-pkpi-card">
+      <div class="iq-pkpi-icon kpi-icon-promedio">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+          <polyline points="4 8 10 4 14 9 20 2"></polyline>
+        </svg>
+      </div>
+      <div class="iq-pkpi-info">
+        <span class="iq-pkpi-label">Nivel Promedio</span>
+        <span class="iq-pkpi-val" id="kpiValNivelPromedio">{{ kpi_nivel_promedio }}</span>
+        <span class="iq-pkpi-sub" id="kpiSubNivelPromedio" style="color: #38bdf8;">{{ kpi_sub_nivel|default:"Progreso de colaboradores" }}</span>
+      </div>
+    </div>
+
+    <!-- KPI 3: Oro Total -->
+    <div class="iq-pkpi-card">
+      <div class="iq-pkpi-icon kpi-icon-oro">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <circle cx="12" cy="12" r="9" fill="#f59e0b" stroke="#b45309" stroke-width="1.5"></circle>
+          <circle cx="12" cy="12" r="6" fill="#fbbf24" stroke="#d97706" stroke-width="1"></circle>
+          <text x="12" y="15" font-size="9" font-weight="900" fill="#78350f" text-anchor="middle">$</text>
+        </svg>
+      </div>
+      <div class="iq-pkpi-info">
+        <span class="iq-pkpi-label">Oro Total</span>
+        <span class="iq-pkpi-val" id="kpiValOroTotal">{{ kpi_oro_total }}</span>
+        <span class="iq-pkpi-sub" id="kpiSubOroTotal" style="color: #fbbf24;">{{ kpi_sub_oro|default:"Oro acumulado en juego" }}</span>
+      </div>
+    </div>
+
+    <!-- KPI 4: Gemas Totales -->
+    <div class="iq-pkpi-card">
+      <div class="iq-pkpi-icon kpi-icon-gemas">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <polygon points="6,3 18,3 22,9 12,21 2,9" fill="#c084fc" stroke="#7e22ce" stroke-width="1.2"></polygon>
+          <polyline points="2,9 22,9" stroke="#581c87" stroke-width="1"></polyline>
+          <polyline points="6,3 12,9 18,3" stroke="#581c87" stroke-width="1"></polyline>
+          <polyline points="12,9 12,21" stroke="#581c87" stroke-width="1"></polyline>
+        </svg>
+      </div>
+      <div class="iq-pkpi-info">
+        <span class="iq-pkpi-label">Gemas Totales</span>
+        <span class="iq-pkpi-val" id="kpiValGemasTotales">{{ kpi_gemas_totales }}</span>
+        <span class="iq-pkpi-sub" id="kpiSubGemasTotales" style="color: #c084fc;">{{ kpi_sub_gemas|default:"Gemas emitidas" }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. BARRA DE FILTROS Y BÚSQUEDA -->
+  <div class="iq-prog-filter-bar">
+    <div class="iq-prog-search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="progSearchInput" class="iq-prog-search-input" placeholder="Buscar por jugador (nombre, alias o correo)...">
+    </div>
+
+    <select id="progRoleSelect" class="iq-prog-select">
+      <option value="">Todos los roles</option>
+      <option value="empleado_jugador">Empleado / Jugador</option>
+      <option value="administrador">Administrador</option>
+    </select>
+
+    <select id="progStatusSelect" class="iq-prog-select">
+      <option value="">Todos los estados</option>
+      <option value="activo">Activo</option>
+      <option value="inactivo">Inactivo</option>
+    </select>
+
+    <select id="progLevelSelect" class="iq-prog-select">
+      <option value="">Todos los niveles</option>
+      <option value="1-5">Nivel 1 - 5</option>
+      <option value="6-10">Nivel 6 - 10</option>
+      <option value="11-15">Nivel 11 - 15</option>
+      <option value="16+">Nivel 16+</option>
+    </select>
+
+    <button type="button" class="btn-prog-filter" id="btnProgFilter">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+      </svg>
+      <span>Filtrar</span>
+    </button>
+  </div>
+
+  <!-- 4. TABLA DE PROGRESO DE JUGADORES -->
+  <div class="iq-prog-table-card">
+    <div class="iq-prog-tbl-wrap">
+      <table class="iq-prog-table" id="progTable">
+        <thead>
+          <tr>
+            <th>Jugador</th>
+            <th>Nivel</th>
+            <th>XP</th>
+            <th>Oro</th>
+            <th>Gemas</th>
+            <th>Vidas</th>
+            <th>Último Reinicio Vidas</th>
+            <th>Último Reinicio Progreso</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="progTableBody">
+          {% for cl in cl.result_list %}
+          <tr class="prog-row" 
+              data-id="{{ cl.id }}"
+              data-name="{{ cl.usuario.nombre_completo|lower }}"
+              data-alias="{{ cl.usuario.alias|lower }}"
+              data-email="{{ cl.usuario.correo|lower }}"
+              data-role="{{ cl.usuario.rol }}"
+              data-status="{{ cl.usuario.estado }}"
+              data-level="{{ cl.nivel }}"
+              data-xp="{{ cl.xp }}"
+              data-oro="{{ cl.oro }}"
+              data-gemas="{{ cl.gemas }}"
+              data-vidas="{{ cl.vidas_actuales }}">
+            <!-- 1. Jugador (Avatar + Nombre + Alias) -->
+            <td>
+              <div class="iq-player-cell">
+                <div class="iq-player-avatar">
+                  <img src="{{ cl.usuario.avatar_url }}" alt="{{ cl.usuario.alias }}" loading="lazy">
+                </div>
+                <div class="iq-player-meta">
+                  <span class="iq-player-name">{{ cl.usuario.nombre_completo }}</span>
+                  <span class="iq-player-alias">{{ cl.usuario.alias }}</span>
+                </div>
+              </div>
+            </td>
+
+            <!-- 2. Nivel -->
+            <td class="col-val-nivel" style="font-weight: 600; color: #cbd5e1;">{{ cl.nivel }}</td>
+
+            <!-- 3. XP -->
+            <td class="col-val-xp" style="font-weight: 600; color: #cbd5e1;">{{ cl.xp|intcomma }}</td>
+
+            <!-- 4. Oro -->
+            <td class="col-val-oro" style="font-weight: 600; color: #cbd5e1;">{{ cl.oro|intcomma }}</td>
+
+            <!-- 5. Gemas -->
+            <td class="col-val-gemas" style="font-weight: 600; color: #cbd5e1;">{{ cl.gemas|intcomma }}</td>
+
+            <!-- 6. Vidas -->
+            <td class="col-val-vidas">
+              <div class="iq-vidas-badge">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                </svg>
+                <span>{{ cl.vidas_actuales }}</span>
+              </div>
+            </td>
+
+            <!-- 7. Último Reinicio Vidas -->
+            <td style="color: #cbd5e1;">
+              {% if cl.ultimo_reinicio_vidas %}
+                {{ cl.ultimo_reinicio_vidas|date:"j M. Y, H:i"|lower }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+
+            <!-- 8. Último Reinicio Progreso -->
+            <td style="color: #cbd5e1;">
+              {% if cl.ultimo_reinicio_progreso %}
+                {{ cl.ultimo_reinicio_progreso|date:"j M. Y, H:i"|lower }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+
+            <!-- 9. Estado -->
+            <td>
+              {% if cl.usuario.estado == 'activo' %}
+                <span class="iq-status-pill status-activo">Activo</span>
+              {% else %}
+                <span class="iq-status-pill status-inactivo">Inactivo</span>
+              {% endif %}
+            </td>
+
+            <!-- 10. Acciones (Ver / Editar) -->
+            <td>
+              <div class="iq-actions-cell">
+                <!-- Botón Ver Detalles (Ojo) -->
+                <button type="button" class="btn-row-action btn-view-prog" title="Ver ficha técnica de progreso" data-id="{{ cl.id }}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+
+                <!-- Botón Editar Progreso (Lápiz) -->
+                <button type="button" class="btn-row-action btn-edit-prog" title="Ajustar nivel, economía y vidas" data-id="{{ cl.id }}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="10" style="text-align: center; padding: 40px; color: var(--text-muted);">
+              No se encontraron registros de progreso disponibles.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5. PIE DE TABLA Y PAGINACIÓN -->
+    <div class="iq-prog-pagination">
+      <div id="progShowingCount">
+        Mostrando 1 - {{ cl.result_list.count }} de {{ total_jugadores_display }} jugadores
+      </div>
+      <div class="iq-prog-pages">
+        <button type="button" class="iq-pbtn" title="Página anterior">&lt;</button>
+        <button type="button" class="iq-pbtn active">1</button>
+        <button type="button" class="iq-pbtn">2</button>
+        <button type="button" class="iq-pbtn">3</button>
+        <button type="button" class="iq-pbtn">4</button>
+        <button type="button" class="iq-pbtn">5</button>
+        <span style="color: #64748b; padding: 0 4px;">...</span>
+        <button type="button" class="iq-pbtn">25</button>
+        <button type="button" class="iq-pbtn" title="Página siguiente">&gt;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- MODAL 1: VER FICHA TÉCNICA DE PROGRESO (OJO)                  -->
+<!-- ============================================================= -->
+<div class="iq-modal-backdrop" id="viewModalBackdrop">
+  <div class="iq-modal-card">
+    <div class="iq-modal-head">
+      <h3>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#a855f7" stroke-width="2.2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span>Ficha de Progreso del Jugador</span>
+      </h3>
+      <button type="button" class="btn-modal-close" id="btnCloseViewModal">&times;</button>
+    </div>
+
+    <div class="iq-modal-body">
+      <!-- Encabezado del Jugador -->
+      <div class="iq-modal-player-header">
+        <div class="iq-player-avatar" style="width: 52px; height: 52px; border: 2.5px solid #a855f7; box-shadow: 0 0 16px rgba(168, 85, 247, 0.5);">
+          <img id="viewPlayerAvatarImg" src="/static/img/avatars/necromancer_1.png" alt="Avatar">
+        </div>
+        <div class="iq-player-meta">
+          <span class="iq-player-name" id="viewPlayerName" style="font-size: 15px;">—</span>
+          <span class="iq-player-alias" id="viewPlayerAlias" style="font-size: 12px; color: #c4b5fd;">@—</span>
+          <span id="viewPlayerEmail" style="font-size: 11px; color: #94a3b8; margin-top: 2px;">—</span>
+        </div>
+      </div>
+
+      <!-- Cuadrícula de Métricas Clave -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div style="background: #0d1026; border: 1px solid #1e2448; border-radius: 8px; padding: 10px; text-align: center;">
+          <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Nivel Actual</div>
+          <div id="viewPlayerLevel" style="font-size: 20px; font-weight: 800; color: #ffffff; margin-top: 2px;">—</div>
+        </div>
+        <div style="background: #0d1026; border: 1px solid #1e2448; border-radius: 8px; padding: 10px; text-align: center;">
+          <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Experiencia XP</div>
+          <div id="viewPlayerXP" style="font-size: 20px; font-weight: 800; color: #38bdf8; margin-top: 2px;">—</div>
+        </div>
+        <div style="background: #0d1026; border: 1px solid #1e2448; border-radius: 8px; padding: 10px; text-align: center;">
+          <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Vidas Actuales</div>
+          <div id="viewPlayerLives" style="font-size: 20px; font-weight: 800; color: #ef4444; margin-top: 2px;">♥ —</div>
+        </div>
+      </div>
+
+      <!-- Economía de Juego -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div style="background: #0d1026; border: 1px solid #1e2448; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: #b45309; display: flex; align-items: center; justify-content: center; color: #fde047; font-weight: 900;">$</div>
+          <div>
+            <div style="font-size: 10.5px; color: #94a3b8;">Monedas de Oro</div>
+            <div id="viewPlayerGold" style="font-size: 16px; font-weight: 700; color: #fbbf24;">—</div>
+          </div>
+        </div>
+        <div style="background: #0d1026; border: 1px solid #1e2448; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: #6b21a8; display: flex; align-items: center; justify-content: center; color: #f472b6; font-size: 14px;">◆</div>
+          <div>
+            <div style="font-size: 10.5px; color: #94a3b8;">Gemas de Compliance</div>
+            <div id="viewPlayerGems" style="font-size: 16px; font-weight: 700; color: #f472b6;">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fechas de Reinicio y Auditoría -->
+      <div style="background: #0d1026; border: 1px solid #1e2448; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Último reinicio de vidas:</span>
+          <span id="viewPlayerLivesReset" style="color: #ffffff; font-weight: 600;">—</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Último reinicio de progreso:</span>
+          <span id="viewPlayerProgReset" style="color: #ffffff; font-weight: 600;">—</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Estado de cuenta:</span>
+          <span id="viewPlayerStatus" class="iq-status-pill status-activo">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="iq-modal-footer">
+      <button type="button" class="btn-export-rep" id="btnEditFromView" style="margin-right: auto; padding: 8px 14px;">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+        <span>Editar este Jugador</span>
+      </button>
+      <button type="button" class="btn-refresh-page" id="btnCloseViewModalBtn" style="padding: 8px 18px;">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- MODAL 2: EDITAR Y REINICIAR PROGRESO (LÁPIZ)                  -->
+<!-- ============================================================= -->
+<div class="iq-modal-backdrop" id="editModalBackdrop">
+  <div class="iq-modal-card">
+    <div class="iq-modal-head">
+      <h3>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#a855f7" stroke-width="2.2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+        <span>Ajustar Progreso de Jugador</span>
+      </h3>
+      <button type="button" class="btn-modal-close" id="btnCloseEditModal">&times;</button>
+    </div>
+
+    <form id="editProgForm">
+      {% csrf_token %}
+      <input type="hidden" id="editProgId" value="">
+      
+      <div class="iq-modal-body">
+        <div style="display: flex; align-items: center; gap: 12px; background: rgba(124, 58, 237, 0.12); border: 1px solid rgba(124, 58, 237, 0.25); border-radius: 8px; padding: 10px 14px;">
+          <div class="iq-player-avatar" style="width: 44px; height: 44px; border: 2px solid #a855f7; box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);">
+            <img id="editPlayerAvatarImg" src="/static/img/avatars/necromancer_1.png" alt="Avatar">
+          </div>
+          <div>
+            <div style="font-size: 11px; color: #c4b5fd;">Editando progreso de:</div>
+            <strong id="editPlayerName" style="color: #ffffff; font-size: 13.5px;">—</strong>
+          </div>
+        </div>
+
+        <div class="iq-form-grid-2">
+          <div class="iq-form-row">
+            <label class="iq-form-label">Nivel de Jugador</label>
+            <input type="number" id="editInputLevel" class="iq-form-input" min="1" max="100" required>
+          </div>
+          <div class="iq-form-row">
+            <label class="iq-form-label">Puntos de Experiencia (XP)</label>
+            <input type="number" id="editInputXP" class="iq-form-input" min="0" required>
+          </div>
+        </div>
+
+        <div class="iq-form-grid-2">
+          <div class="iq-form-row">
+            <label class="iq-form-label">Monedas de Oro</label>
+            <input type="number" id="editInputGold" class="iq-form-input" min="0" required>
+          </div>
+          <div class="iq-form-row">
+            <label class="iq-form-label">Gemas de Compliance</label>
+            <input type="number" id="editInputGems" class="iq-form-input" min="0" required>
+          </div>
+        </div>
+
+        <div class="iq-form-row">
+          <label class="iq-form-label">Vidas Actuales (0 a 5)</label>
+          <input type="number" id="editInputLives" class="iq-form-input" min="0" max="5" required>
+        </div>
+
+        <!-- Botón de Reinicio Rápido -->
+        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; padding: 12px; margin-top: 6px;">
+          <div style="font-size: 11.5px; color: #fca5a5; margin-bottom: 8px;">
+            ¿Deseas reiniciar completamente el avance de este usuario?
+          </div>
+          <button type="button" id="btnResetIndividualProg" style="background: #991b1b; color: #ffffff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polyline points="1 4 1 10 7 10"></polyline>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            <span>Reiniciar Progreso a Nivel 1</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="iq-modal-footer">
+        <button type="button" class="btn-export-rep" id="btnCancelEdit" style="padding: 8px 16px;">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-refresh-page" style="padding: 8px 20px;">
+          Guardar Cambios
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST FLOTANTE -->
+<div class="iq-toast" id="iqToast">Operación realizada con éxito</div>
+
+<!-- JAVASCRIPT DE FILTRADO, BÚSQUEDA Y MODALES -->
+<script src="{% static 'js/admin/core/progresousuario/change_list.js' %}"></script>
+{% endblock %}

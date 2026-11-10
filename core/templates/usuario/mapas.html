@@ -1,0 +1,370 @@
+{% load static humanize %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mundo 1: Castillo Sombrío | Mapas ISO QUEST</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Cinzel Decorative -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/usuarios/mapas.css' %}">
+</head>
+<body>
+
+  <!-- ============================================================= -->
+  <!-- 1. TOPBAR SUPERIOR IDÉNTICA (HUD DE JUGADOR)                  -->
+  <!-- ============================================================= -->
+  {% include 'usuario/includes/player_topbar.html' %}
+
+  <!-- ============================================================= -->
+  <!-- 2. STAGE: FULLSCREEN VIEWPORT EXACT TO REFERENCE IMAGE        -->
+  <!-- ============================================================= -->
+  <main class="iq-map-stage" id="mapStage">
+    <!-- Capa de Fondo (Castillo Gótico Limpio) -->
+    <div class="iq-map-bg-layer"></div>
+    <div class="iq-map-atmosphere"></div>
+
+    <!-- Menú Lateral Izquierdo -->
+    <aside class="iq-map-menu-col">
+      <a href="{% url 'core:lobby' %}" class="iq-menu-btn" title="Volver al Lobby Principal">
+        <i class="bi bi-shield-shaded"></i>
+        <span>Lobby</span>
+      </a>
+
+      <a href="{% url 'core:mapas' %}" class="iq-menu-btn active" title="Pantalla de Mapas y Niveles">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>Mapas</span>
+      </a>
+
+      <a href="{% url 'core:coleccion' %}" class="iq-menu-btn" title="Colección de Cartas y Avatares">
+        <i class="bi bi-archive-fill"></i>
+        <span>Colección</span>
+        <span class="iq-menu-alert-dot"></span>
+      </a>
+
+      <a href="{% url 'core:academia' %}" class="iq-menu-btn" title="Academia ISO">
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>Academia ISO</span>
+      </a>
+
+      <a href="{% url 'core:clasificacion' %}" class="iq-menu-btn" title="Tabla de Clasificación">
+        <i class="bi bi-trophy-fill"></i>
+        <span>Clasificación</span>
+      </a>
+
+      <a href="{% url 'core:tienda' %}" class="iq-menu-btn" title="Tienda Arcana ISO">
+        <i class="bi bi-cart3"></i>
+        <span>Tienda</span>
+      </a>
+    </aside>
+
+    <!-- Selector de Mundo Gótico Superior (Exacto a la imagen) -->
+    <div class="iq-world-banner-wrap">
+      <button type="button" id="btnPrevWorld" class="iq-world-arrow-btn" onclick="cambiarMundoPrev();" title="Mundo anterior">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <div class="iq-world-banner-crest">
+        <div class="iq-world-banner-pin-icon"><i class="bi bi-geo-alt-fill"></i></div>
+        <div id="worldBannerOrden" class="iq-world-banner-orden">Mundo {{ mundo_activo.orden }}</div>
+        <div id="worldBannerName" class="iq-world-banner-name">{{ mundo_activo.nombre_fantasia }}</div>
+        <div id="worldBannerDesc" class="iq-world-banner-desc">{{ mundo_activo.descripcion_narrativa }}</div>
+      </div>
+
+      <button type="button" id="btnNextWorld" class="iq-world-arrow-btn" onclick="cambiarMundoNext();" title="Siguiente mundo">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- Selector de Actos para Mundos con 10 Niveles (Acto I: 1-1 al 1-5 | Acto II: 1-6 al 1-10) -->
+    <div class="iq-act-tabs-bar" id="actTabsBar" style="display: none;">
+      <button type="button" id="tabActo1" class="iq-act-tab-btn active" onclick="cambiarActo(1);">Acto I (1-1 a 1-5)</button>
+      <button type="button" id="tabActo2" class="iq-act-tab-btn" onclick="cambiarActo(2);">Acto II (1-6 a 1-10)</button>
+    </div>
+
+    <!-- SVG Overlay para el Sendero de Energía Arcana Discontinua (viewBox 0 0 1000 1000) -->
+    <svg class="iq-map-svg-overlay" id="mapSvgOverlay" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+      <path id="svgGlowPath" class="iq-map-path-glow" d="" />
+      <path id="svgDashedPath" class="iq-map-path-dashed" d="" />
+    </svg>
+
+    <!-- Contenedor de Nodos sobre el Puente (Renderizados 100% en HTML/CSS) -->
+    <div id="nodesContainer" class="iq-nodes-layer">
+      <!-- Los nodos se inyectan reactivamente vía renderWorldNodes() -->
+    </div>
+
+    <!-- Botón de Reiniciar Progreso (Test) en la Esquina Inferior Izquierda -->
+    <button type="button" class="iq-dev-reset-btn" onclick="reiniciarProgresoPartidasPrueba();" title="Reinicia tus victorias para probar el desbloqueo de Nivel 1 en adelante">
+      <i class="bi bi-arrow-counterclockwise"></i>
+      <span>Reiniciar Progreso (Test)</span>
+    </button>
+
+    <!-- Tarjeta Inferior Izquierda: Recompensas del Mundo (Exacto a la imagen) -->
+    <div class="iq-world-rewards-card">
+      <div class="iq-world-rewards-title">Recompensas del Mundo</div>
+      <div class="iq-world-rewards-row">
+        <div class="iq-reward-slot-box gem">
+          <i class="bi bi-gem"></i>
+          <span class="iq-reward-slot-qty">x100</span>
+        </div>
+        <div class="iq-reward-slot-box gold">
+          <i class="bi bi-coin"></i>
+          <span class="iq-reward-slot-qty">x5,000</span>
+        </div>
+        <div class="iq-reward-slot-box card">
+          <i class="bi bi-suit-spade-fill"></i>
+          <span class="iq-reward-slot-qty">x1</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón Monumental Inferior Derecho [⚔️ JUGAR] (Exacto a la imagen) -->
+    <button type="button" class="btn-jugar-hex-hero" onclick="jugarNivelActual();" title="Jugar el nivel actual desbloqueado">
+      <i class="bi bi-swords"></i>
+      <span>Jugar</span>
+    </button>
+  </main>
+
+  <!-- ============================================================= -->
+  <!-- MODAL: BRIEFING Y JUGAR NIVEL SELECCIONADO                    -->
+  <!-- ============================================================= -->
+  <div id="modalNivelInfo" class="iq-modal-overlay">
+    <div class="iq-gothic-modal-frame">
+      <div class="iq-modal-skull-badge">
+        <i class="bi bi-shield-shaded"></i>
+      </div>
+      <button type="button" class="btn-modal-close-gothic" onclick="closeModal('modalNivelInfo');">&times;</button>
+
+      <div style="text-align: center; margin-top: 14px; margin-bottom: 20px;">
+        <span id="modalLevelWorldTag" style="font-size: 11.5px; font-weight: 800; color: #c084fc; text-transform: uppercase; letter-spacing: 1px;">
+          MUNDO {{ mundo_activo.orden|default:1 }} - {{ mundo_activo.nombre_fantasia|default:'CASTILLO SOMBRÍO' }} ({{ mundo_activo.codigo_iso|default:'ISO/IEC 27001:2022' }})
+        </span>
+        <h3 id="modalLevelTitle" style="font-family: 'Cinzel', serif; font-size: 23px; color: #ffffff; margin: 6px 0 10px 0;">
+          Nivel 1: Introducción a la Ciberseguridad
+        </h3>
+        <div id="modalLevelMetaBadges" style="display: flex; justify-content: center; gap: 8px;">
+          <span id="modalLevelDiffBadge" class="iq-hud-status-badge desbloqueado">DIFICULTAD: FÁCIL</span>
+          <span id="modalLevelTypeBadge" class="iq-hud-status-badge" style="background: rgba(124,58,237,0.3); border: 1px solid #a855f7; color: #d8b4fe;">NIVEL ESTÁNDAR</span>
+        </div>
+      </div>
+
+      <div class="iq-rewards-grid">
+        <div class="iq-reward-card xp">
+          <i class="bi bi-stars"></i>
+          <span id="modalRewardXp" style="font-size: 15px; font-weight: 800; color: #fff;">+100 XP</span>
+          <span style="font-size: 10.5px; color: #94a3b8;">Experiencia</span>
+        </div>
+        <div class="iq-reward-card oro">
+          <i class="bi bi-coin"></i>
+          <span id="modalRewardOro" style="font-size: 15px; font-weight: 800; color: #fff;">+50 Oro</span>
+          <span style="font-size: 10.5px; color: #94a3b8;">Monedas</span>
+        </div>
+        <div class="iq-reward-card gemas">
+          <i class="bi bi-gem"></i>
+          <span id="modalRewardGemas" style="font-size: 15px; font-weight: 800; color: #fff;">+10 Gemas</span>
+          <span style="font-size: 10.5px; color: #94a3b8;">Gemas ISO</span>
+        </div>
+      </div>
+
+      <div style="background: rgba(14, 10, 32, 0.7); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px; padding: 14px 16px; margin-bottom: 22px; font-size: 13px; color: #cbd5e1; line-height: 1.45;">
+        <strong style="color: #e9d5ff; display: block; margin-bottom: 4px;">
+          <i class="bi bi-shield-lock-fill" style="color: #c084fc;"></i> Misión de Cumplimiento ISO:
+        </strong>
+        <span id="modalLevelDescription">
+          Aplica los controles de la norma y mitiga los incidentes corporativos para completar la auditoría con éxito.
+        </span>
+      </div>
+
+      <button type="button" class="btn-action-gothic-main" id="btnEjecutarVictoria" onclick="completarNivelVictoria();">
+        <i class="bi bi-swords"></i>
+        <span>COMENZAR AUDITORÍA</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- PANTALLA GÓTICA MONUMENTAL DE VICTORIA / LEVEL UP              -->
+  <!-- ============================================================= -->
+  <div id="modalVictoria" class="iq-victory-fullscreen">
+    <div class="iq-vic-backdrop-gradient"></div>
+    <div class="iq-vic-right-pane">
+      <!-- Banner Corona y ¡Victoria! Exacto a la referencia -->
+      <img src="{% static 'img/banner_victoria.png' %}" alt="¡Victoria!" class="iq-vic-banner-img">
+
+      <!-- Subtítulo -->
+      <p class="iq-vic-subtitle" id="victorySubtitle">
+        Has completado todas las fases del Consejo de los Nigromantes
+      </p>
+
+      <!-- Banner opcional si se desbloqueó nuevo mundo -->
+      <div id="victoryWorldUnlockedNotice" class="iq-vic-world-notice" style="display: none;">
+        🌟 ¡NUEVO MUNDO DESBLOQUEADO: <strong id="vicMapNewWorldName"></strong>! 🌟
+      </div>
+
+      <!-- Tarjeta / Contenedor Ornato de Recompensas -->
+      <div class="iq-vic-rewards-card">
+        <div class="iq-vic-rewards-badge">
+          <span>Recompensas Obtenidas</span>
+        </div>
+
+        <div class="iq-vic-rewards-grid">
+          <!-- Cristales de Nigromante (Gemas) -->
+          <div class="iq-vic-reward-item">
+            <div class="iq-vic-reward-slot">
+              <img src="{% static 'img/icon_crystal_transp.png' %}" alt="Cristales" class="iq-vic-slot-icon">
+              <span class="iq-vic-slot-qty" id="vicGemasQty">x10</span>
+            </div>
+            <span class="iq-vic-slot-name">Cristales<br>de Nigromante</span>
+          </div>
+
+          <!-- Oro Arcano -->
+          <div class="iq-vic-reward-item">
+            <div class="iq-vic-reward-slot">
+              <img src="{% static 'img/icon_gold_transp.png' %}" alt="Oro Arcano" class="iq-vic-slot-icon">
+              <span class="iq-vic-slot-qty" id="vicOroQty">x50</span>
+            </div>
+            <span class="iq-vic-slot-name">Oro<br>Arcano</span>
+          </div>
+
+          <!-- Experiencia (EXP) -->
+          <div class="iq-vic-reward-item">
+            <div class="iq-vic-reward-slot">
+              <img src="{% static 'img/icon_exp_transp.png' %}" alt="Experiencia" class="iq-vic-slot-icon">
+              <span class="iq-vic-slot-qty" id="vicXpQty">x100</span>
+            </div>
+            <span class="iq-vic-slot-name">Experiencia<br>EXP</span>
+          </div>
+
+          <!-- Slot condicional si subió de nivel -->
+          <div class="iq-vic-reward-item" id="vicCardLevelUp" style="display: none;">
+            <div class="iq-vic-reward-slot level-up">
+              <img src="{% static 'img/crown_clean.png' %}" alt="Subió de Nivel" class="iq-vic-slot-icon">
+              <span class="iq-vic-slot-qty" id="vicLevelUpVal">Nv. 2</span>
+            </div>
+            <span class="iq-vic-slot-name">¡Ascenso<br>de Nivel!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Texto de Lore y Motivación del Consejo -->
+      <div class="iq-vic-footer-lore">
+        <p class="iq-vic-lore-quote">
+          Tu conocimiento y estrategia han demostrado que eres un verdadero miembro del Consejo.
+        </p>
+        <p class="iq-vic-lore-callout">
+          ¡Sigue desafiando los misterios del mundo!
+        </p>
+        <div class="iq-vic-skull-divider">
+          <span class="iq-vic-divider-diamond">◆</span>
+        </div>
+      </div>
+
+      <!-- Botón Continuar exacto al diseño de la imagen -->
+      <div class="iq-vic-buttons-row">
+        <button type="button" class="iq-vic-btn-continuar" onclick="closeModal('modalVictoria');">
+          <span class="iq-vic-btn-chevrons">❯❯</span>
+          <span>Continuar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST FLOTANTE -->
+  <div id="gothicToast" class="iq-gothic-toast">
+    <i class="bi bi-shield-exclamation" style="color: #c084fc; font-size: 20px;"></i>
+    <span id="toastMessage">Mensaje informativo</span>
+  </div>
+
+
+
+  <!-- MODALES DE COLECCIÓN, ACADEMIA, RANKING, TIENDA -->
+  <div id="modalColeccion" class="iq-modal-overlay">
+    <div class="iq-gothic-modal-frame" style="max-width: 500px;">
+      <button type="button" class="btn-modal-close-gothic" onclick="closeModal('modalColeccion');">&times;</button>
+      <h3 style="font-family: 'Cinzel', serif; font-size: 18px; color: #c084fc; margin-bottom: 14px;"><i class="bi bi-archive-fill"></i> Colección de Avatares</h3>
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;">
+        {% for av in avatares_coleccion %}
+        <div style="text-align: center; cursor: pointer;" onclick="seleccionarAvatarRapido('{{ av.img }}');">
+          <img src="{{ av.img }}" alt="{{ av.nombre }}" style="width: 50px; height: 50px; border-radius: 50%; border: 1.5px solid #a855f7;">
+          <div style="font-size: 10px; font-weight: 800; color: #fff; margin-top: 4px;">{{ av.nombre }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div id="modalRanking" class="iq-modal-overlay">
+    <div class="iq-gothic-modal-frame" style="max-width: 520px;">
+      <button type="button" class="btn-modal-close-gothic" onclick="closeModal('modalRanking');">&times;</button>
+      <h3 style="font-family: 'Cinzel', serif; font-size: 18px; color: #fbbf24; margin-bottom: 14px;"><i class="bi bi-trophy-fill"></i> Clasificación Global</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
+        <thead>
+          <tr style="color: #8b95b5; border-bottom: 1px solid #252c58; text-align: left;">
+            <th style="padding: 6px;">#</th><th>Jugador</th><th>Área</th><th style="text-align: right;">Total XP</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in top_jugadores %}
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); color: #fff;">
+            <td style="padding: 6px; font-weight: 800; color: #f59e0b;">{{ forloop.counter }}</td>
+            <td style="padding: 6px; font-weight: 700;">{{ p.usuario.alias }}</td>
+            <td style="padding: 6px; color: #8b95b5;">{{ p.usuario.area }}</td>
+            <td style="padding: 6px; text-align: right; font-weight: 800; color: #38bdf8;">{{ p.xp|intcomma }} XP</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="modalAcademia" class="iq-modal-overlay">
+    <div class="iq-gothic-modal-frame" style="max-width: 500px;">
+      <button type="button" class="btn-modal-close-gothic" onclick="closeModal('modalAcademia');">&times;</button>
+      <h3 style="font-family: 'Cinzel', serif; font-size: 18px; color: #c084fc; margin-bottom: 12px;"><i class="bi bi-mortarboard-fill"></i> Academia ISO</h3>
+      <p style="font-size: 12.5px; color: #cbd5e1; line-height: 1.4;">Accede al material formativo de cada norma para obtener mejores resultados en las auditorías.</p>
+    </div>
+  </div>
+
+  <div id="modalTienda" class="iq-modal-overlay">
+    <div class="iq-gothic-modal-frame" style="max-width: 500px;">
+      <button type="button" class="btn-modal-close-gothic" onclick="closeModal('modalTienda');">&times;</button>
+      <h3 style="font-family: 'Cinzel', serif; font-size: 18px; color: #10b981; margin-bottom: 12px;"><i class="bi bi-cart3"></i> Tienda Arcana</h3>
+      <p style="font-size: 12.5px; color: #cbd5e1;">Adquiere pociones y escudos protectores utilizando tu Oro y Gemas ganados en las auditorías.</p>
+    </div>
+  </div>
+
+  <div id="modalMensajes" class="iq-modal-overlay">
+    <div class="iq-gothic-modal-frame" style="max-width: 440px;">
+      <button type="button" class="btn-modal-close-gothic" onclick="closeModal('modalMensajes');">&times;</button>
+      <h3 style="font-family: 'Cinzel', serif; font-size: 18px; color: #38bdf8; margin-bottom: 10px;"><i class="bi bi-envelope-fill"></i> Buzón</h3>
+      <p style="font-size: 12px; color: #cbd5e1;">¡Bienvenido al mapa de cumplimiento ISO! Supera el Nivel 1-1 para iniciar tu expedición.</p>
+    </div>
+  </div>
+
+  <div id="modalNotifs" class="iq-modal-overlay">
+    <div class="iq-gothic-modal-frame" style="max-width: 440px;">
+      <button type="button" class="btn-modal-close-gothic" onclick="closeModal('modalNotifs');">&times;</button>
+      <h3 style="font-family: 'Cinzel', serif; font-size: 18px; color: #fbbf24; margin-bottom: 10px;"><i class="bi bi-bell-fill"></i> Notificaciones</h3>
+      <p style="font-size: 12px; color: #cbd5e1;">No tienes alertas pendientes.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- JAVASCRIPT DE CONTROL Y REACTIVIDAD                           -->
+  <!-- ============================================================= -->
+  <script id="mapas-data" type="application/json">
+{
+  "mundosData": {{ mundos_data_json|safe }},
+  "activeId": {{ mundo_activo.id }}
+}
+</script>
+<script src="{% static 'js/usuario/mapas.js' %}"></script>
+</body>
+</html>

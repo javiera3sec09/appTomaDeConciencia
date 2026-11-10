@@ -1,0 +1,496 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}Analítica y Rendimiento | ISO QUEST Admin{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/core/partidajugada/change_list.css' %}">
+
+<div class="iq-analytics-page">
+
+  <!-- ============================================================= -->
+  <!-- 1. CABECERA: TÍTULO, SUBTÍTULO Y ACCIÓN DE LANZAMIENTO        -->
+  <!-- ============================================================= -->
+  <div class="iq-analytics-header">
+    <div class="iq-analytics-header-left">
+      <div class="iq-analytics-header-icon">
+        <i class="bi bi-graph-up-arrow"></i>
+      </div>
+      <div class="iq-analytics-header-text">
+        <h1>Analítica y Rendimiento</h1>
+        <p>Consulta el rendimiento y estadísticas de las partidas jugadas</p>
+      </div>
+    </div>
+    <div class="iq-analytics-header-actions">
+      <button type="button" class="iq-btn-reset-launch" onclick="abrirModalReinicioLanzamiento()">
+        <i class="bi bi-arrow-counterclockwise"></i>
+        <span>Reiniciar Analíticas (Modo Lanzamiento)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- 2. BARRA DE FILTROS SUPERIOR                                  -->
+  <!-- ============================================================= -->
+  <form method="get" id="filterForm" class="iq-filter-toolbar">
+    {% csrf_token %}
+    
+    <!-- Filtro 1: Usuarios -->
+    <div class="iq-filter-select-wrapper">
+      <i class="bi bi-person-fill iq-filter-icon"></i>
+      <select name="usuario" id="filterUsuario" class="iq-filter-select">
+        <option value="">Todos los usuarios</option>
+        {% for u in usuarios_list %}
+        <option value="{{ u.id }}" {% if selected_usuario == u.id|stringformat:'s' %}selected{% endif %}>
+          {{ u.alias }} ({{ u.nombre_completo }})
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Filtro 2: Mundos -->
+    <div class="iq-filter-select-wrapper">
+      <i class="bi bi-globe iq-filter-icon"></i>
+      <select name="mundo" id="filterMundo" class="iq-filter-select" onchange="onFilterMundoChange(this.value)">
+        <option value="">Todos los mundos</option>
+        {% for m in mundos_list %}
+        <option value="{{ m.id }}" {% if selected_mundo == m.id|stringformat:'s' %}selected{% endif %}>
+          {{ m.codigo_iso }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Filtro 3: Niveles -->
+    <div class="iq-filter-select-wrapper">
+      <i class="bi bi-layers-fill iq-filter-icon"></i>
+      <select name="nivel" id="filterNivel" class="iq-filter-select">
+        <option value="">Todos los niveles</option>
+        {% for n in niveles_list %}
+        <option value="{{ n.id }}" data-mundo="{{ n.mundo_id }}" {% if selected_nivel == n.id|stringformat:'s' %}selected{% endif %}>
+          Nivel {{ n.numero_nivel }} - {{ n.titulo }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Filtro 4: Rango de Fechas -->
+    <div class="iq-filter-select-wrapper">
+      <i class="bi bi-calendar3 iq-filter-icon"></i>
+      <select name="dias" id="filterDias" class="iq-filter-select">
+        <option value="30" {% if selected_dias == '30' or not selected_dias %}selected{% endif %}>Últimos 30 días</option>
+        <option value="7" {% if selected_dias == '7' %}selected{% endif %}>Últimos 7 días</option>
+        <option value="1" {% if selected_dias == '1' %}selected{% endif %}>Hoy</option>
+        <option value="all" {% if selected_dias == 'all' %}selected{% endif %}>Histórico Total</option>
+      </select>
+    </div>
+
+    <!-- Botón Actualizar -->
+    <button type="submit" class="iq-btn-refresh">
+      <i class="bi bi-arrow-repeat"></i>
+      <span>Actualizar</span>
+    </button>
+  </form>
+
+  <!-- ============================================================= -->
+  <!-- 3. FILA DE 4 TARJETAS KPIS CON ONDA NEÓN                      -->
+  <!-- ============================================================= -->
+  <div class="iq-kpi-row-4">
+    
+    <!-- KPI 1: Partidas Totales -->
+    <div class="iq-kpi-neon-card purple">
+      <div class="iq-kpi-content">
+        <div class="iq-kpi-avatar-circle">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="iq-kpi-texts">
+          <div class="iq-kpi-big-number">{{ kpi_total_partidas|default:"0" }}</div>
+          <div class="iq-kpi-sub-row">
+            <span class="iq-kpi-label">Partidas Totales</span>
+            <span class="iq-kpi-trend">{{ kpi_sub_total }}</span>
+          </div>
+        </div>
+      </div>
+      <!-- Onda púrpura -->
+      <svg class="iq-kpi-wave-svg" viewBox="0 0 300 40" fill="none">
+        <path d="M0,25 C75,5 150,35 225,15 C265,5 285,20 300,12" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M0,32 C60,20 160,35 240,25 C270,22 290,30 300,24" stroke="#7c3aed" stroke-width="1.2" stroke-opacity="0.5"/>
+      </svg>
+    </div>
+
+    <!-- KPI 2: Tasa de Victoria -->
+    <div class="iq-kpi-neon-card blue">
+      <div class="iq-kpi-content">
+        <div class="iq-kpi-avatar-circle">
+          <i class="bi bi-trophy-fill"></i>
+        </div>
+        <div class="iq-kpi-texts">
+          <div class="iq-kpi-big-number">{{ kpi_tasa_victoria|default:"0" }}%</div>
+          <div class="iq-kpi-sub-row">
+            <span class="iq-kpi-label">Tasa de Victoria</span>
+            <span class="iq-kpi-trend">{{ kpi_sub_tasa }}</span>
+          </div>
+        </div>
+      </div>
+      <!-- Onda azul/cian -->
+      <svg class="iq-kpi-wave-svg" viewBox="0 0 300 40" fill="none">
+        <path d="M0,28 C60,10 140,32 210,18 C260,8 280,24 300,15" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M0,34 C70,22 170,36 240,28 C275,24 290,32 300,26" stroke="#0284c7" stroke-width="1.2" stroke-opacity="0.5"/>
+      </svg>
+    </div>
+
+    <!-- KPI 3: Oro Total Obtenido -->
+    <div class="iq-kpi-neon-card gold">
+      <div class="iq-kpi-content">
+        <div class="iq-kpi-avatar-circle">
+          <i class="bi bi-coin"></i>
+        </div>
+        <div class="iq-kpi-texts">
+          <div class="iq-kpi-big-number">{{ kpi_oro_total|default:"0" }}</div>
+          <div class="iq-kpi-sub-row">
+            <span class="iq-kpi-label">Oro Total Obtenido</span>
+            <span class="iq-kpi-trend">{{ kpi_sub_oro }}</span>
+          </div>
+        </div>
+      </div>
+      <!-- Onda ámbar/oro -->
+      <svg class="iq-kpi-wave-svg" viewBox="0 0 300 40" fill="none">
+        <path d="M0,26 C80,8 150,30 220,16 C260,8 280,22 300,14" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M0,32 C70,20 180,34 250,26 C280,22 290,30 300,25" stroke="#d97706" stroke-width="1.2" stroke-opacity="0.5"/>
+      </svg>
+    </div>
+
+    <!-- KPI 4: Gemas Totales -->
+    <div class="iq-kpi-neon-card cyan">
+      <div class="iq-kpi-content">
+        <div class="iq-kpi-avatar-circle">
+          <i class="bi bi-gem"></i>
+        </div>
+        <div class="iq-kpi-texts">
+          <div class="iq-kpi-big-number">{{ kpi_gemas_totales|default:"0" }}</div>
+          <div class="iq-kpi-sub-row">
+            <span class="iq-kpi-label">Gemas Totales</span>
+            <span class="iq-kpi-trend">{{ kpi_sub_gemas }}</span>
+          </div>
+        </div>
+      </div>
+      <!-- Onda cian -->
+      <svg class="iq-kpi-wave-svg" viewBox="0 0 300 40" fill="none">
+        <path d="M0,27 C70,12 145,34 215,16 C260,6 280,20 300,12" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M0,33 C80,24 165,36 245,26 C275,22 290,30 300,24" stroke="#06b6d4" stroke-width="1.2" stroke-opacity="0.5"/>
+      </svg>
+    </div>
+
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- 4. GRID PRINCIPAL: HISTORIAL DE PARTIDAS + RENDIMIENTO        -->
+  <!-- ============================================================= -->
+  <div class="iq-analytics-grid-2">
+
+    <!-- COLUMNA IZQUIERDA: HISTORIAL DE PARTIDAS -->
+    <div class="iq-table-panel">
+      <div class="iq-table-header-title">
+        <i class="bi bi-clock-history"></i>
+        <span>Historial de Partidas</span>
+      </div>
+
+      <div class="iq-partidas-table-wrapper">
+        <table class="iq-partidas-table">
+          <thead>
+            <tr>
+              <th>Fecha y Hora</th>
+              <th>Usuario</th>
+              <th>Nivel</th>
+              <th>Resultado</th>
+              <th>Oro</th>
+              <th>Gemas</th>
+              <th style="text-align: center;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in partidas_page %}
+            <tr>
+              <td>{{ p.fecha_partida|date:"d/m/Y - H:i" }}</td>
+              <td>
+                <div class="iq-user-cell">
+                  <img src="{{ p.usuario.avatar_url }}" alt="{{ p.usuario.alias }}" class="iq-user-avatar-sm" />
+                  <span class="iq-user-alias">{{ p.usuario.alias }}</span>
+                </div>
+              </td>
+              <td>
+                {% if p.nivel %}
+                  Nivel {{ p.nivel.numero_nivel }} - {{ p.nivel.titulo }}
+                {% else %}
+                  Nivel General
+                {% endif %}
+              </td>
+              <td>
+                {% if p.resultado == 'victoria' %}
+                  <span class="iq-result-pill victoria">
+                    <i class="bi bi-trophy-fill"></i> Victoria
+                  </span>
+                {% elif p.resultado == 'derrota' %}
+                  <span class="iq-result-pill derrota">
+                    <i class="bi bi-x-octagon-fill"></i> Derrota
+                  </span>
+                {% else %}
+                  <span class="iq-result-pill abandonada">
+                    <i class="bi bi-slash-circle-fill"></i> Abandonada
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="iq-reward-cell">
+                  <i class="bi bi-coin" style="color: #f59e0b;"></i>
+                  <span>+{{ p.oro_obtenido }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="iq-reward-cell">
+                  <i class="bi bi-gem" style="color: #38bdf8;"></i>
+                  <span>+{{ p.gemas_obtenidas }}</span>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <button type="button" class="iq-btn-view-match" onclick="abrirDetallePartida({{ p.id }})" title="Ver Detalle de Partida">
+                  <i class="bi bi-eye-fill"></i>
+                </button>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 30px; color: #8b95b5;">
+                No se encontraron partidas con los filtros seleccionados.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pie de Tabla: Contador y Paginador -->
+      <div class="iq-table-footer">
+        <div class="iq-table-count-text">
+          Mostrando {{ partidas_page|length }} de {{ total_partidas_display }} partidas
+        </div>
+
+        <div class="iq-pagination">
+          {% if partidas_page.has_previous %}
+          <a href="?page={{ partidas_page.previous_page_number }}&usuario={{ selected_usuario }}&mundo={{ selected_mundo }}&nivel={{ selected_nivel }}&dias={{ selected_dias }}" class="iq-page-btn">&lsaquo;</a>
+          {% else %}
+          <span class="iq-page-btn" style="opacity: 0.4; cursor: default;">&lsaquo;</span>
+          {% endif %}
+
+          <span class="iq-page-btn active">{{ partidas_page.number|default:1 }}</span>
+
+          {% if partidas_page.paginator.num_pages > 1 %}
+            {% if partidas_page.number < partidas_page.paginator.num_pages %}
+            <a href="?page={{ partidas_page.number|add:1 }}&usuario={{ selected_usuario }}&mundo={{ selected_mundo }}&nivel={{ selected_nivel }}&dias={{ selected_dias }}" class="iq-page-btn">{{ partidas_page.number|add:1 }}</a>
+            {% endif %}
+            
+            {% if partidas_page.number|add:1 < partidas_page.paginator.num_pages %}
+            <a href="?page={{ partidas_page.number|add:2 }}&usuario={{ selected_usuario }}&mundo={{ selected_mundo }}&nivel={{ selected_nivel }}&dias={{ selected_dias }}" class="iq-page-btn">{{ partidas_page.number|add:2 }}</a>
+            {% endif %}
+
+            {% if partidas_page.paginator.num_pages > 4 %}
+            <span class="iq-page-btn" style="border: none; background: transparent;">...</span>
+            <a href="?page={{ partidas_page.paginator.num_pages }}&usuario={{ selected_usuario }}&mundo={{ selected_mundo }}&nivel={{ selected_nivel }}&dias={{ selected_dias }}" class="iq-page-btn">{{ partidas_page.paginator.num_pages }}</a>
+            {% endif %}
+          {% endif %}
+
+          {% if partidas_page.has_next %}
+          <a href="?page={{ partidas_page.next_page_number }}&usuario={{ selected_usuario }}&mundo={{ selected_mundo }}&nivel={{ selected_nivel }}&dias={{ selected_dias }}" class="iq-page-btn">&rsaquo;</a>
+          {% else %}
+          <span class="iq-page-btn" style="opacity: 0.4; cursor: default;">&rsaquo;</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: RENDIMIENTO Y NIVEL MÁS JUGADO -->
+    <div class="iq-analytics-side-col">
+      
+      <!-- Panel 1: Rendimiento General -->
+      <div class="iq-side-panel">
+        <div class="iq-side-panel-header">
+          <i class="bi bi-pie-chart-fill"></i>
+          <span>Rendimiento General</span>
+        </div>
+
+        <!-- Donut Progress y Leyenda -->
+        <div class="iq-donut-section">
+          <div class="iq-donut-wrapper">
+            <svg class="iq-donut-svg" viewBox="0 0 100 100">
+              <!-- Fondo circular oscuro -->
+              <circle cx="50" cy="50" r="38" stroke="#1d1746" stroke-width="12" fill="none"/>
+              <!-- Segmento verde (Victorias ~72%) -->
+              <circle cx="50" cy="50" r="38" stroke="#10b981" stroke-width="12" stroke-dasharray="{{ donut_dash_array|default:'0 239' }}" stroke-linecap="round" fill="none" style="filter: drop-shadow(0 0 6px #10b981);"/>
+            </svg>
+            <div class="iq-donut-center-text">
+              <span class="iq-donut-center-pct">{{ kpi_tasa_victoria|default:"0" }}%</span>
+            </div>
+          </div>
+
+          <div class="iq-donut-legend">
+            <div class="iq-legend-item">
+              <span class="iq-legend-label">
+                <span class="iq-dot green"></span>
+                <span>Victorias</span>
+              </span>
+              <span class="iq-legend-value">{{ kpi_victorias|default:"0" }}</span>
+            </div>
+
+            <div class="iq-legend-item">
+              <span class="iq-legend-label">
+                <span class="iq-dot red"></span>
+                <span>Derrotas</span>
+              </span>
+              <span class="iq-legend-value">{{ kpi_derrotas|default:"0" }}</span>
+            </div>
+
+            <div class="iq-legend-item">
+              <span class="iq-legend-label">
+                <span class="iq-dot purple"></span>
+                <span>Abandonadas</span>
+              </span>
+              <span class="iq-legend-value">{{ kpi_abandonadas|default:"0" }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráfico de Tendencia Ondulada Semanal -->
+        <div class="iq-trend-chart-box">
+          <svg viewBox="0 0 320 90" fill="none">
+            <defs>
+              <linearGradient id="purpleGradientArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <!-- Área sombreada -->
+            <path d="{{ trend_area|default:'M10,75 Q60,75 105,75 T200,75 T310,75 L310,85 L10,85 Z' }}" fill="url(#purpleGradientArea)"/>
+            <!-- Línea de tendencia neón con nodos -->
+            <path d="{{ trend_path|default:'M10,75 Q60,75 105,75 T200,75 T310,75' }}" stroke="#a855f7" stroke-width="2.8" stroke-linecap="round" style="filter: drop-shadow(0 0 8px rgba(168,85,247,0.7));"/>
+            <!-- Puntos de datos -->
+            <circle cx="10" cy="{{ y1|default:75 }}" r="3.5" fill="#ffffff" stroke="#a855f7" stroke-width="2"/>
+            <circle cx="105" cy="{{ y2|default:75 }}" r="3.5" fill="#ffffff" stroke="#a855f7" stroke-width="2"/>
+            <circle cx="200" cy="{{ y3|default:75 }}" r="3.5" fill="#ffffff" stroke="#a855f7" stroke-width="2"/>
+            <circle cx="310" cy="{{ y4|default:75 }}" r="3.5" fill="#ffffff" stroke="#a855f7" stroke-width="2"/>
+          </svg>
+          <div class="iq-chart-labels-x">
+            <span title="{{ weekly_c1 }} partidas en S1">S1 ({{ weekly_c1|default:0 }})</span>
+            <span title="{{ weekly_c2 }} partidas en S2">S2 ({{ weekly_c2|default:0 }})</span>
+            <span title="{{ weekly_c3 }} partidas en S3">S3 ({{ weekly_c3|default:0 }})</span>
+            <span title="{{ weekly_c4 }} partidas en S4">S4 ({{ weekly_c4|default:0 }})</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 2: Nivel Más Jugado -->
+      <div class="iq-side-panel">
+        <div class="iq-side-panel-header">
+          <i class="bi bi-controller"></i>
+          <span>Nivel Más Jugado</span>
+        </div>
+
+        <div class="iq-top-level-card">
+          <div class="iq-terminal-thumb">
+            <img src="/static/img/analytics/monitor_cyber_hq.png" alt="Monitor Cibernético" />
+          </div>
+          <div class="iq-top-level-info">
+            <div class="iq-top-level-title">Nivel {{ top_nivel_numero }}</div>
+            <div class="iq-top-level-sub">{{ top_nivel_titulo }}</div>
+            <div class="iq-top-level-metric">{{ top_nivel_pct }} del total ({{ top_nivel_count }} partidas)</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ============================================================= -->
+<!-- MODAL DE DETALLE DE TELEMETRÍA DE PARTIDA                      -->
+<!-- ============================================================= -->
+<div class="iq-modal-overlay" id="partidaModal" onclick="cerrarDetallePartida(event)">
+  <div class="iq-modal-card" onclick="event.stopPropagation()">
+    <div class="iq-modal-header">
+      <h3>
+        <i class="bi bi-shield-check" style="color: #a855f7;"></i>
+        <span>Detalle de Partida y Telemetría</span>
+      </h3>
+      <button type="button" class="iq-modal-close" onclick="cerrarModalDirecto()">&times;</button>
+    </div>
+    <div class="iq-modal-body" id="modalPartidaContent">
+      <div style="text-align: center; color: #8b95b5; padding: 20px;">
+        <i class="bi bi-arrow-repeat" style="animation: spin 1s linear infinite; font-size: 24px; display: inline-block;"></i>
+        <div style="margin-top: 8px;">Cargando telemetría forense...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- MODAL DE CONFIRMACIÓN: REINICIO MODO LANZAMIENTO               -->
+<!-- ============================================================= -->
+<div class="iq-modal-overlay" id="modalReinicioLanzamiento" onclick="cerrarModalReinicio(event)">
+  <div class="iq-modal-card iq-modal-card-danger" onclick="event.stopPropagation()">
+    <div class="iq-modal-header iq-modal-header-danger">
+      <h3>
+        <i class="bi bi-exclamation-triangle-fill" style="color: #ef4444;"></i>
+        <span>Reiniciar Juego a Cero (Modo Lanzamiento)</span>
+      </h3>
+      <button type="button" class="iq-modal-close" onclick="cerrarModalReinicioDirecto()">&times;</button>
+    </div>
+    <div class="iq-modal-body">
+      <div class="iq-reset-warning-banner">
+        <i class="bi bi-radioactive"></i>
+        <div>
+          <strong>¡Acción de Restablecimiento Total!</strong>
+          <p>Esta operación prepara la base de datos para el lanzamiento oficial del videojuego en producción.</p>
+        </div>
+      </div>
+
+      <div class="iq-reset-details-list">
+        <div class="iq-reset-detail-item">
+          <i class="bi bi-trash3-fill" style="color: #ef4444;"></i>
+          <span><strong>Se eliminarán todas las partidas</strong> (historial, telemetría y métricas volverán a 0).</span>
+        </div>
+        <div class="iq-reset-detail-item">
+          <i class="bi bi-arrow-repeat" style="color: #f59e0b;"></i>
+          <span><strong>Se reiniciará el progreso de todos los jugadores</strong> (Nivel 1, XP 0, Oro 0, Gemas 0 y 3 Vidas).</span>
+        </div>
+        <div class="iq-reset-detail-item">
+          <i class="bi bi-123" style="color: #38bdf8;"></i>
+          <span><strong>El contador de partidas comenzará en 1</strong> para la primera partida real jugada.</span>
+        </div>
+        <div class="iq-reset-detail-item">
+          <i class="bi bi-shield-check" style="color: #10b981;"></i>
+          <span><strong>Se mantendrán intactos</strong> los usuarios, credenciales, mundos, niveles y cartas del juego.</span>
+        </div>
+      </div>
+
+      <div class="iq-reset-prompt-box">
+        <label for="inputConfirmarReinicio">Para confirmar, escribe la palabra <strong>REINICIAR</strong>:</label>
+        <input type="text" id="inputConfirmarReinicio" placeholder="Escribe REINICIAR" class="iq-filter-select iq-input-confirm" oninput="verificarTextoConfirmacion(this.value)" autocomplete="off">
+      </div>
+
+      <div class="iq-modal-footer-actions">
+        <button type="button" class="iq-btn-cancelar" onclick="cerrarModalReinicioDirecto()">Cancelar</button>
+        <button type="button" id="btnEjecutarReinicio" class="iq-btn-danger-confirm" disabled onclick="ejecutarReinicioLanzamiento()">
+          <i class="bi bi-rocket-takeoff-fill"></i>
+          <span>Sí, Reiniciar Todo a Cero</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="partidajugada-data" type="application/json">
+{{ niveles_json|safe }}
+</script>
+<script src="{% static 'js/admin/core/partidajugada/change_list.js' %}"></script>
+{% endblock %}

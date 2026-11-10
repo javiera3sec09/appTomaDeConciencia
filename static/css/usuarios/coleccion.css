@@ -1,0 +1,258 @@
+:root {
+      --bg-dark: #070414;
+      --primary-purple: #9333ea;
+      --bright-purple: #c084fc;
+      --deep-purple: #581c87;
+      --glow-purple: rgba(168, 85, 247, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: #080516 url('/static/img/lobby_clean_bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 30%, rgba(13, 8, 30, 0.25) 0%, rgba(5, 3, 14, 0.75) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .iq-page-workspace {
+      position: relative;
+      z-index: 10;
+      width: 100vw;
+      min-height: calc(100vh - 68px);
+      margin-top: 68px;
+      padding: 16px 32px 36px 32px;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    /* Sidebar */
+    .iq-cl-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .iq-cl-nav-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      background: rgba(14, 7, 34, 0.75);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #cbd5e1;
+      font-size: 13.5px;
+      font-weight: 800;
+      text-decoration: none !important;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      transition: all 0.22s ease;
+      clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+    }
+
+    .iq-cl-nav-btn i {
+      font-size: 17px;
+      color: #c084fc;
+      transition: transform 0.2s ease;
+    }
+
+    .iq-cl-nav-btn:hover {
+      background: rgba(88, 28, 135, 0.65);
+      border-color: #c084fc;
+      color: #ffffff;
+      transform: translateX(4px);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+    }
+
+    .iq-cl-nav-btn.active {
+      background: linear-gradient(90deg, rgba(147, 51, 234, 0.85) 0%, rgba(88, 28, 135, 0.95) 100%);
+      border-color: #e9d5ff;
+      color: #ffffff;
+      box-shadow: 0 0 24px rgba(168, 85, 247, 0.8);
+    }
+
+    .iq-cl-nav-btn.active i {
+      color: #ffffff;
+      filter: drop-shadow(0 0 6px #ffffff);
+    }
+
+    .iq-menu-alert-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 8px #ef4444;
+      margin-left: auto;
+    }
+
+    /* Contenedor central */
+    .iq-content-card {
+      background: rgba(14, 8, 36, 0.82);
+      border: 1.5px solid rgba(168, 85, 247, 0.45);
+      border-radius: 20px;
+      padding: 26px 32px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .iq-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+      padding-bottom: 14px;
+    }
+
+    .iq-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .iq-sub-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #e9d5ff;
+      letter-spacing: 0.3px;
+      margin-bottom: 12px;
+    }
+
+    /* Selector de Avatares */
+    .iq-avatars-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 14px;
+    }
+
+    .iq-avatar-card-item {
+      background: rgba(20, 10, 48, 0.75);
+      border: 2px solid rgba(168, 85, 247, 0.35);
+      border-radius: 16px;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      text-align: center;
+    }
+
+    .iq-avatar-card-item:hover {
+      border-color: #c084fc;
+      transform: translateY(-3px);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+    }
+
+    .iq-avatar-card-item.selected {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      box-shadow: 0 0 22px rgba(56, 189, 248, 0.7);
+    }
+
+    .iq-avatar-card-item img {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #a855f7;
+    }
+
+    .iq-avatar-card-item.selected img {
+      border-color: #38bdf8;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.8);
+    }
+
+    .iq-avatar-card-name {
+      font-size: 12px;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+
+    /* Cartas Arcanas */
+    .iq-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 16px;
+    }
+
+    .iq-carta-card {
+      background: linear-gradient(135deg, rgba(28, 14, 60, 0.85) 0%, rgba(14, 7, 34, 0.9) 100%);
+      border: 1.5px solid rgba(168, 85, 247, 0.45);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .iq-carta-card:hover {
+      border-color: #c084fc;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .iq-carta-badge {
+      font-size: 10px;
+      font-weight: 900;
+      color: #fbbf24;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .iq-carta-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .iq-carta-desc {
+      font-size: 11.5px;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
+    .iq-carta-power {
+      margin-top: auto;
+      font-size: 11px;
+      color: #a855f7;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }

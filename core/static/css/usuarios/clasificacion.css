@@ -1,0 +1,1331 @@
+:root {
+      --bg-dark: #080318;
+      --purple-neon: #a855f7;
+      --purple-bright: #c084fc;
+      --purple-deep: #4c1d95;
+      --gold-accent: #fbbf24;
+      --gold-light: #fef08a;
+      --gold-dark: #b45309;
+      --silver-accent: #cbd5e1;
+      --bronze-accent: #d97706;
+      --cyan-magic: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #ffffff;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Fondo con el Castillo Gótico, Luna Cósmica y Banners */
+    .iq-cl-bg-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #080318 url('/static/img/clasificacion_stage_bg.jpg') no-repeat center center;
+      background-size: cover;
+      z-index: 1;
+    }
+
+    .iq-cl-atmosphere {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at 50% 25%, rgba(138, 43, 226, 0.08) 0%, rgba(6, 2, 18, 0.45) 85%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* ------------------------------------------------------------- */
+    /* 1. TOPBAR SUPERIOR (IDÉNTICO A LA REFERENCIA)                 */
+    /* ------------------------------------------------------------- */
+    .iq-cl-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 68px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 50;
+      background: linear-gradient(180deg, rgba(8, 3, 24, 0.96) 0%, rgba(8, 3, 24, 0.6) 80%, rgba(8, 3, 24, 0) 100%);
+    }
+
+    /* Identidad del Jugador (Avatar con aura de fuego + Nombre + Nivel + XP) */
+    .iq-player-identity {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .iq-player-avatar-wrap {
+      position: relative;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .iq-player-avatar-aura {
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.95) 0%, rgba(124, 58, 237, 0.3) 65%, transparent 100%);
+      filter: blur(5px);
+      animation: auraFlame 2.5s infinite alternate ease-in-out;
+    }
+
+    @keyframes auraFlame {
+      0% { transform: scale(0.95); opacity: 0.75; }
+      100% { transform: scale(1.1); opacity: 1; filter: blur(7px); }
+    }
+
+    .iq-player-avatar-img {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #c084fc;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.95);
+      z-index: 2;
+      background: #14112e;
+    }
+
+    .iq-player-details {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .iq-player-name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .iq-player-alias {
+      font-size: 15.5px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.3px;
+      text-shadow: 0 0 12px rgba(192, 132, 252, 0.6);
+    }
+
+    .btn-settings-gear {
+      background: transparent;
+      border: none;
+      color: #c084fc;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.8));
+    }
+
+    .btn-settings-gear:hover {
+      color: #ffffff;
+      transform: rotate(45deg) scale(1.15);
+    }
+
+    .iq-player-level-xp-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .iq-player-level-tag {
+      font-size: 12px;
+      font-weight: 800;
+      color: #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .iq-topbar-xp-bar-wrap {
+      width: 140px;
+      height: 8px;
+      background: #120a2e;
+      border-radius: 8px;
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+    }
+
+    .iq-topbar-xp-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #7c3aed 0%, #c084fc 100%);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.95);
+      border-radius: 8px;
+      transition: width 0.3s ease;
+    }
+
+    .iq-topbar-xp-text {
+      font-size: 11px;
+      color: #cbd5e1;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    /* Recursos Superiores Derecha (Gemas, Oro, Energía, Mensajes, Notificaciones) */
+    .iq-topbar-stats-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .iq-stat-pill {
+      background: rgba(16, 8, 38, 0.85);
+      border: 1.5px solid rgba(168, 85, 247, 0.45);
+      border-radius: 24px;
+      padding: 4px 6px 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 800;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .iq-stat-pill.gemas i {
+      color: #e879f9;
+      font-size: 15px;
+      filter: drop-shadow(0 0 8px #d946ef);
+    }
+
+    .iq-stat-pill.oro i {
+      color: #fbbf24;
+      font-size: 15px;
+      filter: drop-shadow(0 0 8px #f59e0b);
+    }
+
+    .iq-stat-pill.energia i {
+      color: #c084fc;
+      font-size: 15px;
+      filter: drop-shadow(0 0 8px #a855f7);
+    }
+
+    .iq-stat-pill span {
+      color: #ffffff;
+      letter-spacing: 0.3px;
+    }
+
+    .iq-pill-btn-add {
+      background: rgba(88, 28, 135, 0.9);
+      border: 1px solid #c084fc;
+      color: #ffffff;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      line-height: 1;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+    }
+
+    .iq-pill-btn-add:hover {
+      background: #9333ea;
+      transform: scale(1.15);
+      box-shadow: 0 0 12px rgba(192, 132, 252, 1);
+    }
+
+    .iq-topbar-icon-btn {
+      position: relative;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(16, 8, 38, 0.85);
+      border: 1.5px solid rgba(168, 85, 247, 0.45);
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .iq-topbar-icon-btn:hover {
+      color: #ffffff;
+      border-color: #c084fc;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.8);
+      transform: scale(1.08);
+    }
+
+    .iq-icon-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 9.5px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #080318;
+      box-shadow: 0 0 8px #ef4444;
+    }
+
+    /* ------------------------------------------------------------- */
+    /* 2. ÁREA DE TRABAJO PRINCIPAL (3 COLUMNAS EXACTAS)             */
+    /* ------------------------------------------------------------- */
+    .iq-cl-workspace {
+      position: relative;
+      z-index: 10;
+      width: 100vw;
+      height: calc(100vh - 68px);
+      margin-top: 68px;
+      padding: 8px 24px 14px 24px;
+      display: grid;
+      grid-template-columns: 180px 1fr 220px;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    /* ============================================================= */
+    /* COLUMNA 1: MENÚ LATERAL CON BOTÓN ACTIVO CLASIFICACIÓN        */
+    /* ============================================================= */
+    .iq-cl-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+    }
+
+    /* Botones Góticos con filos de diamante en los laterales */
+    .iq-cl-nav-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 16px;
+      background: rgba(14, 7, 34, 0.72);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #cbd5e1;
+      font-size: 13.5px;
+      font-weight: 800;
+      text-decoration: none !important;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      transition: all 0.22s ease;
+      clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+    }
+
+    .iq-cl-nav-btn i {
+      font-size: 17px;
+      color: #c084fc;
+      transition: transform 0.2s ease;
+    }
+
+    .iq-cl-nav-btn:hover {
+      background: rgba(124, 58, 237, 0.35);
+      border-color: #c084fc;
+      color: #ffffff;
+      transform: translateX(3px);
+      box-shadow: 0 0 18px rgba(168, 85, 247, 0.6);
+    }
+
+    /* BOTÓN ACTIVO: CLASIFICACIÓN (EXACTO A LA IMAGEN) */
+    .iq-cl-nav-btn.active {
+      background: linear-gradient(90deg, #6d28d9 0%, #9333ea 50%, #6d28d9 100%);
+      border: 1.8px solid #d8b4fe;
+      color: #ffffff;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.95), inset 0 0 14px rgba(216, 180, 254, 0.5);
+      clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0% 50%);
+    }
+
+    .iq-cl-nav-btn.active i {
+      color: #ffffff;
+      filter: drop-shadow(0 0 8px #ffffff);
+      transform: scale(1.1);
+    }
+
+    .iq-menu-alert-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 8px #ef4444;
+      margin-left: auto;
+    }
+
+    /* Tarjeta Inferior de Evento Especial */
+    .iq-event-card {
+      margin-top: auto;
+      background: rgba(13, 6, 32, 0.88);
+      border: 1.5px solid rgba(168, 85, 247, 0.45);
+      border-radius: 14px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 20px rgba(124, 58, 237, 0.35);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .iq-event-card:hover {
+      border-color: #c084fc;
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.7);
+    }
+
+    .iq-event-tag {
+      display: inline-block;
+      width: fit-content;
+      background: linear-gradient(90deg, #3b82f6 0%, #7c3aed 100%);
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 12px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+
+    .iq-event-title {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 8px rgba(168, 85, 247, 0.8);
+      line-height: 1.2;
+    }
+
+    .iq-event-timer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10.5px;
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+
+    .iq-event-timer i {
+      color: #c084fc;
+      font-size: 11px;
+    }
+
+    .iq-event-art-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: -10px;
+    }
+
+    .iq-event-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1.5px solid #a855f7;
+      object-fit: cover;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+      background: #14112e;
+    }
+
+    /* ============================================================= */
+    /* COLUMNA 2: CENTRO (CRESTA, TABS, PODIO TOP 3, TABLA)         */
+    /* ============================================================= */
+    .iq-cl-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 4px;
+      height: 100%;
+      position: relative;
+    }
+
+    /* Cresta Gótica Ornamental 'Clasificación' */
+    .iq-crest-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: -14px;
+      position: relative;
+      z-index: 20;
+    }
+
+    .iq-crest-img {
+      height: 48px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.95)) drop-shadow(0 0 25px rgba(124, 58, 237, 0.5));
+    }
+
+
+    /* ============================================================= */
+    /* PODIO DE LOS 3 MEJORES JUGADORES                              */
+    /* ============================================================= */
+    .iq-podium-stage {
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 16px;
+      margin: 4px 0 2px 0;
+      position: relative;
+      z-index: 15;
+    }
+
+    /* Banners de Calaveras Góticos detrás del 2° y 3° lugar */
+    .iq-podium-banner-l,
+    .iq-podium-banner-r {
+      position: absolute;
+      top: -15px;
+      width: 52px;
+      height: 140px;
+      object-fit: contain;
+      z-index: 2;
+      opacity: 0.85;
+      pointer-events: none;
+      filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.5));
+    }
+
+    .iq-podium-banner-l {
+      left: 12%;
+    }
+
+    .iq-podium-banner-r {
+      right: 12%;
+    }
+
+    .iq-podium-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* PUESTO 1: CAMPEÓN SUPREMO (CENTRO) */
+    .iq-podium-col.rank-1 {
+      order: 2;
+      z-index: 10;
+      margin-bottom: 2px;
+    }
+
+    .iq-podium-col.rank-2 {
+      order: 1;
+      z-index: 6;
+    }
+
+    .iq-podium-col.rank-3 {
+      order: 3;
+      z-index: 6;
+    }
+
+    /* Avatar y Aureola del Campeón */
+    .iq-champion-avatar-wrap {
+      position: relative;
+      width: 82px;
+      height: 82px;
+      margin-bottom: -14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 12;
+    }
+
+    /* Corona Dorada Flotante */
+    .iq-champion-crown {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: #fbbf24;
+      filter: drop-shadow(0 0 10px #f59e0b) drop-shadow(0 0 20px #fbbf24);
+      z-index: 15;
+      animation: crownBob 2.5s infinite ease-in-out;
+    }
+
+    @keyframes crownBob {
+      0%, 100% { transform: translateX(-50%) translateY(0); filter: drop-shadow(0 0 10px #fbbf24); }
+      50% { transform: translateX(-50%) translateY(-4px); filter: drop-shadow(0 0 18px #f59e0b); }
+    }
+
+    /* Anillo Halo Solar Radiante */
+    .iq-champion-halo {
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      width: 98px;
+      height: 98px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(251, 191, 36, 0.6);
+      box-shadow: 0 0 25px rgba(251, 191, 36, 0.45);
+      z-index: 4;
+      pointer-events: none;
+      animation: haloSpin 16s infinite linear;
+    }
+
+    @keyframes haloSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .iq-champion-avatar-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2.5px solid #fbbf24;
+      box-shadow: 0 0 25px rgba(251, 191, 36, 0.9), 0 0 40px rgba(168, 85, 247, 0.6);
+      z-index: 8;
+      background: #14112e;
+    }
+
+    /* Avatares Puesto 2 y 3 */
+    .iq-sub-avatar-wrap {
+      position: relative;
+      width: 68px;
+      height: 68px;
+      margin-bottom: -12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 8;
+    }
+
+    .iq-sub-avatar-img {
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      object-fit: cover;
+      z-index: 8;
+      background: #14112e;
+    }
+
+    .iq-podium-col.rank-2 .iq-sub-avatar-img {
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 0 18px rgba(203, 213, 225, 0.8), 0 0 30px rgba(168, 85, 247, 0.5);
+    }
+
+    .iq-podium-col.rank-3 .iq-sub-avatar-img {
+      border: 2px solid #d97706;
+      box-shadow: 0 0 18px rgba(217, 119, 6, 0.8), 0 0 30px rgba(168, 85, 247, 0.5);
+    }
+
+    /* Pedestales Góticos */
+    .iq-pedestal-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      border-radius: 12px 12px 6px 6px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Pedestal Oro (Puesto 1) */
+    .iq-pedestal-card.gold {
+      width: 172px;
+      height: 94px;
+      background: linear-gradient(180deg, #381666 0%, #15082e 100%);
+      border-top: 3.5px solid #fbbf24;
+      border-left: 1.5px solid rgba(251, 191, 36, 0.5);
+      border-right: 1.5px solid rgba(251, 191, 36, 0.5);
+      border-bottom: 2px solid rgba(251, 191, 36, 0.3);
+      box-shadow: 0 0 25px rgba(251, 191, 36, 0.3), inset 0 0 16px rgba(251, 191, 36, 0.15);
+    }
+
+    /* Pedestal Plata (Puesto 2) */
+    .iq-pedestal-card.silver {
+      width: 145px;
+      height: 76px;
+      background: linear-gradient(180deg, #241448 0%, #110726 100%);
+      border-top: 3px solid #cbd5e1;
+      border-left: 1.5px solid rgba(203, 213, 225, 0.4);
+      border-right: 1.5px solid rgba(203, 213, 225, 0.4);
+      border-bottom: 2px solid rgba(203, 213, 225, 0.2);
+      box-shadow: 0 0 18px rgba(203, 213, 225, 0.2);
+    }
+
+    /* Pedestal Bronce (Puesto 3) */
+    .iq-pedestal-card.bronze {
+      width: 145px;
+      height: 76px;
+      background: linear-gradient(180deg, #241448 0%, #110726 100%);
+      border-top: 3px solid #d97706;
+      border-left: 1.5px solid rgba(217, 119, 6, 0.4);
+      border-right: 1.5px solid rgba(217, 119, 6, 0.4);
+      border-bottom: 2px solid rgba(217, 119, 6, 0.2);
+      box-shadow: 0 0 18px rgba(217, 119, 6, 0.2);
+    }
+
+    /* Medalla de Laureles Superior del Pedestal */
+    .iq-pedestal-laurel-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 44px;
+      height: 44px;
+      z-index: 5;
+    }
+
+    .iq-pedestal-laurel-badge svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
+    }
+
+    .iq-pedestal-num {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    .iq-pedestal-num.gold {
+      color: #fbbf24;
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.95);
+    }
+
+    .iq-pedestal-num.silver {
+      color: #cbd5e1;
+      text-shadow: 0 0 10px rgba(203, 213, 225, 0.9);
+      font-size: 18px;
+    }
+
+    .iq-pedestal-num.bronze {
+      color: #f59e0b;
+      text-shadow: 0 0 10px rgba(245, 158, 11, 0.9);
+      font-size: 18px;
+    }
+
+    /* Placa con Nombre y XP del Jugador */
+    .iq-pedestal-plaque {
+      position: relative;
+      z-index: 8;
+      width: 90%;
+      margin: 0 auto 6px auto;
+      background: rgba(12, 5, 30, 0.95);
+      border-radius: 8px;
+      padding: 4px 6px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    .iq-pedestal-plaque.gold {
+      border: 1px solid rgba(251, 191, 36, 0.75);
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
+    }
+
+    .iq-pedestal-plaque.silver {
+      border: 1px solid rgba(203, 213, 225, 0.6);
+    }
+
+    .iq-pedestal-plaque.bronze {
+      border: 1px solid rgba(217, 119, 6, 0.6);
+    }
+
+    .iq-pedestal-alias {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+
+    .iq-pedestal-alias.gold {
+      font-size: 14.5px;
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(251, 191, 36, 0.7);
+    }
+
+    .iq-pedestal-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-top: 1px;
+      white-space: nowrap;
+    }
+
+    .iq-pedestal-sub.gold {
+      color: #fde68a;
+    }
+
+    /* ============================================================= */
+    /* TABLA DE CLASIFICACIÓN (CENTRO-INFERIOR)                       */
+    /* ============================================================= */
+    .iq-ranking-card {
+      width: 100%;
+      max-width: 620px;
+      background: rgba(10, 4, 30, 0.88);
+      border: 1.5px solid rgba(168, 85, 247, 0.5);
+      border-radius: 14px;
+      padding: 6px 14px 10px 14px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(168, 85, 247, 0.35);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .iq-table-scroll {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .iq-cl-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 4px;
+    }
+
+    .iq-cl-table thead tr th {
+      color: #cbd5e1;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 4px 8px;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+    }
+
+    .iq-cl-table tbody tr {
+      transition: all 0.2s ease;
+      height: 38px;
+    }
+
+    .iq-cl-table tbody tr:hover:not(.is-gold-row) {
+      background: rgba(168, 85, 247, 0.15);
+    }
+
+    /* FILA 1: RESALTADA EN ORO (CAMPEÓN / USUARIO EXACTO A LA IMAGEN) */
+    .iq-cl-table tbody tr.is-gold-row {
+      background: linear-gradient(90deg, rgba(251, 191, 36, 0.15) 0%, rgba(147, 51, 234, 0.18) 100%) !important;
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.45);
+    }
+
+    .iq-cl-table tbody tr.is-gold-row td:first-child {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+      border-left: 1.2px solid #fbbf24;
+      border-top: 1.2px solid #fbbf24;
+      border-bottom: 1.2px solid #fbbf24;
+    }
+
+    .iq-cl-table tbody tr.is-gold-row td {
+      border-top: 1.2px solid #fbbf24;
+      border-bottom: 1.2px solid #fbbf24;
+    }
+
+    .iq-cl-table tbody tr.is-gold-row td:last-child {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+      border-right: 1.2px solid #fbbf24;
+      border-top: 1.2px solid #fbbf24;
+      border-bottom: 1.2px solid #fbbf24;
+    }
+
+    .iq-cl-td-rank {
+      width: 48px;
+      text-align: center;
+      padding: 2px 4px;
+    }
+
+    .iq-rank-crown-icon {
+      font-size: 17px;
+    }
+
+    .iq-rank-crown-icon.gold {
+      color: #fbbf24;
+      filter: drop-shadow(0 0 8px #f59e0b);
+    }
+
+    .iq-rank-crown-icon.silver {
+      color: #cbd5e1;
+      filter: drop-shadow(0 0 6px #94a3b8);
+    }
+
+    .iq-rank-crown-icon.bronze {
+      color: #d97706;
+      filter: drop-shadow(0 0 6px #b45309);
+    }
+
+    .iq-rank-number-text {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #e2e8f0;
+    }
+
+    .iq-cl-td-player {
+      padding: 2px 8px;
+    }
+
+    .iq-player-cell-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .iq-cell-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid #a855f7;
+      background: #14112e;
+      flex-shrink: 0;
+    }
+
+    .iq-cl-table tbody tr.is-gold-row .iq-cell-avatar {
+      border-color: #fbbf24;
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
+    }
+
+    .iq-cell-name {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .iq-cl-table tbody tr.is-gold-row .iq-cell-name {
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+    }
+
+    .iq-cl-td-level {
+      width: 80px;
+      text-align: center;
+      padding: 2px 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #cbd5e1;
+      white-space: nowrap;
+    }
+
+    .iq-cl-table tbody tr.is-gold-row .iq-cl-td-level {
+      color: #fde68a;
+      font-weight: 800;
+    }
+
+    .iq-cl-td-xp {
+      width: 110px;
+      text-align: right;
+      padding: 2px 14px 2px 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .iq-cl-table tbody tr.is-gold-row .iq-cl-td-xp {
+      color: #fde68a;
+      font-weight: 800;
+    }
+
+    /* Paginación < 1 / 10 > */
+    .iq-pagination-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 6px;
+    }
+
+    .iq-page-arrow-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(88, 28, 135, 0.85);
+      border: 1.5px solid #a855f7;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+    }
+
+    .iq-page-arrow-btn:hover:not(:disabled) {
+      background: #7c3aed;
+      border-color: #c084fc;
+      transform: scale(1.12);
+      box-shadow: 0 0 16px rgba(192, 132, 252, 1);
+    }
+
+    .iq-page-arrow-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .iq-page-indicator {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #e2e8f0;
+      letter-spacing: 2px;
+    }
+
+    /* ============================================================= */
+    /* COLUMNA 3: LATERAL DERECHO (TU POSICIÓN + BOTÓN JUGAR)        */
+    /* ============================================================= */
+    .iq-cl-right-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 16px;
+      height: 100%;
+      padding-bottom: 8px;
+    }
+
+    /* Tarjeta Tu Posición (Marco Gótico Espinoso Idéntico) */
+    .iq-my-position-card {
+      position: relative;
+      background: rgba(12, 4, 32, 0.9);
+      border: 1.5px solid rgba(168, 85, 247, 0.6);
+      border-radius: 16px;
+      padding: 14px 14px 12px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(168, 85, 247, 0.4);
+    }
+
+    /* Picos ornamentales góticos en las 4 esquinas */
+    .iq-my-position-card::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      border-radius: 18px;
+      border: 1px solid rgba(216, 180, 254, 0.3);
+      pointer-events: none;
+    }
+
+    .iq-my-pos-header-title {
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 10px rgba(192, 132, 252, 0.8);
+      margin-bottom: 10px;
+    }
+
+    .iq-my-pos-body-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .iq-my-pos-avatar-box {
+      position: relative;
+      width: 54px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .iq-my-pos-aura {
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.9) 0%, rgba(124, 58, 237, 0.25) 70%, transparent 100%);
+      filter: blur(5px);
+      animation: auraFlame 2.5s infinite alternate ease-in-out;
+    }
+
+    .iq-my-pos-avatar-img {
+      position: relative;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #c084fc;
+      box-shadow: 0 0 18px rgba(168, 85, 247, 0.9);
+      z-index: 2;
+      background: #14112e;
+    }
+
+    .iq-my-pos-text-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .iq-my-pos-alias {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .iq-my-pos-level {
+      font-size: 12px;
+      font-weight: 700;
+      color: #cbd5e1;
+    }
+
+    /* Corona de Laureles con Posición Dorada */
+    .iq-my-pos-laurel-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      width: 110px;
+      height: 50px;
+      margin-top: 2px;
+    }
+
+    .iq-my-pos-laurel-badge svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .iq-my-pos-rank-num {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Cinzel', serif;
+      font-size: 19px;
+      font-weight: 900;
+      color: #fbbf24;
+      text-shadow: 0 0 12px rgba(251, 191, 36, 0.95);
+    }
+
+    /* BOTÓN JUGAR (FILOS DE DIAMANTE GÓTICOS EXACTO A LA IMAGEN) */
+    .iq-btn-jugar-exact {
+      position: relative;
+      width: 100%;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(90deg, #6d28d9 0%, #9333ea 50%, #7c3aed 100%);
+      border: 2px solid #d8b4fe;
+      color: #ffffff;
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-decoration: none !important;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(168, 85, 247, 0.95), 0 0 50px rgba(192, 132, 252, 0.6), inset 0 0 16px rgba(255, 255, 255, 0.35);
+      clip-path: polygon(14px 0%, calc(100% - 14px) 0%, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0% 50%);
+      transition: all 0.25s ease;
+    }
+
+    .iq-btn-jugar-exact i {
+      font-size: 24px;
+      filter: drop-shadow(0 0 10px #ffffff);
+    }
+
+    .iq-btn-jugar-exact:hover {
+      background: linear-gradient(90deg, #7c3aed 0%, #a855f7 50%, #9333ea 100%);
+      border-color: #ffffff;
+      box-shadow: 0 0 45px rgba(192, 132, 252, 1), 0 0 70px rgba(168, 85, 247, 0.8), inset 0 0 24px rgba(255, 255, 255, 0.5);
+      transform: translateY(-2px) scale(1.03);
+      color: #ffffff !important;
+    }
+
+    /* ------------------------------------------------------------- */
+    /* MODAL DE PERFIL FLOTANTE (PERMITE CAMBIAR ALIAS Y AVATAR)    */
+    /* ------------------------------------------------------------- */
+    .iq-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 2, 12, 0.82);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .iq-modal-overlay.show {
+      display: flex;
+    }
+
+    .iq-profile-modal-frame {
+      position: relative;
+      width: 440px;
+      background: rgba(14, 7, 34, 0.96);
+      border: 1.5px solid #a855f7;
+      border-radius: 20px;
+      padding: 24px 22px 20px 22px;
+      box-shadow: 0 0 50px rgba(168, 85, 247, 0.5), inset 0 0 20px rgba(168, 85, 247, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .btn-profile-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: transparent;
+      border: none;
+      color: #cbd5e1;
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .btn-profile-close:hover {
+      color: #ef4444;
+    }
+
+    .iq-modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fbbf24;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.7);
+    }
+
+    .iq-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .iq-input-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #c084fc;
+    }
+
+    .iq-text-input {
+      background: #100a26;
+      border: 1.5px solid rgba(168, 85, 247, 0.5);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .iq-text-input:focus {
+      border-color: #c084fc;
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+    }
+
+    .iq-avatar-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .iq-avatar-option-card {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid rgba(168, 85, 247, 0.4);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #14112e;
+    }
+
+    .iq-avatar-option-card:hover {
+      border-color: #c084fc;
+      transform: scale(1.1);
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.8);
+    }
+
+    .iq-avatar-option-card.selected {
+      border-color: #fbbf24;
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.95);
+      transform: scale(1.12);
+    }
+
+    .iq-avatar-option-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .btn-save-profile {
+      background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
+      border: 1.5px solid #d8b4fe;
+      color: #ffffff;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+      transition: all 0.2s ease;
+    }
+
+    .btn-save-profile:hover {
+      background: #9333ea;
+      box-shadow: 0 0 30px rgba(192, 132, 252, 0.9);
+      transform: translateY(-2px);
+    }

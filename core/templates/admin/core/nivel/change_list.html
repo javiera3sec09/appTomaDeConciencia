@@ -1,0 +1,438 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block title %}Niveles | ISO QUEST Admin{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/core/nivel/change_list.css' %}">
+
+<div class="iq-niveles-page">
+
+  <!-- CABECERA -->
+  <div class="iq-niveles-header">
+    <div class="iq-niveles-title-box">
+      <div class="iq-niveles-title-icon">
+        <i class="bi bi-controller"></i>
+      </div>
+      <div class="iq-niveles-title-text">
+        <h1>Niveles</h1>
+        <p>Gestiona los niveles de cada mundo del juego</p>
+      </div>
+    </div>
+    <button type="button" class="btn-new-nivel" onclick="openNewNivelModal()">
+      <i class="bi bi-plus-lg"></i>
+      <span>Nuevo Nivel</span>
+    </button>
+  </div>
+
+  <!-- SELECTOR HORIZONTAL DE MUNDOS ACTIVOS -->
+  <div class="iq-worlds-selector" id="worldsSelectorContainer">
+    {% for m in mundos_data %}
+    <div class="iq-world-tab {% if selected_mundo and m.id == selected_mundo.id %}active{% endif %}"
+         data-mundo-id="{{ m.id }}"
+         onclick="selectWorldTab({{ m.id }})">
+      <div class="iq-world-tab-icon">
+        <i class="{{ m.icono_class }}"></i>
+      </div>
+      <div class="iq-world-tab-info">
+        <span class="iq-world-tab-label">Mundo {{ m.orden }}</span>
+        <span class="iq-world-tab-code">{{ m.codigo_iso }}</span>
+        <span class="iq-world-tab-name">({{ m.nombre_corto }})</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- HERO BANNER DEL MUNDO SELECCIONADO -->
+  <div class="iq-hero-world-banner" id="heroWorldBanner">
+    <div class="iq-hero-left">
+      <div class="iq-hero-avatar-box">
+        <img src="{{ selected_mundo_data.avatar_url }}"
+             alt="Guardián ISO"
+             class="iq-hero-avatar-img"
+             id="heroAvatarImg" />
+      </div>
+      <div class="iq-hero-meta">
+        <h2 class="iq-hero-title" id="heroTitle">
+          Mundo {{ selected_mundo_data.orden }}: {{ selected_mundo_data.codigo_iso }}
+        </h2>
+        <div class="iq-hero-subtitle" id="heroSubtitle">
+          {{ selected_mundo_data.nombre_tematico }}
+        </div>
+        <p class="iq-hero-desc" id="heroDesc">
+          {{ selected_mundo_data.descripcion }}
+        </p>
+      </div>
+    </div>
+
+    <!-- METRIC STATS BADGES -->
+    <div class="iq-hero-metrics">
+      <!-- Niveles -->
+      <div class="iq-hero-stat-card">
+        <div class="iq-stat-icon-circle iq-stat-icon-star">
+          <i class="bi bi-star-fill"></i>
+        </div>
+        <div class="iq-stat-content">
+          <span class="iq-stat-val" id="statNiveles">{{ selected_mundo_data.total_niveles }}</span>
+          <span class="iq-stat-lbl">Niveles</span>
+        </div>
+      </div>
+
+      <!-- XP Total -->
+      <div class="iq-hero-stat-card">
+        <div class="iq-stat-icon-circle iq-stat-icon-trophy">
+          <i class="bi bi-trophy-fill"></i>
+        </div>
+        <div class="iq-stat-content">
+          <span class="iq-stat-val" id="statXp">{{ selected_mundo_data.total_xp|intcomma }}</span>
+          <span class="iq-stat-lbl">XP Total</span>
+        </div>
+      </div>
+
+      <!-- Oro Total -->
+      <div class="iq-hero-stat-card">
+        <div class="iq-stat-icon-circle iq-stat-icon-coin">
+          <i class="bi bi-coin"></i>
+        </div>
+        <div class="iq-stat-content">
+          <span class="iq-stat-val" id="statOro">{{ selected_mundo_data.total_oro|intcomma }}</span>
+          <span class="iq-stat-lbl">Oro Total</span>
+        </div>
+      </div>
+
+      <!-- Gemas -->
+      <div class="iq-hero-stat-card">
+        <div class="iq-stat-icon-circle iq-stat-icon-gem">
+          <i class="bi bi-gem"></i>
+        </div>
+        <div class="iq-stat-content">
+          <span class="iq-stat-val" id="statGemas">{{ selected_mundo_data.total_gemas|intcomma }}</span>
+          <span class="iq-stat-lbl">Gemas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARRA DE BÚSQUEDA Y FILTROS -->
+  <div class="iq-filter-bar">
+    <div class="iq-search-box">
+      <i class="bi bi-search"></i>
+      <input type="text"
+             id="searchNivelInput"
+             placeholder="Buscar nivel por título..."
+             oninput="applyTableFilters()" />
+    </div>
+
+    <div class="iq-filters-group">
+      <!-- Filtro Tipo -->
+      <select class="iq-select-filter" id="filterTipo" onchange="applyTableFilters()">
+        <option value="">Todos los tipos</option>
+        {% for val, lbl in tipos_choices %}
+        <option value="{{ val }}">{{ lbl }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Filtro Dificultad -->
+      <select class="iq-select-filter" id="filterDificultad" onchange="applyTableFilters()">
+        <option value="">Todas las dificultades</option>
+        {% for val, lbl in dificultades_choices %}
+        <option value="{{ val }}">{{ lbl }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Filtro Estado -->
+      <select class="iq-select-filter" id="filterEstado" onchange="applyTableFilters()">
+        <option value="">Todos los estados</option>
+        {% for val, lbl in estados_choices %}
+        <option value="{{ val }}">{{ lbl }}</option>
+        {% endfor %}
+      </select>
+
+      <button type="button" class="btn-filter-action" onclick="applyTableFilters()">
+        <i class="bi bi-funnel"></i>
+        <span>Filtrar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- TABLA DE NIVELES -->
+  <div class="iq-table-card">
+    <div class="iq-table-wrapper">
+      <table class="iq-table" id="nivelesTable">
+        <thead>
+          <tr>
+            <th style="width: 80px;">Nivel</th>
+            <th>Título</th>
+            <th style="width: 140px;">Tipo</th>
+            <th style="width: 130px;">Dificultad</th>
+            <th style="width: 240px;">Recompensas</th>
+            <th style="width: 120px;">Estado</th>
+            <th style="width: 100px; text-align: center;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="nivelesTableBody">
+          {% for n in niveles_list %}
+          <tr data-id="{{ n.id }}"
+              data-numero="{{ n.numero_nivel }}"
+              data-titulo="{{ n.titulo|lower }}"
+              data-tipo="{{ n.tipo }}"
+              data-dificultad="{{ n.dificultad }}"
+              data-estado="{{ n.estado }}">
+            <td style="font-weight: 700; color: #94a3b8;">{{ n.numero_nivel }}</td>
+            <td style="font-weight: 600; color: #ffffff;">{{ n.titulo }}</td>
+            <td>
+              {% if n.tipo == 'jefe' %}
+              <span class="iq-pill-tipo-jefe">👑 Jefe</span>
+              {% else %}
+              <span class="iq-pill-tipo-normal">Normal</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if n.dificultad == 'facil' %}
+              <span class="iq-pill-dif-facil">Fácil</span>
+              {% elif n.dificultad == 'dificil' %}
+              <span class="iq-pill-dif-dificil">Difícil</span>
+              {% else %}
+              <span class="iq-pill-dif-normal">Normal</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="iq-rewards-box">
+                <span class="iq-reward-item iq-reward-coin">
+                  <i class="bi bi-coin"></i> {{ n.recompensa_oro }}
+                </span>
+                <span class="iq-reward-item iq-reward-gem">
+                  <i class="bi bi-gem"></i> {{ n.recompensa_gemas }}
+                </span>
+                <span class="iq-reward-item iq-reward-xp">
+                  <i class="bi bi-star-fill"></i> {{ n.recompensa_xp }}
+                </span>
+              </div>
+            </td>
+            <td>
+              {% if n.estado == 'activo' %}
+              <span class="iq-pill-estado-activo">Activo</span>
+              {% else %}
+              <span class="iq-pill-estado-inactivo">Inactivo</span>
+              {% endif %}
+            </td>
+            <td style="text-align: center;">
+              <div class="iq-actions-cell" style="justify-content: center;">
+                <button type="button" class="btn-action-view" title="Ver Nivel" onclick="openViewNivelModal({{ n.id }})">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button type="button" class="btn-action-edit" title="Editar Nivel" onclick="openEditNivelModal({{ n.id }})">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr id="emptyRow">
+            <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">
+              No hay niveles registrados para este mundo. ¡Haz clic en "+ Nuevo Nivel" para comenzar!
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FOOTER PAGINADOR -->
+    <div class="iq-table-footer">
+      <div id="paginationSummary">
+        Mostrando <span id="pagStart">1</span> - <span id="pagEnd">5</span> de <span id="pagTotal">{{ niveles_list|length }}</span> niveles
+      </div>
+      <div class="iq-pagination" id="paginationControls">
+        <button type="button" class="iq-page-btn" onclick="prevPage()"><i class="bi bi-chevron-left"></i></button>
+        <div id="pageButtons" style="display: flex; gap: 4px;">
+          <!-- Dynamically populated -->
+        </div>
+        <button type="button" class="iq-page-btn" onclick="nextPage()"><i class="bi bi-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL NUEVO NIVEL -->
+<div class="iq-modal-backdrop" id="modalNewNivel">
+  <div class="iq-modal-box">
+    <div class="iq-modal-header">
+      <h3><i class="bi bi-plus-circle" style="color: #a855f7;"></i> Nuevo Nivel</h3>
+      <button type="button" class="iq-modal-close" onclick="closeModal('modalNewNivel')">&times;</button>
+    </div>
+    <form id="formNewNivel" onsubmit="submitNewNivel(event)">
+      <div class="iq-modal-body">
+        <div class="iq-form-group">
+          <label>Mundo ISO Destino</label>
+          <select id="newNivelMundoId" required>
+            {% for m in mundos_data %}
+            <option value="{{ m.id }}" {% if selected_mundo and m.id == selected_mundo.id %}selected{% endif %}>
+              Mundo {{ m.orden }}: {{ m.codigo_iso }} - {{ m.nombre_tematico }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="iq-form-row">
+          <div class="iq-form-group">
+            <label>Número de Nivel</label>
+            <input type="number" id="newNivelNumero" min="1" max="999" required />
+          </div>
+          <div class="iq-form-group">
+            <label>Tipo de Nivel</label>
+            <select id="newNivelTipo" required>
+              <option value="normal">Normal (Estándar)</option>
+              <option value="jefe">👑 Jefe / Auditoría Crítica</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="iq-form-group">
+          <label>Título del Nivel</label>
+          <input type="text" id="newNivelTitulo" placeholder="Ej. Introducción a la Ciberseguridad" required />
+        </div>
+
+        <div class="iq-form-row">
+          <div class="iq-form-group">
+            <label>Dificultad</label>
+            <select id="newNivelDificultad">
+              <option value="facil">Fácil</option>
+              <option value="normal" selected>Normal</option>
+              <option value="dificil">Difícil</option>
+            </select>
+          </div>
+          <div class="iq-form-group">
+            <label>Estado</label>
+            <select id="newNivelEstado">
+              <option value="activo" selected>Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="iq-form-row three-col">
+          <div class="iq-form-group">
+            <label>Oro</label>
+            <input type="number" id="newNivelOro" value="50" min="0" required />
+          </div>
+          <div class="iq-form-group">
+            <label>Gemas</label>
+            <input type="number" id="newNivelGemas" value="10" min="0" required />
+          </div>
+          <div class="iq-form-group">
+            <label>XP</label>
+            <input type="number" id="newNivelXp" value="100" min="0" required />
+          </div>
+        </div>
+      </div>
+      <div class="iq-modal-footer">
+        <button type="button" class="btn-modal-cancel" onclick="closeModal('modalNewNivel')">Cancelar</button>
+        <button type="submit" class="btn-modal-save">Crear Nivel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL EDITAR NIVEL -->
+<div class="iq-modal-backdrop" id="modalEditNivel">
+  <div class="iq-modal-box">
+    <div class="iq-modal-header">
+      <h3><i class="bi bi-pencil-square" style="color: #38bdf8;"></i> Editar Nivel</h3>
+      <button type="button" class="iq-modal-close" onclick="closeModal('modalEditNivel')">&times;</button>
+    </div>
+    <form id="formEditNivel" onsubmit="submitEditNivel(event)">
+      <input type="hidden" id="editNivelId" />
+      <div class="iq-modal-body">
+        <div class="iq-form-row">
+          <div class="iq-form-group">
+            <label>Número de Nivel</label>
+            <input type="number" id="editNivelNumero" min="1" max="999" required />
+          </div>
+          <div class="iq-form-group">
+            <label>Tipo de Nivel</label>
+            <select id="editNivelTipo" required>
+              <option value="normal">Normal (Estándar)</option>
+              <option value="jefe">👑 Jefe / Auditoría Crítica</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="iq-form-group">
+          <label>Título del Nivel</label>
+          <input type="text" id="editNivelTitulo" required />
+        </div>
+
+        <div class="iq-form-row">
+          <div class="iq-form-group">
+            <label>Dificultad</label>
+            <select id="editNivelDificultad">
+              <option value="facil">Fácil</option>
+              <option value="normal">Normal</option>
+              <option value="dificil">Difícil</option>
+            </select>
+          </div>
+          <div class="iq-form-group">
+            <label>Estado</label>
+            <select id="editNivelEstado">
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="iq-form-row three-col">
+          <div class="iq-form-group">
+            <label>Oro</label>
+            <input type="number" id="editNivelOro" min="0" required />
+          </div>
+          <div class="iq-form-group">
+            <label>Gemas</label>
+            <input type="number" id="editNivelGemas" min="0" required />
+          </div>
+          <div class="iq-form-group">
+            <label>XP</label>
+            <input type="number" id="editNivelXp" min="0" required />
+          </div>
+        </div>
+      </div>
+      <div class="iq-modal-footer">
+        <button type="button" class="btn-modal-cancel" onclick="closeModal('modalEditNivel')">Cancelar</button>
+        <button type="submit" class="btn-modal-save">Guardar Cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL VER DETALLE DE NIVEL -->
+<div class="iq-modal-backdrop" id="modalViewNivel">
+  <div class="iq-modal-box">
+    <div class="iq-modal-header">
+      <h3><i class="bi bi-info-circle" style="color: #a855f7;"></i> Detalle del Nivel</h3>
+      <button type="button" class="iq-modal-close" onclick="closeModal('modalViewNivel')">&times;</button>
+    </div>
+    <div class="iq-modal-body" id="viewNivelBody">
+      <!-- Dinámico -->
+    </div>
+    <div class="iq-modal-footer">
+      <button type="button" class="btn-modal-cancel" onclick="closeModal('modalViewNivel')">Cerrar</button>
+      <button type="button" class="btn-modal-save" id="btnViewToEdit">Editar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="iq-toast" id="iqToast">
+  <i class="bi bi-check-circle-fill" style="color: #34d399; font-size: 18px;"></i>
+  <span id="toastMessage">Operación realizada con éxito</span>
+</div>
+
+<script id="nivel-data" type="application/json">
+{
+  "mundosData": {{ mundos_data_json|safe }},
+  "currentMundoId": {{ selected_mundo.id|default:0 }}
+}
+</script>
+<script src="{% static 'js/admin/core/nivel/change_list.js' %}"></script>
+{% endblock %}
